@@ -34,6 +34,7 @@ dependencies {
 
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.h2)
 }
 
 koverReport {
