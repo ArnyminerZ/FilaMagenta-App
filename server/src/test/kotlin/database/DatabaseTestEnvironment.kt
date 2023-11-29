@@ -1,0 +1,16 @@
+package database
+
+import com.filamagenta.database.Database
+import com.filamagenta.system.EnvironmentVariables
+import database.stub.TestTable
+import org.junit.Before
+
+abstract class DatabaseTestEnvironment {
+    @Before
+    fun prepareEnvironment() {
+        EnvironmentVariables.Database.Url._value = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;"
+        EnvironmentVariables.Database.Driver._value = "org.h2.Driver"
+
+        Database.initialize(TestTable)
+    }
+}
