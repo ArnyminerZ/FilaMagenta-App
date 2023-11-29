@@ -17,26 +17,37 @@ sealed class EnvironmentVariable<DataType : Any>(
     private val kClass: KClass<DataType>,
     private val default: DataType? = null
 ) {
+    companion object {
+        /**
+         * Converts a string to the specified data type.
+         *
+         * @param src The string to be converted.
+         * @return The converted value as the specified data type or null if the conversion fails.
+         * @throws IllegalArgumentException If the specified data type is not compatible.
+         */
+        @VisibleForTesting
+        @Suppress("UNCHECKED_CAST")
+        fun <DataType : Any> convert(name: String, kClass: KClass<DataType>, src: String): DataType? = when (kClass) {
+            String::class -> src as? DataType?
+            Int::class -> src.toIntOrNull() as? DataType?
+            Long::class -> src.toLongOrNull() as? DataType?
+            Float::class -> src.toFloatOrNull() as? DataType?
+            Double::class -> src.toDoubleOrNull() as? DataType?
+            Boolean::class -> src.toBooleanStrictOrNull() as? DataType?
+            else -> throw IllegalArgumentException("Type for $name (${kClass.simpleName}) is not compatible.")
+        }
+    }
+
     @VisibleForTesting
     @Suppress("VariableNaming", "PropertyName")
-    var _value: DataType? = System.getenv(name)?.let(::convert)
+    var _value: DataType? = System.getenv(name)?.let { convert(name, kClass, it) }
 
     /**
-     * Converts a string to the specified data type.
-     *
-     * @param src The string to be converted.
-     * @return The converted value as the specified data type or null if the conversion fails.
-     * @throws IllegalArgumentException If the specified data type is not compatible.
+     * Only intended for testing, resets the value of [_value] to the one stored in the environment variable.
      */
-    @Suppress("UNCHECKED_CAST")
-    private fun convert(src: String): DataType? = when (kClass) {
-        String::class -> src as? DataType?
-        Int::class -> src.toIntOrNull() as? DataType?
-        Long::class -> src.toLongOrNull() as? DataType?
-        Float::class -> src.toFloatOrNull() as? DataType?
-        Double::class -> src.toDoubleOrNull() as? DataType?
-        Boolean::class -> src.toBooleanStrictOrNull() as? DataType?
-        else -> throw IllegalArgumentException("Type for $name (${kClass.simpleName}) is not compatible.")
+    @VisibleForTesting
+    fun dispose() {
+        _value = System.getenv(name)?.let { convert(name, kClass, it) }
     }
 
     /**
