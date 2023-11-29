@@ -28,7 +28,9 @@ dependencies {
 
 koverReport {
     filters {
-        // filters for all reports
+        excludes {
+            annotatedBy("KoverIgnore")
+        }
     }
 
     verify {

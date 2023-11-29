@@ -114,7 +114,9 @@ compose.desktop {
 
 koverReport {
     filters {
-        // filters for reports of all build variants
+        excludes {
+            annotatedBy("KoverIgnore")
+        }
     }
 
     verify {
