@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.detekt)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kover)
 }
@@ -32,4 +33,8 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
+}
+
+dependencies {
+    detektPlugins(libs.detekt.formatting)
 }

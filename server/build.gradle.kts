@@ -1,5 +1,6 @@
 plugins {
     application
+    alias(libs.plugins.detekt)
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.kover)
     alias(libs.plugins.ktor)
@@ -15,7 +16,12 @@ application {
 
 dependencies {
     implementation(projects.shared)
+
+    // Kover modules
     kover(project(":shared"))
+
+    // Detekt plugins
+    detektPlugins(libs.detekt.formatting)
 
     implementation(libs.logback)
 
