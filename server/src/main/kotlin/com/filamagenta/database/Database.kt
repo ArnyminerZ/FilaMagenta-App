@@ -49,6 +49,8 @@ object Database {
      * @param block The block of code to run. Perform all the database-related operations here.
      *
      * @return If any, the result of [block].
+     *
+     * @throws IllegalStateException If the database has not been initialized yet.
      */
     fun <Result> transaction(block: Transaction.() -> Result): Result {
         check(instance != null) { "database has not been initialized yet." }
