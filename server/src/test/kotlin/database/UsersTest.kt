@@ -3,6 +3,7 @@ package database
 import com.filamagenta.database.Database
 import com.filamagenta.database.entity.User
 import com.filamagenta.security.Passwords
+import database.model.DatabaseTestEnvironment
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.junit.Assert.assertThrows
 import org.junit.Test

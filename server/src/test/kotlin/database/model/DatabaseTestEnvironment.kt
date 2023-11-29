@@ -1,4 +1,4 @@
-package database
+package database.model
 
 import com.filamagenta.database.Database
 import com.filamagenta.system.EnvironmentVariables
