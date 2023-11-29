@@ -57,4 +57,8 @@ object TestingEnvironmentVariables {
     @KoverIgnore
     @VisibleForTesting
     data object VarBooleanNull : EnvironmentVariable<Int>("ENV_TEST_VAR_BOO_NULL", Int::class)
+
+    @KoverIgnore
+    @VisibleForTesting
+    data object VarUnsupported : EnvironmentVariable<Void>("ENV_TEST_VAR_STR", Void::class)
 }

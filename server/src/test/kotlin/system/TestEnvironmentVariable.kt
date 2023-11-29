@@ -6,6 +6,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import org.junit.After
+import org.junit.Assert.assertThrows
 import org.junit.Test
 
 class TestEnvironmentVariable {
@@ -142,5 +143,20 @@ class TestEnvironmentVariable {
         assertNull(
             EnvironmentVariable.convert("TEST", Boolean::class, "bad")
         )
+    }
+
+    @Test
+    fun `test unsupported`() {
+        assertThrows(
+            IllegalArgumentException::class.java
+        ) {
+            EnvironmentVariable.convert("TEST", Void::class, "bad")
+        }
+
+        assertThrows(
+            IllegalArgumentException::class.java
+        ) {
+            TestingEnvironmentVariables.VarUnsupported.get()
+        }
     }
 }

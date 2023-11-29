@@ -40,14 +40,14 @@ sealed class EnvironmentVariable<DataType : Any>(
 
     @VisibleForTesting
     @Suppress("VariableNaming", "PropertyName")
-    var _value: DataType? = System.getenv(name)?.let { convert(name, kClass, it) }
+    var _value: DataType? = null
 
     /**
      * Only intended for testing, resets the value of [_value] to the one stored in the environment variable.
      */
     @VisibleForTesting
     fun dispose() {
-        _value = System.getenv(name)?.let { convert(name, kClass, it) }
+        _value = System.getenv(name)?.let { convert(name, kClass, it) } ?: default
     }
 
     /**
@@ -58,7 +58,10 @@ sealed class EnvironmentVariable<DataType : Any>(
      *
      * @throws IllegalArgumentException If the specified data type is not compatible.
      */
-    fun get(): DataType? = _value ?: default
+    fun get(): DataType? = _value ?: run {
+        _value = System.getenv(name)?.let { convert(name, kClass, it) } ?: default
+        _value
+    }
 
     /**
      * Returns the value of the DataType.
