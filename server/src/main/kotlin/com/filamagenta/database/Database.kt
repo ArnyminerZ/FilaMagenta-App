@@ -1,5 +1,6 @@
 package com.filamagenta.database
 
+import com.filamagenta.database.table.UserMetaTable
 import com.filamagenta.database.table.Users
 import com.filamagenta.system.EnvironmentVariables
 import org.jetbrains.annotations.VisibleForTesting
@@ -37,7 +38,7 @@ object Database {
         transaction {
             addLogger(StdOutSqlLogger)
 
-            SchemaUtils.create(Users, *extraTables)
+            SchemaUtils.create(Users, UserMetaTable, *extraTables)
         }
     }
 
