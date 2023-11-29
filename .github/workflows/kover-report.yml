@@ -4,11 +4,16 @@ on:
   pull_request:
 
 jobs:
-  should-run:
+  changes:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      backend: ${{ steps.filter.outputs.server }}
+      frontend: ${{ steps.filter.outputs.app }}
     steps:
       - uses: dorny/paths-filter@v2
-        id: changes
+        id: filter
         with:
           filters: |
             server:
@@ -21,9 +26,9 @@ jobs:
               - '.github/workflows/kover-report.yml'
 
   server-coverage:
-    needs: should-run
+    needs: changes
     runs-on: ubuntu-latest
-    if: needs.should-run.outputs.server == 'true'
+    if:  ${{ needs.changes.outputs.server == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK
@@ -49,9 +54,9 @@ jobs:
           coverage-counter-type: LINE
 
   app-coverage:
-    needs: should-run
+    needs: changes
     runs-on: ubuntu-latest
-    if: needs.should-run.outputs.app == 'true'
+    if:  ${{ needs.changes.outputs.app == 'true' }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK
