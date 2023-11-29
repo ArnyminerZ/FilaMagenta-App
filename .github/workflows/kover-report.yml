@@ -9,8 +9,8 @@ jobs:
     permissions:
       pull-requests: read
     outputs:
-      backend: ${{ steps.filter.outputs.server }}
-      frontend: ${{ steps.filter.outputs.app }}
+      server: ${{ steps.filter.outputs.server }}
+      app: ${{ steps.filter.outputs.app }}
     steps:
       - uses: dorny/paths-filter@v2
         id: filter
