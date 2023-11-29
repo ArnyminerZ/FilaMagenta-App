@@ -5,6 +5,7 @@ import java.security.SecureRandom
 import java.security.spec.InvalidKeySpecException
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
+import org.jetbrains.annotations.VisibleForTesting
 
 /**
  * Utility class for generating and verifying password hashes.
@@ -46,12 +47,18 @@ object Passwords {
      *
      * The value of this constant is "PBKDF2WithHmacSHA1".
      */
-    private const val KEY_ALGORITHM = "PBKDF2WithHmacSHA1"
+    const val KEY_ALGORITHM = "PBKDF2WithHmacSHA1"
 
     /**
      * A variable representing a cryptographically strong random number generator.
      */
     private val random = SecureRandom()
+
+    /**
+     * Used for mocking the algorithm in tests.
+     */
+    @VisibleForTesting
+    fun algorithm(): String = KEY_ALGORITHM
 
     /**
      * Generates a random salt of fixed size.
@@ -88,20 +95,16 @@ object Passwords {
      * @return the hashed password as a byte array
      *
      * @throws AssertionError if the specified encryption algorithm is not available, or if the key spec is not valid.
+     * @throws InvalidKeySpecException If there's an error while generating the key spec. Should not ever happen.
      */
     fun hash(password: String, salt: ByteArray = generateSalt()): ByteArray {
         val spec = PBEKeySpec(password.toCharArray(), salt, KEY_ITERATION_COUNT, KEY_LENGTH)
         try {
-            val skf = SecretKeyFactory.getInstance(KEY_ALGORITHM)
+            val skf = SecretKeyFactory.getInstance(algorithm())
             return skf.generateSecret(spec).encoded
         } catch (exception: NoSuchAlgorithmException) {
             throw AssertionError(
                 "Could not hash password. Algorithm ($KEY_ALGORITHM) is not available.",
-                exception
-            )
-        } catch (exception: InvalidKeySpecException) {
-            throw AssertionError(
-                "Could not hash password. Key spec is not valid.",
                 exception
             )
         } finally {
