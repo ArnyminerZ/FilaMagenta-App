@@ -1,5 +1,6 @@
 package com.filamagenta.endpoint
 
+import com.filamagenta.response.FailureResponse
 import com.filamagenta.response.SuccessResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
@@ -27,7 +28,31 @@ abstract class Endpoint(val url: String) {
         status: HttpStatusCode = HttpStatusCode.OK
     ) {
         val body = SuccessResponse(data)
+        call.respond(status, body)
+    }
 
+    /**
+     * Responds to the request as a failure.
+     */
+    suspend inline fun <reified DataType : Any> PipelineContext<Unit, ApplicationCall>.respondFailure(
+        error: FailureResponse.Error,
+        status: HttpStatusCode = HttpStatusCode.BadRequest
+    ) {
+        val body = FailureResponse(error)
+        call.respond(status, body)
+    }
+
+    /**
+     * Responds to the request as a failure.
+     */
+    suspend fun PipelineContext<Unit, ApplicationCall>.respondFailure(
+        exception: Throwable,
+        status: HttpStatusCode = HttpStatusCode.BadRequest,
+        code: Int = -1
+    ) {
+        val body = FailureResponse(
+            FailureResponse.Error(exception, code)
+        )
         call.respond(status, body)
     }
 }
