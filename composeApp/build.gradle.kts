@@ -141,3 +141,9 @@ koverReport {
         log { /* logging config for `release` build variant */ }
     }
 }
+
+detekt {
+    config.setFrom(
+        file("../config/detekt/detekt-app.yml")
+    )
+}

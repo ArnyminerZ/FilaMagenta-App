@@ -38,3 +38,7 @@ android {
 dependencies {
     detektPlugins(libs.detekt.formatting)
 }
+
+detekt {
+    // :shared uses the default config
+}
