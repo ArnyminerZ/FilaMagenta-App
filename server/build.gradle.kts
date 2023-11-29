@@ -32,9 +32,10 @@ dependencies {
     implementation(libs.exposed.dao)
     implementation(libs.exposed.jdbc)
 
-    testImplementation(libs.ktor.server.tests)
-    testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.h2)
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.ktor.server.tests)
+    testImplementation(libs.mockk)
 }
 
 koverReport {
