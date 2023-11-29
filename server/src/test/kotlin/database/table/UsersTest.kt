@@ -1,4 +1,4 @@
-package database
+package database.table
 
 import com.filamagenta.database.Database
 import com.filamagenta.database.entity.User
