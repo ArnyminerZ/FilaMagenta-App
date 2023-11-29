@@ -159,4 +159,30 @@ class TestEnvironmentVariable {
             TestingEnvironmentVariables.VarUnsupported.get()
         }
     }
+
+    @Test
+    fun `test dispose`() {
+        TestingEnvironmentVariables.VarString.get().let { assertEquals("testing", it) }
+
+        TestingEnvironmentVariables.VarString._value = "other"
+
+        TestingEnvironmentVariables.VarString.get().let { assertEquals("other", it) }
+
+        TestingEnvironmentVariables.VarString.dispose()
+
+        TestingEnvironmentVariables.VarString.get().let { assertEquals("testing", it) }
+    }
+
+    @Test
+    fun `test dispose with default`() {
+        TestingEnvironmentVariables.VarStringDefault.get().let { assertEquals("default", it) }
+
+        TestingEnvironmentVariables.VarStringDefault._value = "other"
+
+        TestingEnvironmentVariables.VarStringDefault.get().let { assertEquals("other", it) }
+
+        TestingEnvironmentVariables.VarStringDefault.dispose()
+
+        TestingEnvironmentVariables.VarStringDefault.get().let { assertEquals("default", it) }
+    }
 }

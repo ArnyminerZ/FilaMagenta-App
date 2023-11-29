@@ -58,10 +58,8 @@ sealed class EnvironmentVariable<DataType : Any>(
      *
      * @throws IllegalArgumentException If the specified data type is not compatible.
      */
-    fun get(): DataType? = _value ?: run {
-        _value = System.getenv(name)?.let { convert(name, kClass, it) } ?: default
-        _value
-    }
+    fun get(): DataType? =
+        _value ?: (System.getenv(name)?.let { convert(name, kClass, it) } ?: default).also { _value = it }
 
     /**
      * Returns the value of the DataType.
