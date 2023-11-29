@@ -12,4 +12,8 @@ object Users : IntIdTable() {
 
     val passwordHash = binary("password", Passwords.KEY_LENGTH)
     val passwordSalt = binary("salt", Passwords.SALT_SIZE)
+
+    init {
+        uniqueIndex(nif)
+    }
 }
