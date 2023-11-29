@@ -17,8 +17,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object Database {
     val tables: Map<Table, IntEntityClass<*>> = mapOf(
-        Users to User.Companion,
-        UserMetaTable to UserMeta.Companion
+        // Tables must be sorted so that removing them in this order doesn't break any reference
+        UserMetaTable to UserMeta.Companion,
+        Users to User.Companion
     )
 
     @VisibleForTesting

@@ -21,6 +21,7 @@ class UserMeta(id: EntityID<Int>) : IntEntity(id) {
     }
 
     var key by UserMetaTable.key
+    var value by UserMetaTable.value
 
     var user by User referencedOn UserMetaTable.user
 }
