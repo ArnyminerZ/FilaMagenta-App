@@ -2,9 +2,10 @@ import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kover)
 }
 
 kotlin {
@@ -108,5 +109,27 @@ compose.desktop {
             packageName = "com.filamagenta"
             packageVersion = "1.0.0"
         }
+    }
+}
+
+koverReport {
+    filters {
+        // filters for reports of all build variants
+    }
+
+    verify {
+        // verification rules for all report variants
+    }
+
+    androidReports("release") {
+        filters {
+            // override report filters for all reports for `release` build variant
+            // all filters specified by the level above cease to work
+        }
+
+        xml { /* XML report config for `release` build variant */ }
+        html { /* HTML report config for `release` build variant */ }
+        verify { /* verification config for `release` build variant */ }
+        log { /* logging config for `release` build variant */ }
     }
 }

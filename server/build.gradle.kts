@@ -1,7 +1,8 @@
 plugins {
-    alias(libs.plugins.kotlinJvm)
-    alias(libs.plugins.ktor)
     application
+    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kover)
+    alias(libs.plugins.ktor)
 }
 
 group = "com.filamagenta"
@@ -14,6 +15,7 @@ application {
 
 dependencies {
     implementation(projects.shared)
+    kover(project(":shared"))
 
     implementation(libs.logback)
 
@@ -22,4 +24,21 @@ dependencies {
 
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)
+}
+
+koverReport {
+    filters {
+        // filters for all reports
+    }
+
+    verify {
+        // verification rules for all reports
+    }
+
+    defaults {
+        xml { /* default XML report config */ }
+        html { /* default HTML report config */ }
+        verify { /* default verification config */ }
+        log { /* default logging config */ }
+    }
 }
