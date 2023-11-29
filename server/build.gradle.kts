@@ -50,3 +50,9 @@ koverReport {
         log { /* default logging config */ }
     }
 }
+
+detekt {
+    config.setFrom(
+        file("../config/detekt/detekt-server.yml")
+    )
+}
