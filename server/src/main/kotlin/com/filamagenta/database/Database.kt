@@ -1,9 +1,12 @@
 package com.filamagenta.database
 
+import com.filamagenta.database.entity.User
+import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.table.UserMetaTable
 import com.filamagenta.database.table.Users
 import com.filamagenta.system.EnvironmentVariables
 import org.jetbrains.annotations.VisibleForTesting
+import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
@@ -13,6 +16,11 @@ import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object Database {
+    val tables: Map<Table, IntEntityClass<*>> = mapOf(
+        Users to User.Companion,
+        UserMetaTable to UserMeta.Companion
+    )
+
     @VisibleForTesting
     var instance: Database? = null
 
@@ -38,7 +46,12 @@ object Database {
         transaction {
             addLogger(StdOutSqlLogger)
 
-            SchemaUtils.create(Users, UserMetaTable, *extraTables)
+            @Suppress("SpreadOperator")
+            SchemaUtils.createMissingTablesAndColumns(
+                *tables.keys.toTypedArray(),
+                *extraTables,
+                inBatch = true
+            )
         }
     }
 

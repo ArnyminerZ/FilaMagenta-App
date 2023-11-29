@@ -3,6 +3,7 @@ package database.model
 import com.filamagenta.database.Database
 import com.filamagenta.system.EnvironmentVariables
 import database.stub.TestTable
+import org.jetbrains.exposed.sql.deleteAll
 import org.junit.After
 import org.junit.Before
 
@@ -19,6 +20,12 @@ abstract class DatabaseTestEnvironment {
     fun disposeEnvironment() {
         EnvironmentVariables.Database.Url.dispose()
         EnvironmentVariables.Database.Driver.dispose()
+
+        Database.transaction {
+            Database.tables.values.forEach {
+                it.table.deleteAll()
+            }
+        }
 
         Database.instance = null
     }

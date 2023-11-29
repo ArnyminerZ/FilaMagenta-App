@@ -5,8 +5,8 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 
-class UserMeta(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<UserMeta>(UserMetaTable)
+class UserMeta(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<UserMeta>(UserMetaTable)
 
     enum class Key {
         ADDRESS_STREET,
