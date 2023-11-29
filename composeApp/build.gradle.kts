@@ -3,6 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.detekt)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kover)
@@ -110,6 +111,11 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+dependencies {
+    // Detekt plugins
+    detektPlugins(libs.detekt.formatting)
 }
 
 koverReport {

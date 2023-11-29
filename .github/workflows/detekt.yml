@@ -1,0 +1,74 @@
+name: reviewdog
+on: [ pull_request ]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      server: ${{ steps.filter.outputs.server }}
+      app: ${{ steps.filter.outputs.app }}
+    steps:
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            server:
+              - 'server/**/*.kt'
+              - 'shared/**/*.kt'
+              - '.github/workflows/detekt.yml'
+              - 'config/detekt/detekt-server.yml'
+            app:
+              - 'composeApp/**/*.kt'
+              - 'shared/**/*.kt'
+              - '.github/workflows/detekt.yml'
+              - 'config/detekt/detekt-app.yml'
+
+  detekt-server:
+    name: Check Server Code Quality
+    runs-on: ubuntu-latest
+
+    needs: changes
+    if:  ${{ needs.changes.outputs.server == 'true' }}
+
+    permissions: write-all
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          ref: ${{ github.head_ref }}
+
+      - name: detekt
+        uses: alaegin/Detekt-Action@v1.23.4
+        with:
+          reviewdog_reporter: github-pr-review
+          github_token: ${{ secrets.github_token }}
+          detekt_config: config/detekt/detekt-server.yml
+          detekt_excludes: '**/build/**,**/.idea/**,**/composeApp/**,**/iosApp/**'
+
+  detekt-app:
+    name: Check App Code Quality
+    runs-on: ubuntu-latest
+
+    needs: changes
+    if:  ${{ needs.changes.outputs.app == 'true' }}
+
+    permissions: write-all
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          ref: ${{ github.head_ref }}
+
+      - name: detekt
+        uses: alaegin/Detekt-Action@v1.23.4
+        with:
+          reviewdog_reporter: github-pr-review
+          github_token: ${{ secrets.github_token }}
+          detekt_config: config/detekt/detekt-app.yml
+          detekt_excludes: '**/build/**,**/.idea/**,**/server/**,**/iosApp/**'
