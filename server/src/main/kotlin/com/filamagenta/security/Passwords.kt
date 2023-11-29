@@ -20,7 +20,7 @@ object Passwords {
      * The value of this constant is set to 16, which means that the salt will be 16 bytes
      * long.
      */
-    private const val SALT_SIZE = 16
+    const val SALT_SIZE = 16
 
     /**
      * Represents the number of iterations to be performed.
@@ -39,7 +39,7 @@ object Passwords {
      * within the scope of its containing class. It is a constant value, meaning that
      * it cannot be modified once it is assigned.
      */
-    private const val KEY_LENGTH = 256
+    const val KEY_LENGTH = 256
 
     /**
      * The algorithm used for key derivation in PBKDF2.
