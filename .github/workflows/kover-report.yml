@@ -4,11 +4,16 @@ on:
   pull_request:
 
 jobs:
-  should-run:
+  changes:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      server: ${{ steps.filter.outputs.server }}
+      app: ${{ steps.filter.outputs.app }}
     steps:
       - uses: dorny/paths-filter@v2
-        id: changes
+        id: filter
         with:
           filters: |
             server:
@@ -21,19 +26,26 @@ jobs:
               - '.github/workflows/kover-report.yml'
 
   server-coverage:
-    needs: should-run
     runs-on: ubuntu-latest
-    if: needs.should-run.outputs.server == 'true'
+
+    needs: changes
+    if:  ${{ needs.changes.outputs.server == 'true' }}
+
+    permissions: write-all
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: 17
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
-      - name: Generate kover coverage report
-        run: ./gradlew :server:koverXmlReport
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@342dbebe7272035434f9baccc29a816ec6dd2c7b
+      - name: Run the Gradle package task
+        uses: gradle/gradle-build-action@87a9a15658c426a54dd469d4fc7dc1a73ca9d4a6
+        with:
+          arguments: :server:koverXmlReport
 
       - name: Add coverage report to PR
         id: kover
@@ -49,19 +61,26 @@ jobs:
           coverage-counter-type: LINE
 
   app-coverage:
-    needs: should-run
     runs-on: ubuntu-latest
-    if: needs.should-run.outputs.app == 'true'
+
+    needs: changes
+    if:  ${{ needs.changes.outputs.app == 'true' }}
+
+    permissions: write-all
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: 17
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
-      - name: Generate kover coverage report
-        run: ./gradlew :composeApp:koverXmlReport
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@342dbebe7272035434f9baccc29a816ec6dd2c7b
+      - name: Run the Gradle package task
+        uses: gradle/gradle-build-action@87a9a15658c426a54dd469d4fc7dc1a73ca9d4a6
+        with:
+          arguments: :composeApp:koverXmlReport
 
       - name: Add coverage report to PR
         id: kover
