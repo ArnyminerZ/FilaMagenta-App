@@ -2,6 +2,7 @@ package database
 
 import com.filamagenta.database.Database
 import database.stub.TestEntity
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.Test
 
@@ -9,6 +10,13 @@ class DatabaseTest : DatabaseTestEnvironment() {
     @Test
     fun `test database initialization`() {
         assertNotNull(Database.instance)
+    }
+
+    @Test
+    fun `test database double initialization`() {
+        val instance = Database.instance
+        Database.initialize()
+        assertEquals(instance, Database.instance)
     }
 
     @Test
