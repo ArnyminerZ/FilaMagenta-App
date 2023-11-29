@@ -1,6 +1,14 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Server Coverage" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
+      <option name="env">
+        <map>
+          <entry key="ENV_TEST_VAR_BOO" value="true" />
+          <entry key="ENV_TEST_VAR_FLO" value="123.456" />
+          <entry key="ENV_TEST_VAR_INT" value="123456" />
+          <entry key="ENV_TEST_VAR_STR" value="testing" />
+        </map>
+      </option>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/server" />
       <option name="externalSystemIdString" value="GRADLE" />
