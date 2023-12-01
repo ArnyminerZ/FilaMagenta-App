@@ -26,5 +26,11 @@ object ErrorCodes {
             const val MISSING_DATA = 8
             const val USER_NOT_FOUND = 9
         }
+
+        @KoverIgnore
+        object Login {
+            const val USER_NOT_FOUND = 10
+            const val WRONG_PASSWORD = 11
+        }
     }
 }

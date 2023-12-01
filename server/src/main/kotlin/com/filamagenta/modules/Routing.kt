@@ -1,5 +1,6 @@
 package com.filamagenta.modules
 
+import com.filamagenta.endpoint.LoginEndpoint
 import com.filamagenta.endpoint.RegisterEndpoint
 import com.filamagenta.endpoint.model.Endpoint
 import com.filamagenta.endpoint.model.SecureEndpoint
@@ -20,7 +21,8 @@ import io.ktor.server.routing.routing
  * Holds all the endpoints defined for the server, and the HTTP method to be used.
  */
 val endpoints: Map<Endpoint, HttpMethod> = mapOf(
-    RegisterEndpoint to HttpMethod.Post
+    RegisterEndpoint to HttpMethod.Post,
+    LoginEndpoint to HttpMethod.Post
 )
 
 /**

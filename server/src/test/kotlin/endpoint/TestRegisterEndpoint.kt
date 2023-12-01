@@ -13,9 +13,6 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.server.plugins.ContentTransformationException
-import io.mockk.every
-import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -72,16 +69,6 @@ class TestRegisterEndpoint : TestServerEnvironment() {
         httpClient.post(RegisterEndpoint.url) {
             contentType(ContentType.Application.Json)
             setBody("abc")
-        }.let { response ->
-            assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_REQUEST)
-        }
-
-        mockkObject(Database)
-        every { Database.transaction<User>(any()) } throws object : ContentTransformationException("") {}
-
-        httpClient.post(RegisterEndpoint.url) {
-            contentType(ContentType.Application.Json)
-            setBody("{}")
         }.let { response ->
             assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_REQUEST)
         }

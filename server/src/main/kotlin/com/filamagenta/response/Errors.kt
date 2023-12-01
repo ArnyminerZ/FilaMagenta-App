@@ -36,17 +36,30 @@ object Errors {
             val ExpiredOrInvalid = FailureResponse.Error(
                 code = ErrorCodes.Authentication.JWT.EXPIRED_OR_INVALID,
                 message = "Token is not valid or has expired."
-            ) to HttpStatusCode.BadRequest
+            ) to HttpStatusCode.NotFound
 
             val MissingData = FailureResponse.Error(
                 code = ErrorCodes.Authentication.JWT.MISSING_DATA,
                 message = "The token is missing some required data."
-            ) to HttpStatusCode.BadRequest
+            ) to HttpStatusCode.NotFound
 
             val UserNotFound = FailureResponse.Error(
                 code = ErrorCodes.Authentication.JWT.USER_NOT_FOUND,
                 message = "The user that generated the token no longer exists."
-            ) to HttpStatusCode.Gone
+            ) to HttpStatusCode.NotFound
+        }
+
+        @KoverIgnore
+        object Login {
+            val UserNotFound = FailureResponse.Error(
+                code = ErrorCodes.Authentication.Login.USER_NOT_FOUND,
+                message = "The given NIF doesn't match any user in the database."
+            ) to HttpStatusCode.NotFound
+
+            val WrongPassword = FailureResponse.Error(
+                code = ErrorCodes.Authentication.Login.WRONG_PASSWORD,
+                message = "The password doesn't match with the user."
+            ) to HttpStatusCode.Forbidden
         }
     }
 }
