@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint.model
 
-import io.ktor.server.routing.Routing
+import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.patch
@@ -13,7 +13,7 @@ import io.ktor.server.routing.post
  *
  * @return The route created.
  */
-fun Routing.get(endpoint: Endpoint) = with(endpoint) {
+fun Route.get(endpoint: Endpoint) = with(endpoint) {
     get(url) { body() }
 }
 
@@ -24,7 +24,7 @@ fun Routing.get(endpoint: Endpoint) = with(endpoint) {
  *
  * @return The route created.
  */
-fun Routing.post(endpoint: Endpoint) = with(endpoint) {
+fun Route.post(endpoint: Endpoint) = with(endpoint) {
     post(url) { body() }
 }
 
@@ -35,7 +35,7 @@ fun Routing.post(endpoint: Endpoint) = with(endpoint) {
  *
  * @return The route created.
  */
-fun Routing.patch(endpoint: Endpoint) = with(endpoint) {
+fun Route.patch(endpoint: Endpoint) = with(endpoint) {
     patch(url) { body() }
 }
 
@@ -46,6 +46,6 @@ fun Routing.patch(endpoint: Endpoint) = with(endpoint) {
  *
  * @return The route created.
  */
-fun Routing.delete(endpoint: Endpoint) = with(endpoint) {
+fun Route.delete(endpoint: Endpoint) = with(endpoint) {
     delete(url) { body() }
 }
