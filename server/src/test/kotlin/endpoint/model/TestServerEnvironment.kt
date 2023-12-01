@@ -14,6 +14,7 @@ import io.ktor.server.testing.testApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.boolean
@@ -86,10 +87,9 @@ abstract class TestServerEnvironment : DatabaseTestEnvironment() {
 
     suspend fun assertResponseFailure(
         response: HttpResponse,
-        errorPair: Pair<FailureResponse.Error, HttpStatusCode>? = null
+        httpStatusCode: HttpStatusCode = HttpStatusCode.BadRequest,
+        errorCode: Int? = null
     ) {
-        val error = errorPair?.first
-        val httpStatusCode = errorPair?.second
         val bodyString = response.bodyAsText()
 
         assertEquals(
@@ -98,13 +98,29 @@ abstract class TestServerEnvironment : DatabaseTestEnvironment() {
             "Expected $httpStatusCode but was ${response.status}. Body: $bodyString"
         )
 
-        val body = serverJson.decodeFromString<JsonElement>(bodyString).jsonObject
-        val success = body.getValue("success").jsonPrimitive.boolean
-        assertFalse(success)
+        try {
+            val body = serverJson.decodeFromString<JsonElement>(bodyString).jsonObject
+            val success = body.getValue("success").jsonPrimitive.boolean
+            assertFalse(success)
 
-        if (error != null) {
-            val errorObj = body.getValue("error").jsonObject
-            assertEquals(error.code, errorObj.getValue("code").jsonPrimitive.int)
+            if (errorCode != null) {
+                val errorObj = body.getValue("error").jsonObject
+                assertEquals(errorCode, errorObj.getValue("code").jsonPrimitive.int)
+            }
+        } catch (exception: SerializationException) {
+            throw AssertionError(
+                "Server provided an invalid JSON response: $bodyString",
+                exception
+            )
         }
+    }
+
+    suspend fun assertResponseFailure(
+        response: HttpResponse,
+        errorPair: Pair<FailureResponse.Error, HttpStatusCode>? = null
+    ) {
+        val error = errorPair?.first
+        val httpStatusCode = errorPair?.second
+        assertResponseFailure(response, httpStatusCode ?: HttpStatusCode.BadRequest, error?.code)
     }
 }

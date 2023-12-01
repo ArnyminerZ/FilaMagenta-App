@@ -9,6 +9,7 @@ import com.filamagenta.response.Errors
 import com.filamagenta.security.Passwords
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.ContentTransformationException
 import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
@@ -54,6 +55,8 @@ object RegisterEndpoint : Endpoint("/auth/register") {
                 SuccessfulRegistration(user.id.value)
             )
         } catch (e: ContentTransformationException) {
+            respondFailure(e, code = ErrorCodes.Generic.INVALID_REQUEST)
+        } catch (e: BadRequestException) {
             respondFailure(e, code = ErrorCodes.Generic.INVALID_REQUEST)
         }
     }
