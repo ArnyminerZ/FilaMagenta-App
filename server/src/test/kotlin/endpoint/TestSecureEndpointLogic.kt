@@ -52,6 +52,32 @@ class TestSecureEndpointLogic : TestServerEnvironment() {
     }
 
     @Test
+    fun `test missing user`() = testServer(false) {
+        provideSampleEndpoint()
+
+        val token = Authentication.generateJWT(UserProvider.SampleUser.NIF)
+
+        client.get("test") {
+            bearerAuth(token)
+        }.let { response ->
+            assertResponseFailure(response, Errors.Authentication.JWT.UserNotFound)
+        }
+    }
+
+    @Test
+    fun `test missing data`() = testServer(false) {
+        provideSampleEndpoint()
+
+        val token = Authentication.generateJWT(null)
+
+        client.get("test") {
+            bearerAuth(token)
+        }.let { response ->
+            assertResponseFailure(response, Errors.Authentication.JWT.MissingData)
+        }
+    }
+
+    @Test
     fun `test success`() = testServer(false) {
         provideSampleEndpoint()
 
