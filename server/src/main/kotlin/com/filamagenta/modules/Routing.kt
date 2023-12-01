@@ -2,6 +2,7 @@ package com.filamagenta.modules
 
 import com.filamagenta.endpoint.LoginEndpoint
 import com.filamagenta.endpoint.RegisterEndpoint
+import com.filamagenta.endpoint.UserMetaEndpoint
 import com.filamagenta.endpoint.model.Endpoint
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.delete
@@ -28,7 +29,9 @@ val endpoints: Map<Endpoint, HttpMethod> = mapOf(
 /**
  * Holds all the endpoints defined for the server, and the HTTP method to be used.
  */
-val secureEndpoints: Map<SecureEndpoint, HttpMethod> = mapOf()
+val secureEndpoints: Map<SecureEndpoint, HttpMethod> = mapOf(
+    UserMetaEndpoint to HttpMethod.Post
+)
 
 fun Application.installRouting() {
     routing {
