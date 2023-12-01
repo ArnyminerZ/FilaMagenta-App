@@ -1,11 +1,14 @@
 package com.filamagenta.response
 
+import KoverIgnore
 import kotlinx.serialization.Serializable
 
+@KoverIgnore
 @Serializable
 data class FailureResponse(
     val error: Error
 ) : Response(false) {
+    @KoverIgnore
     @Serializable
     data class Error(
         val code: Int = -1,
