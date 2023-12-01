@@ -1,5 +1,7 @@
 package com.filamagenta.modules
 
+import com.filamagenta.endpoint.RegisterEndpoint
+import com.filamagenta.endpoint.post
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.response.respondText
@@ -17,4 +19,5 @@ fun Routing.addEndpoints() {
     get("/") {
         call.respondText("Welcome!")
     }
+    post(RegisterEndpoint)
 }
