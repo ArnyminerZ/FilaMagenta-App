@@ -12,6 +12,7 @@ import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -19,6 +20,24 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 abstract class TestServerEnvironment : DatabaseTestEnvironment() {
+    private val clientJson = Json {
+        isLenient = true
+    }
+
+    /**
+     * Retrieves the HttpClient used in the ApplicationTestBuilder.
+     *
+     * The HttpClient is configured with the ContentNegotiation plugin, using the specified clientJson.
+     *
+     * @return The configured HttpClient instance.
+     */
+    protected val ApplicationTestBuilder.httpClient
+        get() = createClient {
+            install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
+                json(clientJson)
+            }
+        }
+
     fun testServer(
         installServerEndpoints: Boolean = true,
         block: suspend ApplicationTestBuilder.() -> Unit
@@ -40,9 +59,14 @@ abstract class TestServerEnvironment : DatabaseTestEnvironment() {
         httpStatusCode: HttpStatusCode = HttpStatusCode.OK,
         block: (data: DataType?) -> Unit = {}
     ) {
-        assertEquals(httpStatusCode, response.status)
-
         val bodyString = response.bodyAsText()
+
+        assertEquals(
+            httpStatusCode,
+            response.status,
+            "Expected $httpStatusCode but was ${response.status}. Body: $bodyString"
+        )
+
         val body = serverJson.decodeFromString<JsonElement>(bodyString).jsonObject
         val success = body.getValue("success").jsonPrimitive.boolean
         assertTrue(success)
