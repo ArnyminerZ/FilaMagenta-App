@@ -1,5 +1,6 @@
 package database.model
 
+import TestEnvironment
 import com.filamagenta.database.Database
 import com.filamagenta.system.EnvironmentVariables
 import database.provider.UserProvider
@@ -8,7 +9,7 @@ import org.jetbrains.exposed.sql.deleteAll
 import org.junit.After
 import org.junit.Before
 
-abstract class DatabaseTestEnvironment {
+abstract class DatabaseTestEnvironment : TestEnvironment() {
     protected val userProvider = UserProvider()
 
     @Before
