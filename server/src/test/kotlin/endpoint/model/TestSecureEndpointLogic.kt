@@ -1,4 +1,4 @@
-package endpoint
+package endpoint.model
 
 import com.filamagenta.database.Database
 import com.filamagenta.database.entity.User
@@ -9,7 +9,6 @@ import com.filamagenta.modules.AUTH_JWT_NAME
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import database.provider.UserProvider
-import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.server.application.ApplicationCall

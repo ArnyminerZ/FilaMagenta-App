@@ -1,4 +1,4 @@
-package endpoint
+package endpoint.model
 
 import com.filamagenta.endpoint.model.Endpoint
 import com.filamagenta.endpoint.model.delete
@@ -6,7 +6,6 @@ import com.filamagenta.endpoint.model.get
 import com.filamagenta.endpoint.model.patch
 import com.filamagenta.endpoint.model.post
 import com.filamagenta.endpoint.model.respondSuccess
-import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
