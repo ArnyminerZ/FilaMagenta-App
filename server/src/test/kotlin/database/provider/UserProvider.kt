@@ -12,7 +12,9 @@ class UserProvider {
     }
 
     /**
-     * Creates the user defined in [SampleUser]
+     * Creates the user defined in [SampleUser].
+     *
+     * **MUST BE IN A TRANSACTION**
      */
     fun createSampleUser(): User {
         val salt = Passwords.generateSalt()

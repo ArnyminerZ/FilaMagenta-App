@@ -5,6 +5,8 @@ import com.filamagenta.modules.configureJwt
 import com.filamagenta.modules.serverJson
 import com.filamagenta.response.FailureResponse
 import database.model.DatabaseTestEnvironment
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
@@ -41,6 +43,9 @@ abstract class TestServerEnvironment : DatabaseTestEnvironment() {
         get() = createClient {
             install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
                 json(clientJson)
+            }
+            install(Auth) {
+                bearer { }
             }
         }
 
