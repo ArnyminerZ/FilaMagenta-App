@@ -4,6 +4,7 @@ import com.filamagenta.database.Database
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.endpoint.UserMetaEndpoint
 import com.filamagenta.request.UserMetaRequest
+import com.filamagenta.response.ErrorCodes
 import com.filamagenta.security.Authentication
 import database.provider.UserProvider
 import endpoint.model.TestServerEnvironment
@@ -67,6 +68,72 @@ class TestUserMetaEndpoint : TestServerEnvironment() {
                 assertEquals(UserMeta.Key.EMAIL, data.key)
                 assertEquals("example@email.com", data.value)
             }
+        }
+    }
+
+    @Test
+    fun `test updating meta`() = testServer {
+        val user = Database.transaction { userProvider.createSampleUser() }
+        val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
+
+        Database.transaction {
+            UserMeta.new {
+                this.key = UserMeta.Key.EMAIL
+                this.value = "example@email.com"
+                this.user = user
+            }
+        }
+
+        // Update the value
+        httpClient.post(UserMetaEndpoint.url) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody(
+                UserMetaRequest(UserMeta.Key.EMAIL, "example2@email.com")
+            )
+        }.let { response ->
+            assertResponseSuccess<UserMetaEndpoint.UserMetaResponse>(response) { data ->
+                assertNotNull(data)
+                assertEquals(UserMeta.Key.EMAIL, data.key)
+                assertEquals("example2@email.com", data.value)
+            }
+        }
+
+        // Make sure the update was made
+        httpClient.post(UserMetaEndpoint.url) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody(
+                UserMetaRequest(UserMeta.Key.EMAIL)
+            )
+        }.let { response ->
+            assertResponseSuccess<UserMetaEndpoint.UserMetaResponse>(response) { data ->
+                assertNotNull(data)
+                assertEquals(UserMeta.Key.EMAIL, data.key)
+                assertEquals("example2@email.com", data.value)
+            }
+        }
+    }
+
+    @Test
+    fun `test invalid body`() = testServer {
+        Database.transaction { userProvider.createSampleUser() }
+
+        val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
+
+        httpClient.post(UserMetaEndpoint.url) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody("{}")
+        }.let { response ->
+            assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_REQUEST)
+        }
+        httpClient.post(UserMetaEndpoint.url) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody("abc")
+        }.let { response ->
+            assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_REQUEST)
         }
     }
 }
