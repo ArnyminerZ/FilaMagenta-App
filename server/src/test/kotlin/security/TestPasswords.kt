@@ -65,4 +65,19 @@ class TestPasswords {
 
         verify { Passwords.algorithm() }
     }
+
+    @Test
+    fun `test password safety`() {
+        // Safe password
+        assertTrue(Passwords.isSecure("Testing123"))
+
+        // Short password
+        assertFalse(Passwords.isSecure("Tes123"))
+        // Missing numbers
+        assertFalse(Passwords.isSecure("Testings"))
+        // Missing uppercase
+        assertFalse(Passwords.isSecure("testing123"))
+        // Missing lowercase
+        assertFalse(Passwords.isSecure("TESTING123"))
+    }
 }

@@ -47,7 +47,26 @@ object Passwords {
      *
      * The value of this constant is "PBKDF2WithHmacSHA1".
      */
-    const val KEY_ALGORITHM = "PBKDF2WithHmacSHA1"
+    private const val KEY_ALGORITHM = "PBKDF2WithHmacSHA1"
+
+    /**
+     * Regular expression pattern for validating passwords.
+     *
+     * The passwordRegex variable contains a regular expression pattern that checks if a password satisfies the
+     * following criteria:
+     * 1. Contains at least one lowercase letter
+     * 2. Contains at least one uppercase letter
+     * 3. Contains at least one numerical digit
+     * 4. Consists of characters from the ASCII range [!-~]
+     * 5. Has a minimum length of eight characters
+     *
+     * Example usage:
+     * ```
+     * val password: String = "Abc12345"
+     * val isValid: Boolean = password.matches(passwordRegex)
+     * ```
+     */
+    private val passwordRegex = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[!-~]{8,}\$")
 
     /**
      * A variable representing a cryptographically strong random number generator.
@@ -111,4 +130,12 @@ object Passwords {
             spec.clearPassword()
         }
     }
+
+    /**
+     * Determines if a given password is secure.
+     *
+     * @param password The password to check.
+     * @return True if the password is secure, false otherwise.
+     */
+    fun isSecure(password: String): Boolean = passwordRegex.matches(password)
 }
