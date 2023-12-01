@@ -1,7 +1,7 @@
 package com.filamagenta.modules
 
 import com.filamagenta.endpoint.RegisterEndpoint
-import com.filamagenta.endpoint.post
+import com.filamagenta.endpoint.model.post
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.response.respondText
