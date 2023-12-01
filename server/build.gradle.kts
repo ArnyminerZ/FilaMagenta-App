@@ -39,6 +39,7 @@ dependencies {
 
     testImplementation(libs.h2)
     testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.ktor.client.contentNegotiation)
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.mockk)
 }
