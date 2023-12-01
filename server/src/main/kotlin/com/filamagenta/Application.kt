@@ -2,6 +2,7 @@ package com.filamagenta
 
 import KoverIgnore
 import SERVER_PORT
+import com.filamagenta.modules.installAuthentication
 import com.filamagenta.modules.installContentNegotiation
 import com.filamagenta.modules.installRouting
 import io.ktor.server.application.Application
@@ -26,6 +27,7 @@ fun main(args: Array<String> = emptyArray()) {
 }
 
 fun Application.module() {
-    installRouting()
+    installAuthentication()
     installContentNegotiation()
+    installRouting()
 }
