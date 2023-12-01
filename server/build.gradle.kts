@@ -2,6 +2,7 @@ plugins {
     application
     alias(libs.plugins.detekt)
     alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.kover)
     alias(libs.plugins.ktor)
 }
@@ -25,11 +26,25 @@ dependencies {
 
     implementation(libs.logback)
 
+    implementation(libs.kotlinx.serialization.json)
+
+    api(libs.ktor.server.auth.base)
+    api(libs.ktor.server.auth.jwt)
     api(libs.ktor.server.core)
     api(libs.ktor.server.netty)
+    api(libs.ktor.server.contentNegotiation)
+    api(libs.ktor.server.serialization.kotlinx.json)
 
-    testImplementation(libs.ktor.server.tests)
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.dao)
+    implementation(libs.exposed.jdbc)
+
+    testImplementation(libs.h2)
     testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.ktor.client.auth)
+    testImplementation(libs.ktor.client.contentNegotiation)
+    testImplementation(libs.ktor.server.tests)
+    testImplementation(libs.mockk)
 }
 
 koverReport {

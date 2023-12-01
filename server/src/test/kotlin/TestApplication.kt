@@ -10,7 +10,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Test
 
-class TestApplication {
+class TestApplication : TestEnvironment() {
     private val client = HttpClient()
 
     @After
