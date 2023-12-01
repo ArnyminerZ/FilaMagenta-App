@@ -30,5 +30,23 @@ object Errors {
                 message = "An user with the given NIF already exists."
             ) to HttpStatusCode.PreconditionFailed
         }
+
+        @KoverIgnore
+        object JWT {
+            val ExpiredOrInvalid = FailureResponse.Error(
+                code = ErrorCodes.Authentication.JWT.EXPIRED_OR_INVALID,
+                message = "Token is not valid or has expired."
+            ) to HttpStatusCode.BadRequest
+
+            val MissingData = FailureResponse.Error(
+                code = ErrorCodes.Authentication.JWT.MISSING_DATA,
+                message = "The token is missing some required data."
+            ) to HttpStatusCode.BadRequest
+
+            val UserNotFound = FailureResponse.Error(
+                code = ErrorCodes.Authentication.JWT.USER_NOT_FOUND,
+                message = "The user that generated the token no longer exists."
+            ) to HttpStatusCode.Gone
+        }
     }
 }

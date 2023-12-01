@@ -1,4 +1,4 @@
-package com.filamagenta.endpoint
+package com.filamagenta.endpoint.model
 
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.delete

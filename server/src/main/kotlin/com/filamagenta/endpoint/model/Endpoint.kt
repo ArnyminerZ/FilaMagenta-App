@@ -1,4 +1,4 @@
-package com.filamagenta.endpoint
+package com.filamagenta.endpoint.model
 
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext

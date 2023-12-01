@@ -3,6 +3,9 @@ package com.filamagenta.endpoint
 import com.filamagenta.database.Database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.table.Users
+import com.filamagenta.endpoint.model.Endpoint
+import com.filamagenta.endpoint.model.respondFailure
+import com.filamagenta.endpoint.model.respondSuccess
 import com.filamagenta.request.RegisterRequest
 import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors

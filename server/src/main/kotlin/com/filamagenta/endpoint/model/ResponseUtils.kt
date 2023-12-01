@@ -1,4 +1,4 @@
-package com.filamagenta.endpoint
+package com.filamagenta.endpoint.model
 
 import com.filamagenta.response.FailureResponse
 import com.filamagenta.response.SuccessResponse

@@ -19,5 +19,12 @@ object ErrorCodes {
             const val INSECURE_PASSWORD = 5
             const val USER_ALREADY_EXISTS = 6
         }
+
+        @KoverIgnore
+        object JWT {
+            const val EXPIRED_OR_INVALID = 7
+            const val MISSING_DATA = 8
+            const val USER_NOT_FOUND = 9
+        }
     }
 }
