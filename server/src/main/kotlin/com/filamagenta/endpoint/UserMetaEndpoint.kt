@@ -1,5 +1,6 @@
 package com.filamagenta.endpoint
 
+import KoverIgnore
 import com.filamagenta.database.Database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserMeta
@@ -18,6 +19,7 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.and
 
 object UserMetaEndpoint : SecureEndpoint("/user/meta") {
+    @KoverIgnore
     @Serializable
     data class UserMetaResponse(
         val key: UserMeta.Key,
