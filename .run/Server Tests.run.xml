@@ -19,6 +19,7 @@
       <option name="taskNames">
         <list>
           <option value=":server:check" />
+          <option value=":shared:check" />
         </list>
       </option>
       <option name="vmOptions" />
