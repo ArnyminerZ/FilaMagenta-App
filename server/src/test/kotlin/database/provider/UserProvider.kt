@@ -5,7 +5,7 @@ import com.filamagenta.security.Passwords
 
 class UserProvider {
     object SampleUser {
-        const val NIF = "12345678X"
+        const val NIF = "12345678Z"
         const val NAME = "Testing"
         const val SURNAME = "User"
         const val PASSWORD = "S4mPle-P4SSw0Rd"
