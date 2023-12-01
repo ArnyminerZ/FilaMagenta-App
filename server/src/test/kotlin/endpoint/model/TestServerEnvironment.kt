@@ -2,6 +2,7 @@ package endpoint.model
 
 import com.filamagenta.modules.addEndpoints
 import com.filamagenta.modules.serverJson
+import com.filamagenta.response.FailureResponse
 import database.model.DatabaseTestEnvironment
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
@@ -11,11 +12,13 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -79,5 +82,29 @@ abstract class TestServerEnvironment : DatabaseTestEnvironment() {
         }
         val data: DataType? = dataObject?.let { serverJson.decodeFromJsonElement(it) }
         block(data)
+    }
+
+    suspend fun assertResponseFailure(
+        response: HttpResponse,
+        errorPair: Pair<FailureResponse.Error, HttpStatusCode>? = null
+    ) {
+        val error = errorPair?.first
+        val httpStatusCode = errorPair?.second
+        val bodyString = response.bodyAsText()
+
+        assertEquals(
+            httpStatusCode,
+            response.status,
+            "Expected $httpStatusCode but was ${response.status}. Body: $bodyString"
+        )
+
+        val body = serverJson.decodeFromString<JsonElement>(bodyString).jsonObject
+        val success = body.getValue("success").jsonPrimitive.boolean
+        assertFalse(success)
+
+        if (error != null) {
+            val errorObj = body.getValue("error").jsonObject
+            assertEquals(error.code, errorObj.getValue("code").jsonPrimitive.int)
+        }
     }
 }

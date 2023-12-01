@@ -46,6 +46,13 @@ abstract class Endpoint(val url: String) {
      * Responds to the request as a failure.
      */
     suspend fun PipelineContext<Unit, ApplicationCall>.respondFailure(
+        error: Pair<FailureResponse.Error, HttpStatusCode?>
+    ) = respondFailure(error.first, error.second ?: HttpStatusCode.BadRequest)
+
+    /**
+     * Responds to the request as a failure.
+     */
+    suspend fun PipelineContext<Unit, ApplicationCall>.respondFailure(
         exception: Throwable,
         status: HttpStatusCode = HttpStatusCode.BadRequest,
         code: Int = -1
