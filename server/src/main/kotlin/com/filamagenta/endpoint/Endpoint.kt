@@ -34,7 +34,7 @@ abstract class Endpoint(val url: String) {
     /**
      * Responds to the request as a failure.
      */
-    suspend inline fun <reified DataType : Any> PipelineContext<Unit, ApplicationCall>.respondFailure(
+    suspend fun PipelineContext<Unit, ApplicationCall>.respondFailure(
         error: FailureResponse.Error,
         status: HttpStatusCode = HttpStatusCode.BadRequest
     ) {
