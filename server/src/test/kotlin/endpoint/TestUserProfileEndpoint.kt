@@ -2,8 +2,10 @@ package endpoint
 
 import com.filamagenta.database.Database
 import com.filamagenta.database.entity.UserMeta
+import com.filamagenta.database.entity.UserRole
 import com.filamagenta.endpoint.UserProfileEndpoint
 import com.filamagenta.security.Authentication
+import com.filamagenta.security.Roles
 import database.provider.UserProvider
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
@@ -34,6 +36,14 @@ class TestUserProfileEndpoint : TestServerEnvironment() {
             }
         }
 
+        // Add some roles to check
+        Database.transaction {
+            UserRole.new {
+                this.role = Roles.Users.ModifyOthers
+                this.user = user
+            }
+        }
+
         // Get the profile
         httpClient.get(UserProfileEndpoint.url) {
             bearerAuth(jwt)
@@ -49,6 +59,10 @@ class TestUserProfileEndpoint : TestServerEnvironment() {
                         UserMeta.Key.PHONE to "123456789"
                     ).toList(),
                     data.meta.toList()
+                )
+                assertContentEquals(
+                    listOf(Roles.Users.ModifyOthers),
+                    data.roles
                 )
             }
         }
