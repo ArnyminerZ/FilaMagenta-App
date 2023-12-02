@@ -5,6 +5,7 @@ import com.filamagenta.endpoint.RegisterEndpoint
 import com.filamagenta.endpoint.UserGrantRoleEndpoint
 import com.filamagenta.endpoint.UserMetaEndpoint
 import com.filamagenta.endpoint.UserProfileEndpoint
+import com.filamagenta.endpoint.UserRevokeRoleEndpoint
 import com.filamagenta.endpoint.model.Endpoint
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.delete
@@ -35,6 +36,7 @@ val secureEndpoints: Map<SecureEndpoint, HttpMethod> = mapOf(
     UserGrantRoleEndpoint to HttpMethod.Post,
     UserMetaEndpoint to HttpMethod.Post,
     UserProfileEndpoint to HttpMethod.Get,
+    UserRevokeRoleEndpoint to HttpMethod.Post,
 )
 
 fun Application.installRouting() {

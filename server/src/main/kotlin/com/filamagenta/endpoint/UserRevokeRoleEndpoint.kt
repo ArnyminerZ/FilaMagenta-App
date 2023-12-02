@@ -19,7 +19,7 @@ import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
 import org.jetbrains.exposed.sql.and
 
-object UserGrantRoleEndpoint : SecureEndpoint("/user/grant", Roles.Users.GrantRole) {
+object UserRevokeRoleEndpoint : SecureEndpoint("/user/revoke", Roles.Users.RevokeRole) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         try {
             val (userId, role) = call.receive<UserRoleRequest>()
@@ -32,18 +32,12 @@ object UserGrantRoleEndpoint : SecureEndpoint("/user/grant", Roles.Users.GrantRo
                 UserRole.find { (UserRolesTable.role eq role.name) and (UserRolesTable.user eq userId) }.firstOrNull()
             }
             if (existingRole == null) {
-                // Add the role
-                Database.transaction {
-                    val grantUser = User[userId]
-                    UserRole.new {
-                        this.role = role
-                        this.user = grantUser
-                    }
-                }
-                respondSuccess<Void>()
-            } else {
                 // No operation is necessary
                 respondSuccess<Void>(status = HttpStatusCode.Accepted)
+            } else {
+                // Remove the role
+                Database.transaction { existingRole.delete() }
+                respondSuccess<Void>()
             }
         } catch (e: BadRequestException) {
             respondFailure(e, code = ErrorCodes.Generic.INVALID_REQUEST)

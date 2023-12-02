@@ -3,7 +3,7 @@ package endpoint
 import com.filamagenta.database.Database
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserRolesTable
-import com.filamagenta.endpoint.UserGrantRoleEndpoint
+import com.filamagenta.endpoint.UserRevokeRoleEndpoint
 import com.filamagenta.request.UserRoleRequest
 import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors
@@ -17,19 +17,19 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import org.jetbrains.exposed.sql.and
 import org.junit.Test
 
-class TestGrantRoleEndpoint : TestServerEnvironment() {
+class TestRevokeRoleEndpoint : TestServerEnvironment() {
     @Test
-    fun `test setting role`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
-        val user2 = Database.transaction { userProvider.createSampleUser2() }
+    fun `test revoking role`() = testServer {
+        Database.transaction { userProvider.createSampleUser(Roles.Users.RevokeRole) }
+        val user2 = Database.transaction { userProvider.createSampleUser2(Roles.Users.ModifyOthers) }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
-        httpClient.post(UserGrantRoleEndpoint.url) {
+        httpClient.post(UserRevokeRoleEndpoint.url) {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
@@ -39,24 +39,24 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
             assertResponseSuccess<Void>(response)
         }
 
-        // Make sure the role has been inserted
+        // Make sure the role has been removed
         Database.transaction {
             val role = UserRole.find {
                 (UserRolesTable.role eq Roles.Users.ModifyOthers.name) and (UserRolesTable.user eq user2.id)
             }.firstOrNull()
 
-            assertNotNull(role)
+            assertNull(role)
         }
     }
 
     @Test
-    fun `test setting already set role`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
-        val user2 = Database.transaction { userProvider.createSampleUser2(Roles.Users.ModifyOthers) }
+    fun `test removing non-existing role`() = testServer {
+        Database.transaction { userProvider.createSampleUser(Roles.Users.RevokeRole) }
+        val user2 = Database.transaction { userProvider.createSampleUser2() }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
-        httpClient.post(UserGrantRoleEndpoint.url) {
+        httpClient.post(UserRevokeRoleEndpoint.url) {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
@@ -68,13 +68,13 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
     }
 
     @Test
-    fun `test setting role forbidden`() = testServer {
+    fun `test revoking role forbidden`() = testServer {
         Database.transaction { userProvider.createSampleUser() }
-        val user2 = Database.transaction { userProvider.createSampleUser2() }
+        val user2 = Database.transaction { userProvider.createSampleUser2(Roles.Users.ModifyOthers) }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
-        httpClient.post(UserGrantRoleEndpoint.url) {
+        httpClient.post(UserRevokeRoleEndpoint.url) {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
@@ -86,12 +86,12 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
     }
 
     @Test
-    fun `test setting user doesn't exist`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
+    fun `test revoking user doesn't exist`() = testServer {
+        Database.transaction { userProvider.createSampleUser(Roles.Users.RevokeRole) }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
-        httpClient.post(UserGrantRoleEndpoint.url) {
+        httpClient.post(UserRevokeRoleEndpoint.url) {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
@@ -104,18 +104,18 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test invalid body`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
+        Database.transaction { userProvider.createSampleUser(Roles.Users.RevokeRole) }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
-        httpClient.post(UserGrantRoleEndpoint.url) {
+        httpClient.post(UserRevokeRoleEndpoint.url) {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody("{}")
         }.let { response ->
             assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_REQUEST)
         }
-        httpClient.post(UserGrantRoleEndpoint.url) {
+        httpClient.post(UserRevokeRoleEndpoint.url) {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody("abc")

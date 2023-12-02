@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @KoverIgnore
 @Serializable
-data class UserGrantRoleRequest(
+data class UserRoleRequest(
     val userId: Int,
     val role: Role
 )
