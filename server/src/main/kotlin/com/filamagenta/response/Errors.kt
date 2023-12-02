@@ -67,4 +67,12 @@ object Errors {
             ) to HttpStatusCode.Forbidden
         }
     }
+
+    @KoverIgnore
+    object Users {
+        val UserIdNotFound = FailureResponse.Error(
+            code = ErrorCodes.Generic.USER_NOT_FOUND,
+            message = "The given user id doesn't match any registered user"
+        ) to HttpStatusCode.NotFound
+    }
 }

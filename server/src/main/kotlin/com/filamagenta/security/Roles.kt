@@ -26,7 +26,7 @@ sealed class Role(val name: String) {
     }
 }
 
-val roles: List<Role> = listOf(Roles.Users.ModifyOthers)
+val roles: List<Role> = listOf(Roles.Users.ModifyOthers, Roles.Users.GrantRole)
 
 @KoverIgnore
 object Roles {
@@ -38,6 +38,10 @@ object Roles {
         @KoverIgnore
         @Serializable
         data object ModifyOthers : Role("modify_users")
+
+        @KoverIgnore
+        @Serializable
+        data object GrantRole : Role("grant_role")
     }
 }
 
