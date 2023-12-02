@@ -104,7 +104,7 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
     }
 
     @Test
-    fun `test revoking role immutable`() = testServer {
+    fun `test granting role for immutable`() = testServer {
         Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
         val admin = Database.transaction { User.all().first() }
 
@@ -118,6 +118,24 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
             )
         }.let { response ->
             assertResponseFailure(response, Errors.Users.Immutable)
+        }
+    }
+
+    @Test
+    fun `test granting immutable role forbidden`() = testServer {
+        Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
+        val admin = Database.transaction { User.all().first() }
+
+        val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
+
+        httpClient.post(UserGrantRoleEndpoint.url) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody(
+                UserRoleRequest(admin.id.value, Roles.Users.Immutable)
+            )
+        }.let { response ->
+            assertResponseFailure(response, Errors.Users.ImmutableCannotBeGranted)
         }
     }
 

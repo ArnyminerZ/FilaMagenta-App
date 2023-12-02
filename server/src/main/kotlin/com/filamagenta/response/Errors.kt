@@ -79,5 +79,10 @@ object Errors {
             code = ErrorCodes.Users.IMMUTABLE_USER,
             message = "Tried to modify an immutable user"
         ) to HttpStatusCode.Forbidden
+
+        val ImmutableCannotBeGranted = FailureResponse.Error(
+            code = ErrorCodes.Users.IMMUTABLE_GRANT,
+            message = "Immutability cannot be granted"
+        ) to HttpStatusCode.Forbidden
     }
 }

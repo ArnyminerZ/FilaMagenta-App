@@ -2,7 +2,7 @@ package com.filamagenta.response
 
 import KoverIgnore
 
-// Last one: 14
+// Last one: 15
 @KoverIgnore
 object ErrorCodes {
     @KoverIgnore
@@ -41,5 +41,6 @@ object ErrorCodes {
     @KoverIgnore
     object Users {
         const val IMMUTABLE_USER = 14
+        const val IMMUTABLE_GRANT = 15
     }
 }

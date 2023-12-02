@@ -24,6 +24,9 @@ object UserGrantRoleEndpoint : SecureEndpoint("/user/grant", Roles.Users.GrantRo
         try {
             val (userId, role) = call.receive<UserRoleRequest>()
 
+            // Immutability cannot be granted
+            if (role == Roles.Users.Immutable) return respondFailure(Errors.Users.ImmutableCannotBeGranted)
+
             // Make sure the user exists
             val other = Database.transaction { User.findById(userId) }
                 ?: return respondFailure(Errors.Users.UserIdNotFound)
