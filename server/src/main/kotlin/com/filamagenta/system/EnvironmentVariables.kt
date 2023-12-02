@@ -13,7 +13,24 @@ object EnvironmentVariables {
         data object Driver : EnvironmentVariable<String>("DATABASE_DRIVER", String::class)
     }
 
+    @KoverIgnore
     object Authentication {
+        @KoverIgnore
+        object Users {
+            @KoverIgnore
+            data object AdminNif : EnvironmentVariable<String>("ADMIN_NIF", String::class, "87654321X")
+
+            @KoverIgnore
+            data object AdminPwd : EnvironmentVariable<String>("ADMIN_PWD", String::class, "0changeMe!")
+
+            @KoverIgnore
+            data object AdminName : EnvironmentVariable<String>("ADMIN_NAME", String::class, "Admin")
+
+            @KoverIgnore
+            data object AdminSurname : EnvironmentVariable<String>("ADMIN_SURNAME", String::class, "Admin")
+        }
+
+        @KoverIgnore
         object Jwt {
             @KoverIgnore
             data object Secret : EnvironmentVariable<String>("AUTH_JWT_SECRET", String::class)

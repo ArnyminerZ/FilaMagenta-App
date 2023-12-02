@@ -24,7 +24,7 @@ sealed class Role(val name: String) {
     }
 }
 
-private val roles: List<Role> = listOf(Roles.Users.ModifyOthers)
+val roles: List<Role> = listOf(Roles.Users.ModifyOthers)
 
 @KoverIgnore
 object Roles {
