@@ -7,4 +7,8 @@ object UserRolesTable : IntIdTable() {
     val role = varchar("role", USER_ROLE_LENGTH)
 
     val user = reference("user", Users)
+
+    init {
+        uniqueIndex(user, role)
+    }
 }
