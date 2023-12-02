@@ -47,6 +47,11 @@ object Errors {
                 code = ErrorCodes.Authentication.JWT.USER_NOT_FOUND,
                 message = "The user that generated the token no longer exists."
             ) to HttpStatusCode.NotFound
+
+            val MissingRole = FailureResponse.Error(
+                code = ErrorCodes.Authentication.JWT.MISSING_ROLE,
+                message = "The user that is making the request is missing a required role."
+            ) to HttpStatusCode.Unauthorized
         }
 
         @KoverIgnore
