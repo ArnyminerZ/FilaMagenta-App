@@ -25,8 +25,16 @@ object UserGrantRoleEndpoint : SecureEndpoint("/user/grant", Roles.Users.GrantRo
             val (userId, role) = call.receive<UserRoleRequest>()
 
             // Make sure the user exists
-            Database.transaction { User.findById(userId) }
+            val other = Database.transaction { User.findById(userId) }
                 ?: return respondFailure(Errors.Users.UserIdNotFound)
+
+            // Check that the user to modify doesn't have the immutable role
+            val isImmutable = Database.transaction {
+                UserRole.find {
+                    (UserRolesTable.role eq Roles.Users.Immutable.name) and (UserRolesTable.user eq other.id)
+                }.firstOrNull() != null
+            }
+            if (isImmutable) return respondFailure(Errors.Users.Immutable)
 
             val existingRole = Database.transaction {
                 UserRole.find { (UserRolesTable.role eq role.name) and (UserRolesTable.user eq userId) }.firstOrNull()

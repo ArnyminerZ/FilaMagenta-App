@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.endpoint.UserGrantRoleEndpoint
@@ -99,6 +100,24 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
             )
         }.let { response ->
             assertResponseFailure(response, Errors.Users.UserIdNotFound)
+        }
+    }
+
+    @Test
+    fun `test revoking role immutable`() = testServer {
+        Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
+        val admin = Database.transaction { User.all().first() }
+
+        val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
+
+        httpClient.post(UserGrantRoleEndpoint.url) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody(
+                UserRoleRequest(admin.id.value, Roles.Users.ModifyOthers)
+            )
+        }.let { response ->
+            assertResponseFailure(response, Errors.Users.Immutable)
         }
     }
 
