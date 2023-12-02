@@ -2,12 +2,14 @@ package com.filamagenta.response
 
 import KoverIgnore
 
-// Last one: 12
+// Last one: 15
 @KoverIgnore
 object ErrorCodes {
     @KoverIgnore
     object Generic {
         const val INVALID_REQUEST = 1
+
+        const val USER_NOT_FOUND = 13
     }
 
     @KoverIgnore
@@ -34,5 +36,11 @@ object ErrorCodes {
             const val USER_NOT_FOUND = 10
             const val WRONG_PASSWORD = 11
         }
+    }
+
+    @KoverIgnore
+    object Users {
+        const val IMMUTABLE_USER = 14
+        const val IMMUTABLE_GRANT = 15
     }
 }

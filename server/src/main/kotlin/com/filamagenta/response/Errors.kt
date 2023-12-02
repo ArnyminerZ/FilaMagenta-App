@@ -67,4 +67,22 @@ object Errors {
             ) to HttpStatusCode.Forbidden
         }
     }
+
+    @KoverIgnore
+    object Users {
+        val UserIdNotFound = FailureResponse.Error(
+            code = ErrorCodes.Generic.USER_NOT_FOUND,
+            message = "The given user id doesn't match any registered user"
+        ) to HttpStatusCode.NotFound
+
+        val Immutable = FailureResponse.Error(
+            code = ErrorCodes.Users.IMMUTABLE_USER,
+            message = "Tried to modify an immutable user"
+        ) to HttpStatusCode.Forbidden
+
+        val ImmutableCannotBeGranted = FailureResponse.Error(
+            code = ErrorCodes.Users.IMMUTABLE_GRANT,
+            message = "Immutability cannot be granted"
+        ) to HttpStatusCode.Forbidden
+    }
 }

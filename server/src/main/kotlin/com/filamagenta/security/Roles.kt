@@ -26,18 +26,40 @@ sealed class Role(val name: String) {
     }
 }
 
-val roles: List<Role> = listOf(Roles.Users.ModifyOthers)
+val roles: List<Role> = listOf(
+    Roles.Users.ModifyOthers,
+    Roles.Users.GrantRole,
+    Roles.Users.RevokeRole,
+    Roles.Users.Immutable
+)
 
 @KoverIgnore
 object Roles {
     @KoverIgnore
     object Users {
         /**
+         * A user with this role cannot be modified.
+         * It's intended for security purposes, so that the admin user is not accidentally removed, or all permissions
+         * are revoked.
+         */
+        @KoverIgnore
+        @Serializable
+        data object Immutable : Role("immutable")
+
+        /**
          * Allows the user with this role to modify the personal data and metadata of other users.
          */
         @KoverIgnore
         @Serializable
         data object ModifyOthers : Role("modify_users")
+
+        @KoverIgnore
+        @Serializable
+        data object GrantRole : Role("grant_role")
+
+        @KoverIgnore
+        @Serializable
+        data object RevokeRole : Role("revoke_role")
     }
 }
 
