@@ -26,6 +26,25 @@ abstract class SecureEndpoint(
 ) : Endpoint(url) {
     private val roles = roles.toList()
 
+    /**
+     * Makes sure that [user] has all the roles in [roles]. If it's empty, no operation is performed.
+     */
+    private fun verifyRoles(user: User) {
+        if (roles.isNotEmpty()) {
+            // Fetch all the user's roles
+            val roles = Database.transaction {
+                UserRole.find { UserRolesTable.user eq user.id }
+                    .map { it.role }
+            }
+            // Make sure that the user has all of them
+            for (role in this@SecureEndpoint.roles) {
+                if (!roles.contains(role)) {
+                    throw SecurityException()
+                }
+            }
+        }
+    }
+
     override suspend fun PipelineContext<Unit, ApplicationCall>.body() {
         try {
             val principal = call.principal<JWTPrincipal>()
@@ -35,24 +54,15 @@ abstract class SecureEndpoint(
             val user = Database.transaction { User.find { Users.nif eq nif }.firstOrNull() }
                 ?: return respondFailure(Errors.Authentication.JWT.UserNotFound)
 
-            if (roles.isNotEmpty()) {
-                // Fetch all the user's roles
-                val roles = Database.transaction {
-                    UserRole.find { UserRolesTable.user eq user.id }
-                        .map { it.role }
-                }
-                // Make sure that the user has all of them
-                for (role in this@SecureEndpoint.roles) {
-                    if (!roles.contains(role)) {
-                        return respondFailure(Errors.Authentication.JWT.MissingRole)
-                    }
-                }
-            }
+            // Make sure the user has all the required roles
+            verifyRoles(user)
 
             // If all requirements have been met, call the secure body
             secureBody(user)
         } catch (_: NullPointerException) {
             respondFailure(Errors.Authentication.JWT.MissingData)
+        } catch (_: SecurityException) {
+            respondFailure(Errors.Authentication.JWT.MissingRole)
         }
     }
 
