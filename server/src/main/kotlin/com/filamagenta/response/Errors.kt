@@ -102,9 +102,9 @@ object Errors {
                 message = "A safer password must be provided"
             ) to HttpStatusCode.BadRequest
 
-            val KeyError = FailureResponse.Error(
+            val NullKey = FailureResponse.Error(
                 code = ErrorCodes.Users.KEY_ERROR,
-                message = "There was an error while parsing the key"
+                message = "The key passed was null"
             ) to HttpStatusCode.InternalServerError
         }
     }

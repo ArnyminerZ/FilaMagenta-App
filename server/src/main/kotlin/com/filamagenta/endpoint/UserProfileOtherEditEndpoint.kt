@@ -10,23 +10,29 @@ import com.filamagenta.endpoint.model.respondSuccess
 import com.filamagenta.request.UserProfileEditRequest
 import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors
+import com.filamagenta.security.Roles
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
+import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 
-object UserProfileEditEndpoint : SecureEndpoint("/user/profile") {
+object UserProfileOtherEditEndpoint : SecureEndpoint("/user/profile/{userId}", Roles.Users.ModifyOthers) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         var key: UserDataKey? = null
         try {
             val request = call.receive<UserProfileEditRequest>()
             key = request.key
             val value = request.value
+            val userId: Int by call.parameters
+
+            val modifyUser = Database.transaction { User.findById(userId) }
+                ?: return respondFailure(Errors.Users.UserIdNotFound)
 
             require(key != null) { "Key cannot be null" }
 
-            Database.set(user, key, value)
+            Database.set(modifyUser, key, value)
 
             respondSuccess<Void>()
         } catch (e: BadRequestException) {

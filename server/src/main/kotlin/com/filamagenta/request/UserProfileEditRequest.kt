@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 @KoverIgnore
 @Serializable
 data class UserProfileEditRequest(
-    val key: UserDataKey,
+    val key: UserDataKey?,
     val value: String
 )

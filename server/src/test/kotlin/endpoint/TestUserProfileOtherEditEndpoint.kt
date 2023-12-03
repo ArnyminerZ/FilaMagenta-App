@@ -3,14 +3,13 @@ package endpoint
 import com.filamagenta.database.Database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.utils.UserDataKey
-import com.filamagenta.endpoint.UserProfileEditEndpoint
-import com.filamagenta.endpoint.UserProfileEndpoint
+import com.filamagenta.endpoint.UserProfileOtherEditEndpoint
 import com.filamagenta.request.UserProfileEditRequest
 import com.filamagenta.response.Errors
 import com.filamagenta.response.FailureResponse
 import com.filamagenta.security.Authentication
 import com.filamagenta.security.Passwords
-import database.provider.UserProvider
+import com.filamagenta.security.Roles
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.post
@@ -22,17 +21,20 @@ import kotlin.test.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class TestUserProfileEditEndpoint : TestServerEnvironment() {
+class TestUserProfileOtherEditEndpoint : TestServerEnvironment() {
     private fun testUpdate(
         key: UserDataKey,
         value: String,
         assertion: (User) -> Unit
     ) = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
+        val other = Database.transaction { userProvider.createSampleUser2() }
 
-        val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
+        val jwt = Authentication.generateJWT(user.nif)
 
-        httpClient.post(UserProfileEndpoint.url) {
+        httpClient.post(
+            UserProfileOtherEditEndpoint.url.replace("{userId}", other.id.value.toString())
+        ) {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
@@ -42,18 +44,22 @@ class TestUserProfileEditEndpoint : TestServerEnvironment() {
             assertResponseSuccess<Void>(response)
         }
 
-        Database.transaction { User[user.id] }.let(assertion)
+        Database.transaction { User[other.id] }.let(assertion)
     }
     private fun testUpdateFails(
         key: UserDataKey?,
         value: String,
-        error: Pair<FailureResponse.Error, HttpStatusCode>
+        error: Pair<FailureResponse.Error, HttpStatusCode>,
+        overrideUserId: Int? = null
     ) = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
+        val other = Database.transaction { userProvider.createSampleUser2() }
 
         val jwt = Authentication.generateJWT(user.nif)
 
-        httpClient.post(UserProfileEndpoint.url) {
+        httpClient.post(
+            UserProfileOtherEditEndpoint.url.replace("{userId}", (overrideUserId ?: other.id.value).toString())
+        ) {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
@@ -108,6 +114,14 @@ class TestUserProfileEditEndpoint : TestServerEnvironment() {
     )
 
     @Test
+    fun `test updating unknown user`() = testUpdateFails(
+        UserDataKey.Name,
+        "New Name",
+        Errors.Users.UserIdNotFound,
+        10
+    )
+
+    @Test
     fun `test updating key failure`() = testUpdateFails(
         null,
         "New Value",
@@ -115,5 +129,8 @@ class TestUserProfileEditEndpoint : TestServerEnvironment() {
     )
 
     @Test
-    fun `test invalid body`() = testServerInvalidBody(UserProfileEditEndpoint.url)
+    fun `test invalid body`() = testServerInvalidBody(
+        UserProfileOtherEditEndpoint.url.replace("{userId}", "10"),
+        Database.transaction { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
+    )
 }
