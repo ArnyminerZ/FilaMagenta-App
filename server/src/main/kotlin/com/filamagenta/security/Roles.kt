@@ -60,6 +60,13 @@ object Roles {
         @KoverIgnore
         @Serializable
         data object RevokeRole : Role("revoke_role")
+
+        @KoverIgnore
+        object Transaction {
+            @KoverIgnore
+            @Serializable
+            data object Create : Role("trans_create")
+        }
     }
 }
 

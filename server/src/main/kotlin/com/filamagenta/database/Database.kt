@@ -3,6 +3,7 @@ package com.filamagenta.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.entity.UserRole
+import com.filamagenta.database.table.Transactions
 import com.filamagenta.database.table.UserMetaTable
 import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.database.table.Users
@@ -24,6 +25,7 @@ object Database {
         // Tables must be sorted so that removing them in this order doesn't break any reference
         UserMetaTable to UserMeta.Companion,
         UserRolesTable to UserRole.Companion,
+        Transactions to com.filamagenta.database.entity.Transaction.Companion,
         Users to User.Companion
     )
 
