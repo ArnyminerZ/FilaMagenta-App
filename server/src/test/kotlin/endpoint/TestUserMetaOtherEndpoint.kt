@@ -4,7 +4,6 @@ import com.filamagenta.database.Database
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.endpoint.UserMetaOtherEndpoint
 import com.filamagenta.request.UserMetaRequest
-import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import com.filamagenta.security.Roles
@@ -167,29 +166,12 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
     }
 
     @Test
-    fun `test invalid body`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
+    fun `test invalid body`() {
         val other = Database.transaction { userProvider.createSampleUser2() }
 
-        val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
-
-        httpClient.post(
-            UserMetaOtherEndpoint.url.replace("{userId}", other.id.value.toString())
-        ) {
-            bearerAuth(jwt)
-            contentType(ContentType.Application.Json)
-            setBody("{}")
-        }.let { response ->
-            assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_REQUEST)
-        }
-        httpClient.post(
-            UserMetaOtherEndpoint.url.replace("{userId}", other.id.value.toString())
-        ) {
-            bearerAuth(jwt)
-            contentType(ContentType.Application.Json)
-            setBody("abc")
-        }.let { response ->
-            assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_REQUEST)
-        }
+        testServerInvalidBody(
+            UserMetaOtherEndpoint.url.replace("{userId}", other.id.value.toString()),
+            Database.transaction { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
+        )
     }
 }
