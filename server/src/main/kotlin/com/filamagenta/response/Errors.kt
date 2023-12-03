@@ -84,5 +84,28 @@ object Errors {
             code = ErrorCodes.Users.IMMUTABLE_GRANT,
             message = "Immutability cannot be granted"
         ) to HttpStatusCode.Forbidden
+
+        @KoverIgnore
+        object Profile {
+            val NameCannotBeEmpty = FailureResponse.Error(
+                code = ErrorCodes.Users.NAME_EMPTY,
+                message = "Name cannot be empty"
+            ) to HttpStatusCode.BadRequest
+
+            val SurnameCannotBeEmpty = FailureResponse.Error(
+                code = ErrorCodes.Users.SURNAME_EMPTY,
+                message = "Surname cannot be empty"
+            ) to HttpStatusCode.BadRequest
+
+            val UnsafePassword = FailureResponse.Error(
+                code = ErrorCodes.Users.UNSAFE_PASSWORD,
+                message = "A safer password must be provided"
+            ) to HttpStatusCode.BadRequest
+
+            val NullKey = FailureResponse.Error(
+                code = ErrorCodes.Users.KEY_ERROR,
+                message = "The key passed was null"
+            ) to HttpStatusCode.InternalServerError
+        }
     }
 }

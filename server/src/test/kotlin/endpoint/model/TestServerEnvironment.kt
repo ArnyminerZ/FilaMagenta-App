@@ -1,15 +1,23 @@
 package endpoint.model
 
+import com.filamagenta.database.Database
+import com.filamagenta.database.entity.User
 import com.filamagenta.modules.addEndpoints
 import com.filamagenta.modules.configureJwt
 import com.filamagenta.modules.serverJson
+import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.FailureResponse
 import database.model.DatabaseTestEnvironment
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.bearer
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.auth.Authentication
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -64,6 +72,28 @@ abstract class TestServerEnvironment : DatabaseTestEnvironment() {
         if (installServerEndpoints) installServerEndpoints()
 
         block()
+    }
+
+    fun testServerInvalidBody(
+        url: String,
+        user: User = Database.transaction { userProvider.createSampleUser() }
+    ) = testServer {
+        val jwt = com.filamagenta.security.Authentication.generateJWT(user.nif)
+
+        httpClient.post(url) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody("{}")
+        }.let { response ->
+            assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_REQUEST)
+        }
+        httpClient.post(url) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody("abc")
+        }.let { response ->
+            assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_REQUEST)
+        }
     }
 
     private fun ApplicationTestBuilder.installServerEndpoints() {

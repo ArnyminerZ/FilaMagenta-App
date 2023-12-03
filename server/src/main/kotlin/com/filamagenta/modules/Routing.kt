@@ -4,7 +4,10 @@ import com.filamagenta.endpoint.LoginEndpoint
 import com.filamagenta.endpoint.RegisterEndpoint
 import com.filamagenta.endpoint.UserGrantRoleEndpoint
 import com.filamagenta.endpoint.UserMetaEndpoint
+import com.filamagenta.endpoint.UserMetaOtherEndpoint
+import com.filamagenta.endpoint.UserProfileEditEndpoint
 import com.filamagenta.endpoint.UserProfileEndpoint
+import com.filamagenta.endpoint.UserProfileOtherEditEndpoint
 import com.filamagenta.endpoint.UserRevokeRoleEndpoint
 import com.filamagenta.endpoint.model.Endpoint
 import com.filamagenta.endpoint.model.SecureEndpoint
@@ -35,7 +38,10 @@ val endpoints: Map<Endpoint, HttpMethod> = mapOf(
 val secureEndpoints: Map<SecureEndpoint, HttpMethod> = mapOf(
     UserGrantRoleEndpoint to HttpMethod.Post,
     UserMetaEndpoint to HttpMethod.Post,
+    UserMetaOtherEndpoint to HttpMethod.Post,
     UserProfileEndpoint to HttpMethod.Get,
+    UserProfileEditEndpoint to HttpMethod.Post,
+    UserProfileOtherEditEndpoint to HttpMethod.Post,
     UserRevokeRoleEndpoint to HttpMethod.Post,
 )
 
@@ -55,13 +61,16 @@ private fun Route.installEndpoint(endpoint: Endpoint, method: HttpMethod) {
     }
 }
 
-fun Route.addEndpoints() {
+fun Route.addEndpoints(
+    endpointsList: Map<Endpoint, HttpMethod> = endpoints,
+    secureEndpointsList: Map<SecureEndpoint, HttpMethod> = secureEndpoints
+) {
     get("/") {
         call.respondText("Welcome!")
     }
-    for ((endpoint, method) in endpoints) installEndpoint(endpoint, method)
+    for ((endpoint, method) in endpointsList) installEndpoint(endpoint, method)
 
     authenticate(AUTH_JWT_NAME) {
-        for ((endpoint, method) in secureEndpoints) installEndpoint(endpoint, method)
+        for ((endpoint, method) in secureEndpointsList) installEndpoint(endpoint, method)
     }
 }
