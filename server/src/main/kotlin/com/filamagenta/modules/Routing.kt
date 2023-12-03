@@ -61,13 +61,16 @@ private fun Route.installEndpoint(endpoint: Endpoint, method: HttpMethod) {
     }
 }
 
-fun Route.addEndpoints() {
+fun Route.addEndpoints(
+    endpointsList: Map<Endpoint, HttpMethod> = endpoints,
+    secureEndpointsList: Map<SecureEndpoint, HttpMethod> = secureEndpoints
+) {
     get("/") {
         call.respondText("Welcome!")
     }
-    for ((endpoint, method) in endpoints) installEndpoint(endpoint, method)
+    for ((endpoint, method) in endpointsList) installEndpoint(endpoint, method)
 
     authenticate(AUTH_JWT_NAME) {
-        for ((endpoint, method) in secureEndpoints) installEndpoint(endpoint, method)
+        for ((endpoint, method) in secureEndpointsList) installEndpoint(endpoint, method)
     }
 }
