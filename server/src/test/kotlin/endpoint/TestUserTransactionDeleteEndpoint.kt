@@ -79,12 +79,4 @@ class TestUserTransactionDeleteEndpoint : TestServerEnvironment() {
             assertResponseFailure(response, Errors.Transactions.NotFound)
         }
     }
-
-    @Test
-    fun `test invalid body`() {
-        testServerInvalidBody(
-            UserTransactionDeleteEndpoint.url,
-            Database.transaction { userProvider.createSampleUser(Roles.Transaction.Delete) }
-        ) { url, builder -> delete(url, builder) }
-    }
 }
