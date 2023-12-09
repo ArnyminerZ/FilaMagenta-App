@@ -30,7 +30,8 @@ val roles: List<Role> = listOf(
     Roles.Users.ModifyOthers,
     Roles.Users.GrantRole,
     Roles.Users.RevokeRole,
-    Roles.Users.Immutable
+    Roles.Users.Immutable,
+    Roles.Users.Transaction.Create
 )
 
 @KoverIgnore
