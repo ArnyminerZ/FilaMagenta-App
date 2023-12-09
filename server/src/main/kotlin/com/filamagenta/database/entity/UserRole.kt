@@ -14,7 +14,7 @@ class UserRole(id: EntityID<Int>) : IntEntity(id) {
     private var _role by UserRolesTable.role
 
     var role: Role
-        get() = Roles.find(_role)!!
+        get() = Roles.find(_role) ?: throw IllegalArgumentException("Could not find a role named $_role")
         set(value) { _role = value.name }
 
     var user by User referencedOn UserRolesTable.user
