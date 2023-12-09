@@ -1,8 +1,10 @@
 package com.filamagenta.database
 
+import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.entity.UserRole
+import com.filamagenta.database.table.Events
 import com.filamagenta.database.table.Transactions
 import com.filamagenta.database.table.UserMetaTable
 import com.filamagenta.database.table.UserRolesTable
@@ -10,6 +12,7 @@ import com.filamagenta.database.table.Users
 import com.filamagenta.security.Passwords
 import com.filamagenta.security.roles
 import com.filamagenta.system.EnvironmentVariables
+import kotlinx.serialization.json.Json
 import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.sql.Database
@@ -21,12 +24,21 @@ import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object Database {
+    /**
+     * The JSON configuration used by the database.
+     */
+    val json = Json {
+        isLenient = true
+        prettyPrint = false
+    }
+
     val tables: Map<Table, IntEntityClass<*>> = mapOf(
         // Tables must be sorted so that removing them in this order doesn't break any reference
         UserMetaTable to UserMeta.Companion,
         UserRolesTable to UserRole.Companion,
         Transactions to com.filamagenta.database.entity.Transaction.Companion,
-        Users to User.Companion
+        Users to User.Companion,
+        Events to Event.Companion
     )
 
     @VisibleForTesting
