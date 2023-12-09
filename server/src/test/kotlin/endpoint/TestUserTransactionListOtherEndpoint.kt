@@ -3,7 +3,8 @@ package endpoint
 import com.filamagenta.database.Database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
-import com.filamagenta.endpoint.UserTransactionListEndpoint
+import com.filamagenta.endpoint.UserTransactionListOtherEndpoint
+import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import com.filamagenta.security.Roles
 import endpoint.model.TestServerEnvironment
@@ -14,7 +15,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.Test
 
-class TestUserTransactionListEndpoint : TestServerEnvironment() {
+class TestUserTransactionListOtherEndpoint : TestServerEnvironment() {
     private fun provideSampleTransactions(user: User) {
         Database.transaction {
             Transaction.new {
@@ -42,20 +43,50 @@ class TestUserTransactionListEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test listing transactions`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Delete) }
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.ListOthers) }
         val jwt = Authentication.generateJWT(user.nif)
         provideSampleTransactions(user)
 
         // List transactions
-        httpClient.get(UserTransactionListEndpoint.url) {
+        httpClient.get(
+            UserTransactionListOtherEndpoint.url.replace("{userId}", user.id.value.toString())
+        ) {
             bearerAuth(jwt)
         }.let { response ->
-            assertResponseSuccess<UserTransactionListEndpoint.UserTransactionsResponse>(response) { data ->
+            assertResponseSuccess<UserTransactionListOtherEndpoint.UserTransactionsResponse>(response) { data ->
                 assertNotNull(data)
 
                 val transactions = data.transactions
                 assertEquals(2, transactions.size)
             }
+        }
+    }
+
+    @Test
+    fun `test no permission`() = testServer {
+        val user = Database.transaction { userProvider.createSampleUser() }
+        val jwt = Authentication.generateJWT(user.nif)
+
+        httpClient.get(
+            UserTransactionListOtherEndpoint.url.replace("{userId}", user.id.value.toString())
+        ) {
+            bearerAuth(jwt)
+        }.let { response ->
+            assertResponseFailure(response, Errors.Authentication.JWT.MissingRole)
+        }
+    }
+
+    @Test
+    fun `test user not found`() = testServer {
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.ListOthers) }
+        val jwt = Authentication.generateJWT(user.nif)
+
+        httpClient.get(
+            UserTransactionListOtherEndpoint.url.replace("{userId}", "10")
+        ) {
+            bearerAuth(jwt)
+        }.let { response ->
+            assertResponseFailure(response, Errors.Users.UserIdNotFound)
         }
     }
 }
