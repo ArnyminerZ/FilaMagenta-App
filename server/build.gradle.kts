@@ -37,6 +37,7 @@ dependencies {
 
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
+    implementation(libs.exposed.datetime)
     implementation(libs.exposed.jdbc)
 
     testImplementation(libs.h2)

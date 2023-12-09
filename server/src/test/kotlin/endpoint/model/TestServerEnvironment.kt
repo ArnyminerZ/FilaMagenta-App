@@ -8,8 +8,10 @@ import com.filamagenta.modules.serverJson
 import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.FailureResponse
 import database.model.DatabaseTestEnvironment
+import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.bearer
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -76,18 +78,22 @@ abstract class TestServerEnvironment : DatabaseTestEnvironment() {
 
     fun testServerInvalidBody(
         url: String,
-        user: User = Database.transaction { userProvider.createSampleUser() }
+        user: User = Database.transaction { userProvider.createSampleUser() },
+        method: suspend HttpClient.(
+            url: String,
+            requestBuilder: HttpRequestBuilder.() -> Unit
+        ) -> HttpResponse = { u, builder -> post(u, builder) }
     ) = testServer {
         val jwt = com.filamagenta.security.Authentication.generateJWT(user.nif)
 
-        httpClient.post(url) {
+        method(httpClient, url) {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody("{}")
         }.let { response ->
             assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_REQUEST)
         }
-        httpClient.post(url) {
+        method(httpClient, url) {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody("abc")

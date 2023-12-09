@@ -27,10 +27,14 @@ sealed class Role(val name: String) {
 }
 
 val roles: List<Role> = listOf(
-    Roles.Users.ModifyOthers,
+    Roles.Transaction.Create,
+    Roles.Transaction.Delete,
+    Roles.Transaction.ListOthers,
+    Roles.Transaction.Update,
     Roles.Users.GrantRole,
+    Roles.Users.Immutable,
+    Roles.Users.ModifyOthers,
     Roles.Users.RevokeRole,
-    Roles.Users.Immutable
 )
 
 @KoverIgnore
@@ -60,6 +64,25 @@ object Roles {
         @KoverIgnore
         @Serializable
         data object RevokeRole : Role("revoke_role")
+    }
+
+    @KoverIgnore
+    object Transaction {
+        @KoverIgnore
+        @Serializable
+        data object Create : Role("trans_create")
+
+        @KoverIgnore
+        @Serializable
+        data object Delete : Role("trans_delete")
+
+        @KoverIgnore
+        @Serializable
+        data object Update : Role("trans_update")
+
+        @KoverIgnore
+        @Serializable
+        data object ListOthers : Role("trans_list")
     }
 }
 
