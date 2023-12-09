@@ -9,8 +9,8 @@ object Transactions : IntIdTable() {
     val date = date("date")
     val description = varchar("description", TRANSACTION_DESCRIPTION_LENGTH)
     val income = bool("income")
-    val units = uinteger("units")
-    val pricePerUnit = float("price")
+    val units = uinteger("units").check { it greater 0U }
+    val pricePerUnit = float("price").check { it greater 0f }
     val type = enumeration<Transaction.Type>("type")
 
     val user = reference("user", Users)
