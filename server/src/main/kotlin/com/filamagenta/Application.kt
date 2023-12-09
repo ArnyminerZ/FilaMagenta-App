@@ -4,7 +4,9 @@ import KoverIgnore
 import SERVER_PORT
 import com.filamagenta.modules.installAuthentication
 import com.filamagenta.modules.installContentNegotiation
+import com.filamagenta.modules.installRateLimit
 import com.filamagenta.modules.installRouting
+import com.filamagenta.modules.installStatusPages
 import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -29,5 +31,7 @@ fun main(args: Array<String> = emptyArray()) {
 fun Application.module() {
     installAuthentication()
     installContentNegotiation()
+    installRateLimit()
     installRouting()
+    installStatusPages()
 }

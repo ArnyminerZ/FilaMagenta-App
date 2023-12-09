@@ -3,6 +3,7 @@ package com.filamagenta.system
 import KoverIgnore
 
 @KoverIgnore
+@Suppress("MagicNumber")
 object EnvironmentVariables {
     @KoverIgnore
     object Database {
@@ -11,6 +12,18 @@ object EnvironmentVariables {
 
         @KoverIgnore
         data object Driver : EnvironmentVariable<String>("DATABASE_DRIVER", String::class)
+    }
+
+    @KoverIgnore
+    object Security {
+        @KoverIgnore
+        object RateLimit {
+            @KoverIgnore
+            data object Capacity : EnvironmentVariable<Int>("RATE_CAPACITY", Int::class, 5)
+
+            @KoverIgnore
+            data object RefillPeriod : EnvironmentVariable<Int>("RATE_PERIOD", Int::class, 60)
+        }
     }
 
     @KoverIgnore

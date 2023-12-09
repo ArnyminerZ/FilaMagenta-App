@@ -2,7 +2,7 @@ package com.filamagenta.response
 
 import KoverIgnore
 
-// Last one: 23
+// Last one: 24
 @KoverIgnore
 object ErrorCodes {
     @KoverIgnore
@@ -12,6 +12,8 @@ object ErrorCodes {
         const val USER_NOT_FOUND = 13
 
         const val INVALID_DATE = 20
+
+        const val TOO_MANY_REQUESTS = 24
     }
 
     @KoverIgnore
