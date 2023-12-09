@@ -5,6 +5,7 @@ import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.table.Transactions
 import com.filamagenta.endpoint.UserTransactionCreateEndpoint
 import com.filamagenta.request.UserTransactionCreateRequest
+import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import com.filamagenta.security.Roles
@@ -56,6 +57,63 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
             assertEquals(sampleTransaction.units, transaction.units)
             assertEquals(sampleTransaction.pricePerUnit, transaction.pricePerUnit)
             assertEquals(sampleTransaction.type, transaction.type)
+        }
+    }
+
+    @Test
+    fun `test creating transaction invalid price per unit`() = testServer {
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val jwt = Authentication.generateJWT(user.nif)
+
+        httpClient.post(
+            UserTransactionCreateEndpoint.url.replace("{userId}", user.id.value.toString())
+        ) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody(sampleTransaction.copy(pricePerUnit = 0f))
+        }.let { response ->
+            assertResponseFailure(response, Errors.Transactions.PriceMustBeGreaterThan0)
+        }
+        httpClient.post(
+            UserTransactionCreateEndpoint.url.replace("{userId}", user.id.value.toString())
+        ) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody(sampleTransaction.copy(pricePerUnit = -10f))
+        }.let { response ->
+            assertResponseFailure(response, Errors.Transactions.PriceMustBeGreaterThan0)
+        }
+    }
+
+    @Test
+    fun `test creating transaction invalid units`() = testServer {
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val jwt = Authentication.generateJWT(user.nif)
+
+        httpClient.post(
+            UserTransactionCreateEndpoint.url.replace("{userId}", user.id.value.toString())
+        ) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody(sampleTransaction.copy(units = 0U))
+        }.let { response ->
+            assertResponseFailure(response, Errors.Transactions.UnitsMustBeGreaterThan0)
+        }
+    }
+
+    @Test
+    fun `test creating transaction invalid date`() = testServer {
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val jwt = Authentication.generateJWT(user.nif)
+
+        httpClient.post(
+            UserTransactionCreateEndpoint.url.replace("{userId}", user.id.value.toString())
+        ) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody(sampleTransaction.copy(date = "invalid"))
+        }.let { response ->
+            assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_DATE)
         }
     }
 

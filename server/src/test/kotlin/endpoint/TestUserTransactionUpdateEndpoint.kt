@@ -5,6 +5,7 @@ import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.UserTransactionUpdateEndpoint
 import com.filamagenta.request.UserTransactionUpdateRequest
+import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import com.filamagenta.security.Roles
@@ -124,6 +125,75 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
         ),
         assertion = { assertEquals(Transaction.Type.DEBT, it.type) }
     )
+
+    @Test
+    fun `test update transaction invalid price`() = testServer {
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Update) }
+        val jwt = Authentication.generateJWT(user.nif)
+        val transaction = provideSampleTransaction(user)
+
+        httpClient.patch(
+            UserTransactionUpdateEndpoint.url.replace("{transactionId}", transaction.id.value.toString())
+        ) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody(
+                UserTransactionUpdateRequest(pricePerUnit = 0f)
+            )
+        }.let { response ->
+            assertResponseFailure(response, Errors.Transactions.PriceMustBeGreaterThan0)
+        }
+
+        httpClient.patch(
+            UserTransactionUpdateEndpoint.url.replace("{transactionId}", transaction.id.value.toString())
+        ) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody(
+                UserTransactionUpdateRequest(pricePerUnit = -10f)
+            )
+        }.let { response ->
+            assertResponseFailure(response, Errors.Transactions.PriceMustBeGreaterThan0)
+        }
+    }
+
+    @Test
+    fun `test update transaction invalid units`() = testServer {
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Update) }
+        val jwt = Authentication.generateJWT(user.nif)
+        val transaction = provideSampleTransaction(user)
+
+        httpClient.patch(
+            UserTransactionUpdateEndpoint.url.replace("{transactionId}", transaction.id.value.toString())
+        ) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody(
+                UserTransactionUpdateRequest(units = 0U)
+            )
+        }.let { response ->
+            assertResponseFailure(response, Errors.Transactions.UnitsMustBeGreaterThan0)
+        }
+    }
+
+    @Test
+    fun `test update transaction invalid date`() = testServer {
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Update) }
+        val jwt = Authentication.generateJWT(user.nif)
+        val transaction = provideSampleTransaction(user)
+
+        httpClient.patch(
+            UserTransactionUpdateEndpoint.url.replace("{transactionId}", transaction.id.value.toString())
+        ) {
+            bearerAuth(jwt)
+            contentType(ContentType.Application.Json)
+            setBody(
+                UserTransactionUpdateRequest(date = "invalid")
+            )
+        }.let { response ->
+            assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_DATE)
+        }
+    }
 
     @Test
     fun `test no permission`() = testServer {
