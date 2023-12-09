@@ -2,7 +2,7 @@ package com.filamagenta.response
 
 import KoverIgnore
 
-// Last one: 20
+// Last one: 22
 @KoverIgnore
 object ErrorCodes {
     @KoverIgnore
@@ -48,5 +48,11 @@ object ErrorCodes {
         const val SURNAME_EMPTY = 17
         const val UNSAFE_PASSWORD = 18
         const val KEY_ERROR = 19
+    }
+
+    @KoverIgnore
+    object Transactions {
+        const val INVALID_AMOUNT = 21
+        const val INVALID_PRICE = 22
     }
 }

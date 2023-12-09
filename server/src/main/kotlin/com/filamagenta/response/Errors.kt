@@ -108,4 +108,17 @@ object Errors {
             ) to HttpStatusCode.InternalServerError
         }
     }
+
+    @KoverIgnore
+    object Transactions {
+        val UnitsMustBeGreaterThan0 = FailureResponse.Error(
+            code = ErrorCodes.Transactions.INVALID_AMOUNT,
+            message = "The amount must be greater than 0"
+        ) to HttpStatusCode.BadRequest
+
+        val PriceMustBeGreaterThan0 = FailureResponse.Error(
+            code = ErrorCodes.Transactions.INVALID_PRICE,
+            message = "The price must be greater than 0"
+        ) to HttpStatusCode.BadRequest
+    }
 }
