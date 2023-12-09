@@ -49,7 +49,8 @@ abstract class SecureEndpoint(
         try {
             val principal = call.principal<JWTPrincipal>()
                 ?: return respondFailure(Errors.Authentication.JWT.MissingData)
-            val nif = principal.payload.getClaim(AUTH_JWT_CLAIM_NIF).asString()
+            val nif: String = principal.payload.getClaim(AUTH_JWT_CLAIM_NIF).asString()
+                ?: return respondFailure(Errors.Authentication.JWT.MissingData)
 
             // Make sure the user exists
             val user = Database.transaction { User.find { Users.nif eq nif }.firstOrNull() }
