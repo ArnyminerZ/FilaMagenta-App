@@ -48,7 +48,8 @@ abstract class SecureEndpoint(
     override suspend fun PipelineContext<Unit, ApplicationCall>.body() {
         try {
             val principal = call.principal<JWTPrincipal>()
-            val nif = principal!!.payload.getClaim(AUTH_JWT_CLAIM_NIF).asString()
+                ?: return respondFailure(Errors.Authentication.JWT.MissingData)
+            val nif = principal.payload.getClaim(AUTH_JWT_CLAIM_NIF).asString()
 
             // Make sure the user exists
             val user = Database.transaction { User.find { Users.nif eq nif }.firstOrNull() }
@@ -59,8 +60,6 @@ abstract class SecureEndpoint(
 
             // If all requirements have been met, call the secure body
             secureBody(user)
-        } catch (_: NullPointerException) {
-            respondFailure(Errors.Authentication.JWT.MissingData)
         } catch (_: SecurityException) {
             respondFailure(Errors.Authentication.JWT.MissingRole)
         }
