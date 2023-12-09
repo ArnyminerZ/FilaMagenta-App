@@ -1,12 +1,16 @@
 package com.filamagenta.endpoint.model
 
+import com.filamagenta.modules.serverJson
 import com.filamagenta.response.FailureResponse
 import com.filamagenta.response.SuccessResponse
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 import io.ktor.util.pipeline.PipelineContext
+import kotlinx.serialization.encodeToString
 
 /**
  * Responds to the request as a successful one, and appends the [data] given if any.
@@ -27,7 +31,8 @@ suspend fun ApplicationCall.respondFailure(
     status: HttpStatusCode = HttpStatusCode.BadRequest
 ) {
     val body = FailureResponse(error)
-    respond(status, body)
+    val bodyStr = serverJson.encodeToString(body)
+    respondText(bodyStr, ContentType.Application.Json, status)
 }
 
 /**
@@ -48,7 +53,8 @@ suspend fun ApplicationCall.respondFailure(
     val body = FailureResponse(
         FailureResponse.Error(exception, code)
     )
-    respond(status, body)
+    val bodyStr = serverJson.encodeToString(body)
+    respondText(bodyStr, ContentType.Application.Json, status)
 }
 
 /**

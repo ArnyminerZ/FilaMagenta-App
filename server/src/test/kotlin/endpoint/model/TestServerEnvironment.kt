@@ -38,6 +38,74 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 abstract class TestServerEnvironment : DatabaseTestEnvironment() {
+    companion object {
+        suspend inline fun <reified DataType : Any> assertResponseSuccess(
+            response: HttpResponse,
+            httpStatusCode: HttpStatusCode = HttpStatusCode.OK,
+            block: (data: DataType?) -> Unit = {}
+        ) {
+            val bodyString = response.bodyAsText()
+
+            assertEquals(
+                httpStatusCode,
+                response.status,
+                "Expected $httpStatusCode but was ${response.status}. Body: $bodyString"
+            )
+
+            val body = serverJson.decodeFromString<JsonElement>(bodyString).jsonObject
+            val success = body.getValue("success").jsonPrimitive.boolean
+            assertTrue(success)
+
+            val dataObject = try {
+                body["data"]?.jsonObject
+            } catch (_: IllegalArgumentException) {
+                // This is thrown if "data" is not a JSON object
+                null
+            }
+            val data: DataType? = dataObject?.let { serverJson.decodeFromJsonElement(it) }
+            block(data)
+        }
+
+        suspend fun assertResponseFailure(
+            response: HttpResponse,
+            httpStatusCode: HttpStatusCode = HttpStatusCode.BadRequest,
+            errorCode: Int? = null
+        ) {
+            val bodyString = response.bodyAsText()
+
+            assertEquals(
+                httpStatusCode,
+                response.status,
+                "Expected $httpStatusCode but was ${response.status}. Body: $bodyString"
+            )
+
+            try {
+                val body = serverJson.decodeFromString<JsonElement>(bodyString).jsonObject
+                val success = body.getValue("success").jsonPrimitive.boolean
+                assertFalse(success)
+
+                if (errorCode != null) {
+                    val errorObj = body.getValue("error").jsonObject
+                    assertEquals(errorCode, errorObj.getValue("code").jsonPrimitive.int)
+                }
+            } catch (exception: SerializationException) {
+                throw AssertionError(
+                    "Server provided an invalid JSON response: $bodyString",
+                    exception
+                )
+            }
+        }
+
+        suspend fun assertResponseFailure(
+            response: HttpResponse,
+            errorPair: Pair<FailureResponse.Error, HttpStatusCode>? = null
+        ) {
+            val error = errorPair?.first
+            val httpStatusCode = errorPair?.second
+            assertResponseFailure(response, httpStatusCode ?: HttpStatusCode.BadRequest, error?.code)
+        }
+    }
+
     private val clientJson = Json {
         isLenient = true
     }
@@ -104,71 +172,5 @@ abstract class TestServerEnvironment : DatabaseTestEnvironment() {
 
     private fun ApplicationTestBuilder.installServerEndpoints() {
         routing { addEndpoints() }
-    }
-
-    suspend inline fun <reified DataType : Any> assertResponseSuccess(
-        response: HttpResponse,
-        httpStatusCode: HttpStatusCode = HttpStatusCode.OK,
-        block: (data: DataType?) -> Unit = {}
-    ) {
-        val bodyString = response.bodyAsText()
-
-        assertEquals(
-            httpStatusCode,
-            response.status,
-            "Expected $httpStatusCode but was ${response.status}. Body: $bodyString"
-        )
-
-        val body = serverJson.decodeFromString<JsonElement>(bodyString).jsonObject
-        val success = body.getValue("success").jsonPrimitive.boolean
-        assertTrue(success)
-
-        val dataObject = try {
-            body["data"]?.jsonObject
-        } catch (_: IllegalArgumentException) {
-            // This is thrown if "data" is not a JSON object
-            null
-        }
-        val data: DataType? = dataObject?.let { serverJson.decodeFromJsonElement(it) }
-        block(data)
-    }
-
-    suspend fun assertResponseFailure(
-        response: HttpResponse,
-        httpStatusCode: HttpStatusCode = HttpStatusCode.BadRequest,
-        errorCode: Int? = null
-    ) {
-        val bodyString = response.bodyAsText()
-
-        assertEquals(
-            httpStatusCode,
-            response.status,
-            "Expected $httpStatusCode but was ${response.status}. Body: $bodyString"
-        )
-
-        try {
-            val body = serverJson.decodeFromString<JsonElement>(bodyString).jsonObject
-            val success = body.getValue("success").jsonPrimitive.boolean
-            assertFalse(success)
-
-            if (errorCode != null) {
-                val errorObj = body.getValue("error").jsonObject
-                assertEquals(errorCode, errorObj.getValue("code").jsonPrimitive.int)
-            }
-        } catch (exception: SerializationException) {
-            throw AssertionError(
-                "Server provided an invalid JSON response: $bodyString",
-                exception
-            )
-        }
-    }
-
-    suspend fun assertResponseFailure(
-        response: HttpResponse,
-        errorPair: Pair<FailureResponse.Error, HttpStatusCode>? = null
-    ) {
-        val error = errorPair?.first
-        val httpStatusCode = errorPair?.second
-        assertResponseFailure(response, httpStatusCode ?: HttpStatusCode.BadRequest, error?.code)
     }
 }

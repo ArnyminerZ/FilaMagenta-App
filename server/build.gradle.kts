@@ -30,10 +30,12 @@ dependencies {
 
     api(libs.ktor.server.auth.base)
     api(libs.ktor.server.auth.jwt)
+    api(libs.ktor.server.contentNegotiation)
     api(libs.ktor.server.core)
     api(libs.ktor.server.netty)
-    api(libs.ktor.server.contentNegotiation)
+    api(libs.ktor.server.rateLimit)
     api(libs.ktor.server.serialization.kotlinx.json)
+    api(libs.ktor.server.statusPages)
 
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)

@@ -6,6 +6,14 @@ import io.ktor.http.HttpStatusCode
 @KoverIgnore
 object Errors {
     @KoverIgnore
+    object Generic {
+        val TooManyRequests = FailureResponse.Error(
+            code = ErrorCodes.Generic.TOO_MANY_REQUESTS,
+            message = "Too many requests"
+        ) to HttpStatusCode.TooManyRequests
+    }
+
+    @KoverIgnore
     object Authentication {
         @KoverIgnore
         object Register {
