@@ -13,5 +13,5 @@ object Events : IntIdTable() {
     val name = varchar("name", DatabaseConstants.EVENT_NAME_LENGTH)
     val type = enumeration<Event.Type>("type")
     val description = varchar("description", DatabaseConstants.EVENT_DESCRIPTION_LENGTH)
-    val prices = json<EventPrices>("prices", Database.json).nullable()
+    val prices = json<EventPrices>("prices", Database.json).default(EventPrices.EMPTY)
 }

@@ -10,5 +10,5 @@ data class EventCreateRequest(
     val name: String,
     val type: Event.Type,
     val description: String,
-    val prices: EventPrices? = null
+    val prices: EventPrices
 )

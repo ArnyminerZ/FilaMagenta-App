@@ -3,6 +3,7 @@ package database.model
 import TestEnvironment
 import com.filamagenta.database.Database
 import com.filamagenta.system.EnvironmentVariables
+import database.provider.EventProvider
 import database.provider.UserProvider
 import database.stub.TestTable
 import org.jetbrains.exposed.sql.deleteAll
@@ -11,6 +12,8 @@ import org.junit.Before
 
 abstract class DatabaseTestEnvironment : TestEnvironment() {
     protected val userProvider = UserProvider()
+
+    protected val eventProvider = EventProvider()
 
     @Before
     fun prepareEnvironment() {

@@ -7,7 +7,6 @@ import com.filamagenta.database.json.EventPrices
 import database.model.DatabaseTestEnvironment
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import org.junit.Test
 
 class EventsTest : DatabaseTestEnvironment() {
@@ -44,28 +43,6 @@ class EventsTest : DatabaseTestEnvironment() {
                 assertEquals(SampleEvent.type, event.type)
                 assertEquals(SampleEvent.DESCRIPTION, event.description)
                 assertEquals(SampleEvent.prices, event.prices)
-            }
-        }
-    }
-
-    @Test
-    fun `test creation null prices`() {
-        val e = Database.transaction {
-            Event.new {
-                this.name = SampleEvent.NAME
-                this.date = SampleEvent.date
-                this.type = SampleEvent.type
-                this.description = SampleEvent.DESCRIPTION
-                this.prices = null
-            }
-        }
-        Database.transaction {
-            Event[e.id].let { event ->
-                assertEquals(SampleEvent.NAME, event.name)
-                assertEquals(SampleEvent.date, event.date)
-                assertEquals(SampleEvent.type, event.type)
-                assertEquals(SampleEvent.DESCRIPTION, event.description)
-                assertNull(event.prices)
             }
         }
     }

@@ -5,9 +5,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class EventPrices(
-    val prices: Map<UserMeta.Category, Float>,
+    val prices: Map<UserMeta.Category, Float>? = emptyMap(),
     val fallback: Float? = null
 ) {
+    companion object {
+        val EMPTY = EventPrices()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
