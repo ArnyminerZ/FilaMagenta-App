@@ -134,4 +134,12 @@ object Errors {
             message = "Could not find the requested transaction."
         ) to HttpStatusCode.NotFound
     }
+
+    @KoverIgnore
+    object Events {
+        val NameCannotBeEmpty = FailureResponse.Error(
+            code = ErrorCodes.Events.NAME_EMPTY,
+            message = "Name cannot be empty"
+        ) to HttpStatusCode.BadRequest
+    }
 }

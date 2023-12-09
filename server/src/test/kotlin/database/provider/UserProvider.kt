@@ -1,7 +1,9 @@
 package database.provider
 
+import com.filamagenta.database.Database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
+import com.filamagenta.security.Authentication
 import com.filamagenta.security.Passwords
 import com.filamagenta.security.Role
 
@@ -72,5 +74,17 @@ class UserProvider {
                 }
             }
         }
+    }
+
+    /**
+     * Uses [createSampleUser] to create the sample user, and then generates a JWT token using [Authentication].
+     *
+     * @return A pair which holds the created user, and the generated token.
+     */
+    fun createSampleUserAndProvideToken(vararg roles: Role): Pair<User, String> {
+        val user = Database.transaction { createSampleUser(*roles) }
+        val jwt = Authentication.generateJWT(user.nif)
+
+        return user to jwt
     }
 }

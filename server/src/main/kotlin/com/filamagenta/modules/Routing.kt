@@ -1,5 +1,6 @@
 package com.filamagenta.modules
 
+import com.filamagenta.endpoint.EventCreateEndpoint
 import com.filamagenta.endpoint.LoginEndpoint
 import com.filamagenta.endpoint.RegisterEndpoint
 import com.filamagenta.endpoint.UserGrantRoleEndpoint
@@ -41,6 +42,7 @@ val endpoints: Map<Endpoint, HttpMethod> = mapOf(
  * Holds all the endpoints defined for the server, and the HTTP method to be used.
  */
 val secureEndpoints: Map<SecureEndpoint, HttpMethod> = mapOf(
+    EventCreateEndpoint to HttpMethod.Post,
     UserGrantRoleEndpoint to HttpMethod.Post,
     UserMetaEndpoint to HttpMethod.Post,
     UserMetaOtherEndpoint to HttpMethod.Post,
