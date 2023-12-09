@@ -48,4 +48,19 @@ class UserRolesTest : DatabaseTestEnvironment() {
             }
         }
     }
+
+    @Test
+    fun `test invalid role name`() {
+        val user = Database.transaction { userProvider.createSampleUser() }
+
+        val entry = Database.transaction {
+            UserRole.new {
+                this._role = "non-existing"
+                this.user = user
+            }
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            Database.transaction { UserRole[entry.id].role }
+        }
+    }
 }
