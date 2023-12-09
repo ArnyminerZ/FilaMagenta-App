@@ -8,7 +8,6 @@ import com.filamagenta.request.UserTransactionCreateRequest
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import com.filamagenta.security.Roles
-import database.provider.UserProvider
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.post
@@ -32,8 +31,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
     @Test
     fun `test creating transaction`() = testServer {
         val user = Database.transaction { userProvider.createSampleUser(Roles.Users.Transaction.Create) }
-
-        val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
+        val jwt = Authentication.generateJWT(user.nif)
 
         // Insert the transaction
         httpClient.post(
@@ -64,7 +62,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
     @Test
     fun `test no permission`() = testServer {
         val user = Database.transaction { userProvider.createSampleUser() }
-        val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
+        val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
             UserTransactionCreateEndpoint.url.replace("{userId}", user.id.value.toString())
@@ -79,8 +77,8 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test user not found`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.Transaction.Create) }
-        val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Users.Transaction.Create) }
+        val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
             UserTransactionCreateEndpoint.url.replace("{userId}", "10")

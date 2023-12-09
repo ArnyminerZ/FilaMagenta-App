@@ -28,6 +28,9 @@ object UserTransactionCreateEndpoint : SecureEndpoint("/user/{userId}/transactio
             val modifyUser = Database.transaction { User.findById(userId) }
                 ?: return respondFailure(Errors.Users.UserIdNotFound)
 
+            if (request.pricePerUnit <= 0) return respondFailure(Errors.Transactions.PriceMustBeGreaterThan0)
+            if (request.units <= 0u) return respondFailure(Errors.Transactions.UnitsMustBeGreaterThan0)
+
             Database.transaction {
                 Transaction.new {
                     this.date = LocalDate.parse(request.date)
