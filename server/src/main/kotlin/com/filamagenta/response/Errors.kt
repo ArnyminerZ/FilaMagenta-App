@@ -9,7 +9,7 @@ object Errors {
     object Generic {
         val TooManyRequests = FailureResponse.Error(
             code = ErrorCodes.Generic.TOO_MANY_REQUESTS,
-            message = "Too many requests. Wait for %d seconds."
+            message = "Too many requests"
         ) to HttpStatusCode.TooManyRequests
     }
 
