@@ -18,6 +18,7 @@ exposed = "0.45.0"
 h2 = "2.2.224"
 junit = "4.13.2"
 kotlin = "1.9.21"
+kotlinx-datetime = "0.5.0"
 kotlinx-serialization = "1.6.2"
 kover = "0.7.5"
 ktor = "2.3.7"
@@ -47,6 +48,7 @@ h2 = { module = "com.h2database:h2", version.ref = "h2" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
