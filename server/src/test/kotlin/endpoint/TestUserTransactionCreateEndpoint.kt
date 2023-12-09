@@ -30,7 +30,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test creating transaction`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Users.Transaction.Create) }
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
         val jwt = Authentication.generateJWT(user.nif)
 
         // Insert the transaction
@@ -77,7 +77,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test user not found`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Users.Transaction.Create) }
+        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
@@ -97,7 +97,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
         testServerInvalidBody(
             UserTransactionCreateEndpoint.url.replace("{userId}", other.id.value.toString()),
-            Database.transaction { userProvider.createSampleUser(Roles.Users.Transaction.Create) }
+            Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
         )
     }
 }

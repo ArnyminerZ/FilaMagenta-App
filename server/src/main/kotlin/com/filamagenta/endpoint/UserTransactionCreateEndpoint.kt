@@ -19,7 +19,7 @@ import io.ktor.util.pipeline.PipelineContext
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
-object UserTransactionCreateEndpoint : SecureEndpoint("/user/{userId}/transaction", Roles.Users.Transaction.Create) {
+object UserTransactionCreateEndpoint : SecureEndpoint("/user/{userId}/transaction", Roles.Transaction.Create) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         try {
             val request = call.receive<UserTransactionCreateRequest>()
