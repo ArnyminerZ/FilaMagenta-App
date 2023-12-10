@@ -40,6 +40,7 @@ window.addEventListener('load', async function () {
 
     /** @type {ProfileData} */
     const profile = getCache(STORAGE_PROFILE);
+    const roles = profile.roles.map((role) => role.type);
 
     /** @type {TransactionsListResult} */
     const transactionsResult = await get('/user/transactions', token);
@@ -59,5 +60,9 @@ window.addEventListener('load', async function () {
     }
     if (transactions.length <= 0) {
         _('transactionsEmpty').style.display = 'block';
+    }
+
+    if (roles.includes('com.filamagenta.security.Roles.Transaction.Create')) {
+        _('newTransactionButton').style.display = 'block';
     }
 });

@@ -15,6 +15,18 @@
         <b><a href="/admin/transactions">Transactions</a></b>
     </nav>
 
+    <dialog id="newTransactionDialog">
+        <h3>Create new transaction</h3>
+        <form method="dialog">
+            <button>Close</button>
+        </form>
+    </dialog>
+
+    <button id="newTransactionButton"
+            style="display: none"
+            onclick="document.getElementById('newTransactionDialog').showModal()">Create Transaction
+    </button>
+
     <table id="transactionsList">
         <tr>
             <th><b>Date</b></th>
