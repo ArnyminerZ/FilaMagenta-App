@@ -14,6 +14,7 @@ import com.filamagenta.database.table.Users
 import com.filamagenta.security.Passwords
 import com.filamagenta.security.roles
 import com.filamagenta.system.EnvironmentVariables
+import java.sql.Connection
 import kotlinx.serialization.json.Json
 import org.jetbrains.annotations.VisibleForTesting
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -23,6 +24,7 @@ import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object Database {
@@ -44,6 +46,7 @@ object Database {
         Events to Event.Companion
     )
 
+    @Volatile
     @VisibleForTesting
     var instance: Database? = null
 
@@ -60,23 +63,42 @@ object Database {
      * @param createAdminUser If `true`, a default admin user will be created, with all the roles existing.
      * The user is defined through environment variables, see [EnvironmentVariables.Authentication.Users].
      */
+    @Synchronized
     fun initialize(vararg extraTables: Table, createAdminUser: Boolean = true) {
         if (instance != null) return
 
         val url by EnvironmentVariables.Database.Url
         val driver by EnvironmentVariables.Database.Driver
+        val username by EnvironmentVariables.Database.Username
+        val password by EnvironmentVariables.Database.Password
 
-        Database.connect(url, driver).also { instance = it }
+        Database.connect(url, driver, username, password).also { instance = it }
 
         transaction {
             addLogger(StdOutSqlLogger)
 
-            @Suppress("SpreadOperator")
-            SchemaUtils.createMissingTablesAndColumns(
-                *tables.keys.toTypedArray(),
-                *extraTables,
-                inBatch = true
-            )
+            // @Suppress("SpreadOperator")
+            // SchemaUtils.createMissingTablesAndColumns(
+            //     *tables.keys.toTypedArray(),
+            //     *extraTables,
+            //     inBatch = true
+            // )
+
+            if (driver == "org.sqlite.JDBC") {
+                TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
+            }
+
+            val databases = SchemaUtils.listDatabases()
+            for (table in tables.keys) {
+                if (!databases.contains(table.tableName)) {
+                    SchemaUtils.create(table)
+                }
+            }
+            for (table in extraTables) {
+                if (!databases.contains(table.tableName)) {
+                    SchemaUtils.create(table)
+                }
+            }
         }
         if (createAdminUser) createAdminUser()
     }
