@@ -2,6 +2,7 @@ package com.filamagenta.request
 
 import KoverIgnore
 import com.filamagenta.database.entity.Transaction
+import com.filamagenta.request.model.IUpdateRequest
 import kotlinx.serialization.Serializable
 
 @KoverIgnore
@@ -13,13 +14,13 @@ data class UserTransactionUpdateRequest(
     val units: UInt? = null,
     val pricePerUnit: Float? = null,
     val type: Transaction.Type? = null
-) {
+) : IUpdateRequest {
     /**
      * Checks whether all the parameters are null.
      *
      * @return `true` if all the properties are null, `false` otherwise.
      */
-    fun isEmpty(): Boolean = date == null &&
+    override fun isEmpty(): Boolean = date == null &&
         description == null &&
         income == null &&
         units == null &&
