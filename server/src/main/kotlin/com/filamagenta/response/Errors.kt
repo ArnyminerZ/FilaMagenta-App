@@ -134,4 +134,40 @@ object Errors {
             message = "Could not find the requested transaction."
         ) to HttpStatusCode.NotFound
     }
+
+    @KoverIgnore
+    object Events {
+        val NameCannotBeEmpty = FailureResponse.Error(
+            code = ErrorCodes.Events.NAME_EMPTY,
+            message = "Name cannot be empty"
+        ) to HttpStatusCode.BadRequest
+
+        val NotFound = FailureResponse.Error(
+            code = ErrorCodes.Events.NOT_FOUND,
+            message = "Could not find the requested event."
+        ) to HttpStatusCode.NotFound
+
+        @KoverIgnore
+        object Join {
+            val Double = FailureResponse.Error(
+                code = ErrorCodes.Events.Join.JOIN_TWICE,
+                message = "A user cannot join the same event twice."
+            ) to HttpStatusCode.PreconditionFailed
+
+            val NotJoined = FailureResponse.Error(
+                code = ErrorCodes.Events.Join.NOT_JOINED,
+                message = "You cannot leave an event you still haven't joined."
+            ) to HttpStatusCode.PreconditionFailed
+
+            val UserNotFound = FailureResponse.Error(
+                code = ErrorCodes.Events.Join.USER_NOT_FOUND,
+                message = "Could not find the requested user."
+            ) to HttpStatusCode.NotFound
+
+            val PaymentConfigInvalid = FailureResponse.Error(
+                code = ErrorCodes.Events.Join.PAYMENT_INVALID,
+                message = "isPaid cannot be false and paymentReference non-null"
+            ) to HttpStatusCode.Forbidden
+        }
+    }
 }

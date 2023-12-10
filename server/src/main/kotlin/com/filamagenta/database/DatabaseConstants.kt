@@ -18,4 +18,10 @@ object DatabaseConstants {
     const val USER_ROLE_LENGTH = 16
 
     const val TRANSACTION_DESCRIPTION_LENGTH = 2048
+
+    const val EVENT_NAME_LENGTH = 256
+
+    const val EVENT_DESCRIPTION_LENGTH = 2048
+
+    const val EVENT_JOIN_PAYMENT_REFERENCE_LENGTH = 2048
 }

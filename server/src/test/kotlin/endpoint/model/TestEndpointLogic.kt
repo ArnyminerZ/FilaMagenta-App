@@ -82,4 +82,17 @@ class TestEndpointLogic : TestServerEnvironment() {
 
         assertResponseSuccess<Unit>(response = client.get("test"))
     }
+
+    @Test
+    fun `test url replacement`() {
+        val endpoint = object : Endpoint("/test/{replace-me}/more/path/{another}") {
+            override suspend fun PipelineContext<Unit, ApplicationCall>.body() {
+                // nothing
+            }
+        }
+        assertEquals(
+            "/test/demo/more/path/123",
+            endpoint.url("replace-me" to "demo", "another" to 123)
+        )
+    }
 }

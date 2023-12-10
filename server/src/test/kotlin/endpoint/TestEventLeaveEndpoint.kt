@@ -1,0 +1,72 @@
+package endpoint
+
+import com.filamagenta.database.Database
+import com.filamagenta.database.entity.JoinedEvent
+import com.filamagenta.database.table.JoinedEvents
+import com.filamagenta.endpoint.EventLeaveEndpoint
+import com.filamagenta.response.Errors
+import com.filamagenta.security.Roles
+import endpoint.model.TestServerEnvironment
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.post
+import java.time.Instant
+import kotlin.test.assertNull
+import org.jetbrains.exposed.sql.and
+import org.junit.Test
+
+class TestEventLeaveEndpoint : TestServerEnvironment() {
+    @Test
+    fun `test leaving event`() = testServer {
+        val (user, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.Delete) }
+        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val event = events.first()
+
+        Database.transaction {
+            JoinedEvent.new {
+                this.timestamp = Instant.now()
+
+                this.isPaid = false
+
+                this.user = user
+                this.event = event
+            }
+        }
+
+        httpClient.post(EventLeaveEndpoint.url("eventId" to event.id)) {
+            bearerAuth(jwt)
+        }.let { response ->
+            assertResponseSuccess<Void>(response)
+        }
+        Database.transaction {
+            val joinedEvent = JoinedEvent.find { (JoinedEvents.user eq user.id) and (JoinedEvents.event eq event.id) }
+                .firstOrNull()
+            assertNull(joinedEvent)
+        }
+    }
+
+    @Test
+    fun `test leaving a non-joined event`() = testServer {
+        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken() }
+        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val event = events.first()
+
+        // Try leaving the event
+        httpClient.post(EventLeaveEndpoint.url("eventId" to event.id)) {
+            bearerAuth(jwt)
+        }.let { response ->
+            assertResponseFailure(response, Errors.Events.Join.NotJoined)
+        }
+    }
+
+    @Test
+    fun `test leaving unknown event`() = testServer {
+        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken() }
+
+        httpClient.post(EventLeaveEndpoint.url("eventId" to "123")) {
+            bearerAuth(jwt)
+        }.let { response ->
+            // Leaving an unknown event throws that the user has not joined that event
+            assertResponseFailure(response, Errors.Events.Join.NotJoined)
+        }
+    }
+}
