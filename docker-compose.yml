@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+  backend:
+    image: filamagenta:latest
+    container_name: filamagenta_backend
+    restart: "no"
+    environment:
+      # -- Configure database
+      DATABASE_URL: "jdbc:postgresql://db:5432/postgres"
+      DATABASE_DRIVER: "org.postgresql.Driver"
+      DATABASE_USERNAME: "postgres"
+      DATABASE_PASSWORD: "AbfEwudQ8AqhhVVqTiRURpbMmQTW46"
+      # -- Configure JWT
+      AUTH_JWT_AUDIENCE: "http://0.0.0.0:8080/"
+      AUTH_JWT_ISSUER: "http://0.0.0.0:8080/"
+      AUTH_JWT_REALM: "Access to secure endpoints"
+      AUTH_JWT_SECRET: "yz5QsoHuehFio7pQdYumy2FD7Cd6W8XE"
+      # -- Configure Rate Limiter
+      RATE_CAPACITY: 100
+      RATE_PERIOD: 10
+    networks:
+      - filamagenta_backend
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+  # See https://hub.docker.com/_/postgres for more information
+  db:
+    image: postgres
+    container_name: filamagenta_db
+    environment:
+      POSTGRES_PASSWORD: AbfEwudQ8AqhhVVqTiRURpbMmQTW46 # This should be modified
+      PGUSER: postgres
+    networks:
+      - filamagenta_backend
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 1s
+
+networks:
+  filamagenta_backend:
+    name: filamagenta_backend
+
+volumes:
+  pgdata:
