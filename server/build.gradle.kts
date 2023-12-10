@@ -1,3 +1,7 @@
+import io.ktor.plugin.features.DockerImageRegistry
+import io.ktor.plugin.features.DockerPortMapping
+import io.ktor.plugin.features.DockerPortMappingProtocol
+
 plugins {
     application
     alias(libs.plugins.detekt)
@@ -74,4 +78,26 @@ detekt {
     config.setFrom(
         file("../config/detekt/detekt-server.yml")
     )
+}
+
+ktor {
+    docker {
+        localImageName.set("filamagenta")
+        imageTag.set(
+            if (System.getenv("IS_PRODUCTION") == "true") version.toString() else "development"
+        )
+        portMappings.set(
+            listOf(
+                DockerPortMapping(80, 8080, DockerPortMappingProtocol.TCP)
+            )
+        )
+
+        externalRegistry.set(
+            DockerImageRegistry.dockerHub(
+                appName = provider { "filamagenta" },
+                username = providers.environmentVariable("DOCKER_HUB_USERNAME"),
+                password = providers.environmentVariable("DOCKER_HUB_PASSWORD")
+            )
+        )
+    }
 }
