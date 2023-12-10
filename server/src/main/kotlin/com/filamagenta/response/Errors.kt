@@ -146,5 +146,13 @@ object Errors {
             code = ErrorCodes.Events.NOT_FOUND,
             message = "Could not find the requested event."
         ) to HttpStatusCode.NotFound
+
+        @KoverIgnore
+        object Join {
+            val Double = FailureResponse.Error(
+                code = ErrorCodes.Events.Join.JOIN_TWICE,
+                message = "A user cannot join the same event twice."
+            ) to HttpStatusCode.PreconditionFailed
+        }
     }
 }

@@ -17,6 +17,10 @@ object JoinedEvents : IntIdTable() {
     val user = reference("user", Users)
 
     init {
+        // If paymentReference is not null, the event must be paid
         check { (paymentReference eq null) or (isPaid neq false) }
+
+        // Each user may join only one event
+        uniqueIndex(event, user)
     }
 }

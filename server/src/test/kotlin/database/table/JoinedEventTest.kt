@@ -94,4 +94,30 @@ class JoinedEventTest : DatabaseTestEnvironment() {
             }
         }
     }
+
+    @Test
+    fun `test creation double forbidden`() {
+        // One user cannot join the same event twice
+        val user = Database.transaction { userProvider.createSampleUser() }
+        val events = Database.transaction { eventProvider.createSampleEvents() }
+
+        val instant = Instant.now()
+
+        fun joinEvent() = Database.transaction {
+            JoinedEvent.new {
+                this.timestamp = instant
+
+                this.isPaid = false
+
+                this.event = events.first()
+                this.user = user
+            }
+        }
+
+        joinEvent()
+
+        assertThrows(ExposedSQLException::class.java) {
+            joinEvent()
+        }
+    }
 }
