@@ -7,3 +7,13 @@
 export function _(id) {
     return document.getElementById(id);
 }
+
+/**
+ * Alias for `document.getElementById`.
+ * @alias document.getElementsByName
+ * @param {string} className The class name of the element to fetch.
+ * @returns {NodeListOf<HTMLElement>|null}
+ */
+export function CC(className) {
+    return document.getElementsByClassName(className);
+}

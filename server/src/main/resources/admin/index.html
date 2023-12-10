@@ -39,6 +39,28 @@
     </form>
 </div>
 
+<div id="main_container" style="display: none">
+    <h3>Welcome back <span class="ma-fill-fullname"></span>, here's your personal information:</h3>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>NIF</th>
+        </tr>
+        <tr>
+            <td class="ma-fill-name"></td>
+            <td class="ma-fill-surname"></td>
+            <td class="ma-fill-nif"></td>
+        </tr>
+    </table>
+
+    <h3>Here's your extra information:</h3>
+    <table id="metadata-table"></table>
+
+    <h3>Those are your privileges:</h3>
+    <ul id="roles-list"></ul>
+</div>
+
 <script src="/admin/js/login.mjs" type="module"></script>
 </body>
 </html>

@@ -13,18 +13,24 @@
  */
 
 /**
- * Sends a POST request to the specified URL with the provided body.
+ * Runs an HTTP request with the desired method.
  *
- * @param {string} url - The URL to send the POST request to.
- * @param {object} body - The body of the POST request. Should be a valid JSON object.
- * @returns {Promise<APIResult>} - A Promise that resolves with the response text if the request is successful, or rejects
- * with the error message if the request fails.
+ * @private
+ * @param {'GET'|'POST'|'PATCH'|'DELETE'} method The HTTP method to use
+ * @param {string} url The endpoint to make the request to.
+ * @param {Document|XMLHttpRequestBodyInit|null} body If any, the body of the request.
+ * @param {[[string,string]]} headers A list of headers to append to the request.
+ * @returns {Promise<unknown>}
  */
-export function post(url, body) {
+function httpRequest(method, url, body = null, headers = []) {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', url);
-        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        xhr.open(method, url);
+        for (let pair of headers) {
+            const name = pair[0];
+            const value = pair[1];
+            xhr.setRequestHeader(name, value);
+        }
         xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
                 resolve(JSON.parse(xhr.responseText));
@@ -32,8 +38,28 @@ export function post(url, body) {
                 reject(JSON.parse(xhr.responseText));
             }
         };
-        xhr.send(
-            JSON.stringify(body)
-        );
+        xhr.send(body);
     });
+}
+
+export function get(url, token = null) {
+    return httpRequest('GET', url, null, [['Authorization', `Bearer ${token}`]]);
+}
+
+/**
+ * Sends a POST request to the specified URL with the provided body.
+ *
+ * @param {string} url - The URL to send the POST request to.
+ * @param {Document|XMLHttpRequestBodyInit|null} body - The body of the POST request. Should be a valid JSON object.
+ * @param {string|null} token - If any, the authorization token to use for accessing the endpoint.
+ * @returns {Promise<APIResult>} - A Promise that resolves with the response text if the request is successful, or rejects
+ * with the error message if the request fails.
+ */
+export function post(url, body = null, token = null) {
+    return httpRequest(
+        'POST',
+        url,
+        body,
+        [['Content-Type', 'application/json; charset=UTF-8'], ['Authorization', `Bearer ${token}`]]
+    );
 }

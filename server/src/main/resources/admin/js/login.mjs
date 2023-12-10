@@ -1,5 +1,5 @@
-import {_} from './utils.mjs';
-import {post} from './request.js';
+import {_, CC} from './utils.mjs';
+import {get, post} from './request.js';
 
 const STORAGE_TOKEN = 'TOKEN';
 
@@ -10,7 +10,36 @@ const STORAGE_TOKEN = 'TOKEN';
  * @property {string} data.token
  */
 
-window.addEventListener('load', function () {
+/**
+ * @typedef {Object} Role
+ * @property {string} type
+ */
+
+/**
+ * @typedef {APIResult} ProfileSuccessResult
+ * @property {boolean} success
+ * @property {Object} data
+ * @property {string} data.name
+ * @property {string} data.surname
+ * @property {string} data.nif
+ * @property {Role[]} data.roles
+ * @property {Object} data.meta
+ */
+
+/**
+ * Fills the elements selected by the given class name with the provided contents.
+ *
+ * @param {string} className - The class name used to select the elements.
+ * @param {string} contents - The contents to be inserted into the elements.
+ */
+function fill(className, contents) {
+    const list = CC(className);
+    for (const el of list) {
+        el.innerText = contents;
+    }
+}
+
+window.addEventListener('load', async function () {
     if (localStorage == null) {
         alert('Your device doesn\'t support localStorage.')
         return
@@ -51,5 +80,28 @@ window.addEventListener('load', function () {
         _('login_container').style.display = 'block';
     } else {
         console.info('User is logged in.');
+
+        // todo: try-catch
+        /** @type {ProfileSuccessResult} */
+        const profileResult = await get('/user/profile', token);
+        const profile = profileResult.data
+
+        _('loading_indicator').style.display = 'none';
+        _('main_container').style.display = 'block';
+
+        fill('ma-fill-fullname', `${profile.name} ${profile.surname}`);
+        fill('ma-fill-name', profile.name);
+        fill('ma-fill-surname', profile.surname);
+        fill('ma-fill-nif', profile.nif);
+
+        // const metadataTable = _('metadata-table');
+        // todo: fill metadata table
+
+        const rolesList =_('roles-list');
+        for(const role of profile.roles) {
+            const item = document.createElement('li');
+            item.innerText = role.type;
+            rolesList.append(item);
+        }
     }
 });
