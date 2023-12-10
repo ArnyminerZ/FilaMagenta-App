@@ -8,13 +8,10 @@ on:
     types:
       - released
 
-permissions:
-  checks: write
-  pull-requests: write
-
 jobs:
   build_and_publish:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
