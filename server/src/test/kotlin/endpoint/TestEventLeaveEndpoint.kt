@@ -32,7 +32,6 @@ class TestEventLeaveEndpoint : TestServerEnvironment() {
             }
         }
 
-        // Make sure deleting the event also removes the joins
         httpClient.post(EventLeaveEndpoint.url("eventId" to event.id)) {
             bearerAuth(jwt)
         }.let { response ->

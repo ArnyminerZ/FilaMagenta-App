@@ -29,6 +29,8 @@ sealed class Role(val name: String) {
 val roles: List<Role> = listOf(
     Roles.Events.Create,
     Roles.Events.Delete,
+    Roles.Events.JoinOthers,
+    Roles.Events.LeaveOthers,
     Roles.Events.ListJoined,
     Roles.Events.Update,
     Roles.Transaction.Create,
@@ -106,6 +108,14 @@ object Roles {
         @KoverIgnore
         @Serializable
         data object ListJoined : Role("events_lst_join")
+
+        @KoverIgnore
+        @Serializable
+        data object JoinOthers : Role("events_join_oth")
+
+        @KoverIgnore
+        @Serializable
+        data object LeaveOthers : Role("events_leave_oth")
     }
 }
 

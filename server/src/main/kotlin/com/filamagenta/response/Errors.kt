@@ -158,6 +158,11 @@ object Errors {
                 code = ErrorCodes.Events.Join.NOT_JOINED,
                 message = "You cannot leave an event you still haven't joined."
             ) to HttpStatusCode.PreconditionFailed
+
+            val UserNotFound = FailureResponse.Error(
+                code = ErrorCodes.Events.Join.USER_NOT_FOUND,
+                message = "Could not find the requested user."
+            ) to HttpStatusCode.NotFound
         }
     }
 }
