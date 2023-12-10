@@ -163,6 +163,11 @@ object Errors {
                 code = ErrorCodes.Events.Join.USER_NOT_FOUND,
                 message = "Could not find the requested user."
             ) to HttpStatusCode.NotFound
+
+            val PaymentConfigInvalid = FailureResponse.Error(
+                code = ErrorCodes.Events.Join.PAYMENT_INVALID,
+                message = "isPaid cannot be false and paymentReference non-null"
+            ) to HttpStatusCode.Forbidden
         }
     }
 }

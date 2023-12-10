@@ -32,6 +32,7 @@ val roles: List<Role> = listOf(
     Roles.Events.JoinOthers,
     Roles.Events.LeaveOthers,
     Roles.Events.ListJoined,
+    Roles.Events.Payment,
     Roles.Events.Update,
     Roles.Transaction.Create,
     Roles.Transaction.Delete,
@@ -116,6 +117,10 @@ object Roles {
         @KoverIgnore
         @Serializable
         data object LeaveOthers : Role("events_leave_oth")
+
+        @KoverIgnore
+        @Serializable
+        data object Payment : Role("events_payment")
     }
 }
 
