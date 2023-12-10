@@ -15,6 +15,4 @@ class JoinedEvent(id: EntityID<Int>) : IntEntity(id) {
 
     var event by Event referencedOn JoinedEvents.event
     var user by User referencedOn JoinedEvents.user
-
-    // todo: we might want to limit paymentReference to always be null unless isPaid is true
 }
