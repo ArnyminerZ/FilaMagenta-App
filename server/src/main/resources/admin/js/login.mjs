@@ -1,7 +1,7 @@
 import {_, CC} from './utils.mjs';
 import {get, post} from './request.js';
-
-const STORAGE_TOKEN = 'TOKEN';
+import {getCache, setCache} from "./data-storage.js";
+import {STORAGE_PROFILE, STORAGE_TOKEN} from "./const.js";
 
 /**
  * @typedef {APIResult} LoginSuccessResult
@@ -16,14 +16,18 @@ const STORAGE_TOKEN = 'TOKEN';
  */
 
 /**
+ * @typedef {Object} ProfileData
+ * @property {string} name
+ * @property {string} surname
+ * @property {string} nif
+ * @property {Role[]} roles
+ * @property {Object} meta
+ */
+
+/**
  * @typedef {APIResult} ProfileSuccessResult
  * @property {boolean} success
- * @property {Object} data
- * @property {string} data.name
- * @property {string} data.surname
- * @property {string} data.nif
- * @property {Role[]} data.roles
- * @property {Object} data.meta
+ * @property {ProfileData} data
  */
 
 /**
@@ -36,6 +40,29 @@ function fill(className, contents) {
     const list = CC(className);
     for (const el of list) {
         el.innerText = contents;
+    }
+}
+
+function refreshUI() {
+    /** @type {ProfileData} */
+    const profile = getCache(STORAGE_PROFILE);
+
+    _('loading_indicator').style.display = 'none';
+    _('main_container').style.display = 'block';
+
+    fill('ma-fill-fullname', `${profile.name} ${profile.surname}`);
+    fill('ma-fill-name', profile.name);
+    fill('ma-fill-surname', profile.surname);
+    fill('ma-fill-nif', profile.nif);
+
+    // const metadataTable = _('metadata-table');
+    // todo: fill metadata table
+
+    const rolesList = _('roles-list');
+    for (const role of profile.roles) {
+        const item = document.createElement('li');
+        item.innerText = role.type;
+        rolesList.append(item);
     }
 }
 
@@ -84,24 +111,10 @@ window.addEventListener('load', async function () {
         // todo: try-catch
         /** @type {ProfileSuccessResult} */
         const profileResult = await get('/user/profile', token);
-        const profile = profileResult.data
+        const profile = profileResult.data;
 
-        _('loading_indicator').style.display = 'none';
-        _('main_container').style.display = 'block';
+        setCache(STORAGE_PROFILE, profile);
 
-        fill('ma-fill-fullname', `${profile.name} ${profile.surname}`);
-        fill('ma-fill-name', profile.name);
-        fill('ma-fill-surname', profile.surname);
-        fill('ma-fill-nif', profile.nif);
-
-        // const metadataTable = _('metadata-table');
-        // todo: fill metadata table
-
-        const rolesList =_('roles-list');
-        for(const role of profile.roles) {
-            const item = document.createElement('li');
-            item.innerText = role.type;
-            rolesList.append(item);
-        }
+        refreshUI();
     }
 });
