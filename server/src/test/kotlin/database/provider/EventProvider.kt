@@ -57,21 +57,21 @@ class EventProvider {
      *
      * **MUST BE IN A TRANSACTION**
      */
-    fun createSampleEvents() {
+    fun createSampleEvents(): Set<Event> = setOf(
         Event.new {
             this.date = SampleEvent1.date
             this.name = SampleEvent1.name
             this.type = SampleEvent1.type
             this.description = SampleEvent1.description
             this.prices = SampleEvent1.prices
-        }
+        },
         Event.new {
             this.date = SampleEvent2.date
             this.name = SampleEvent2.name
             this.type = SampleEvent2.type
             this.description = SampleEvent2.description
             this.prices = SampleEvent2.prices
-        }
+        },
         Event.new {
             this.date = SampleEvent3.date
             this.name = SampleEvent3.name
@@ -79,5 +79,5 @@ class EventProvider {
             this.description = SampleEvent3.description
             this.prices = SampleEvent3.prices
         }
-    }
+    )
 }

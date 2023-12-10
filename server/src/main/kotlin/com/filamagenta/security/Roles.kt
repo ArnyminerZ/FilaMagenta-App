@@ -28,6 +28,7 @@ sealed class Role(val name: String) {
 
 val roles: List<Role> = listOf(
     Roles.Events.Create,
+    Roles.Events.Delete,
     Roles.Transaction.Create,
     Roles.Transaction.Delete,
     Roles.Transaction.ListOthers,
@@ -91,6 +92,10 @@ object Roles {
         @KoverIgnore
         @Serializable
         data object Create : Role("events_create")
+
+        @KoverIgnore
+        @Serializable
+        data object Delete : Role("events_delete")
     }
 }
 

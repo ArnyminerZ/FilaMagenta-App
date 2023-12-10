@@ -2,7 +2,7 @@ package com.filamagenta.response
 
 import KoverIgnore
 
-// Last one: 25
+// Last one: 26
 @KoverIgnore
 object ErrorCodes {
     @KoverIgnore
@@ -62,5 +62,6 @@ object ErrorCodes {
     @KoverIgnore
     object Events {
         const val NAME_EMPTY = 25
+        const val NOT_FOUND = 26
     }
 }

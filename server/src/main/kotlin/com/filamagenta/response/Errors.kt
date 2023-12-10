@@ -141,5 +141,10 @@ object Errors {
             code = ErrorCodes.Events.NAME_EMPTY,
             message = "Name cannot be empty"
         ) to HttpStatusCode.BadRequest
+
+        val NotFound = FailureResponse.Error(
+            code = ErrorCodes.Events.NOT_FOUND,
+            message = "Could not find the requested event."
+        ) to HttpStatusCode.NotFound
     }
 }
