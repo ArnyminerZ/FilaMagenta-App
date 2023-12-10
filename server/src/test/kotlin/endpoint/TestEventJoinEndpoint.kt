@@ -3,11 +3,14 @@ package endpoint
 import com.filamagenta.database.Database
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.table.JoinedEvents
+import com.filamagenta.endpoint.EventDeleteEndpoint
 import com.filamagenta.endpoint.EventJoinEndpoint
 import com.filamagenta.endpoint.EventListEndpoint
 import com.filamagenta.response.Errors
+import com.filamagenta.security.Roles
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import java.time.Instant
@@ -22,7 +25,7 @@ import org.junit.Test
 class TestEventJoinEndpoint : TestServerEnvironment() {
     @Test
     fun `test joining event`() = testServer {
-        val (user, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken() }
+        val (user, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.Delete) }
         val events = Database.transaction { eventProvider.createSampleEvents() }
         val event = events.first()
 
@@ -58,6 +61,18 @@ class TestEventJoinEndpoint : TestServerEnvironment() {
                     assertNotNull(it.joined)
                 }
             }
+        }
+
+        // Make sure deleting the event also removes the joins
+        httpClient.delete(EventDeleteEndpoint.url("eventId" to event.id)) {
+            bearerAuth(jwt)
+        }.let { response ->
+            assertResponseSuccess<Void>(response)
+        }
+        Database.transaction {
+            val joinedEvent = JoinedEvent.find { (JoinedEvents.user eq user.id) and (JoinedEvents.event eq event.id) }
+                .firstOrNull()
+            assertNull(joinedEvent)
         }
     }
 
