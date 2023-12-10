@@ -1,10 +1,12 @@
 package com.filamagenta.database
 
 import com.filamagenta.database.entity.Event
+import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.Events
+import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.database.table.Transactions
 import com.filamagenta.database.table.UserMetaTable
 import com.filamagenta.database.table.UserRolesTable
@@ -37,6 +39,7 @@ object Database {
         UserMetaTable to UserMeta.Companion,
         UserRolesTable to UserRole.Companion,
         Transactions to com.filamagenta.database.entity.Transaction.Companion,
+        JoinedEvents to JoinedEvent.Companion,
         Users to User.Companion,
         Events to Event.Companion
     )
