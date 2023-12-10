@@ -5,16 +5,20 @@ import com.filamagenta.database.Database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.entity.User
+import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.json.EventPrices
 import com.filamagenta.database.table.JoinedEvents
+import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondSuccess
+import com.filamagenta.security.Roles
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.request.header
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.and
 import utils.isInWorkingYear
 
 object EventListEndpoint : SecureEndpoint("/events/list") {
@@ -32,16 +36,18 @@ object EventListEndpoint : SecureEndpoint("/events/list") {
             val type: Event.Type,
             val description: String,
             val prices: EventPrices?,
-            val joined: UserJoinedEvent?
+            val joined: UserJoinedEvent?,
+            val othersJoined: List<OthersJoinedEvent>?
         ) {
-            constructor(event: Event, joined: UserJoinedEvent?) : this(
+            constructor(event: Event, joined: UserJoinedEvent?, othersJoined: List<OthersJoinedEvent>?) : this(
                 event.id.value,
                 event.date.toString(),
                 event.name,
                 event.type,
                 event.description,
                 event.prices,
-                joined
+                joined,
+                othersJoined
             )
         }
 
@@ -56,6 +62,20 @@ object EventListEndpoint : SecureEndpoint("/events/list") {
                 joined.isPaid
             )
         }
+
+        @KoverIgnore
+        @Serializable
+        data class OthersJoinedEvent(
+            val timestamp: Long,
+            val isPaid: Boolean,
+            val userId: Int
+        ) {
+            constructor(joined: JoinedEvent) : this(
+                joined.timestamp.toEpochMilli(),
+                joined.isPaid,
+                joined.user.id.value
+            )
+        }
     }
 
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
@@ -66,18 +86,32 @@ object EventListEndpoint : SecureEndpoint("/events/list") {
             .filter { ev -> workingYearLimit?.let { ev.date.toKotlinLocalDateTime().isInWorkingYear(it) } ?: true }
         events = events.subList(0, countLimit ?: events.size)
 
+        // Check if user has the list role
+        val hasListJoinedRole = !Database.transaction {
+            UserRole.find { (UserRolesTable.role eq Roles.Events.ListJoined.name) and (UserRolesTable.user eq user.id) }
+                .empty()
+        }
+
         // Fetch all the events the user has joined
         val joinedEvents = Database.transaction {
             JoinedEvent.find { JoinedEvents.user eq user.id }.associateBy { it.event.id.value }
         }
+        val othersJoined = if (hasListJoinedRole) {
+            Database.transaction { JoinedEvent.all().groupBy { it.event.id.value } }
+        } else {
+            null
+        }
 
         respondSuccess<EventListResponse>(
             EventListResponse(
-                events.map { event ->
-                    EventListResponse.SerializableEvent(
-                        event,
-                        joinedEvents[event.id.value]?.let { EventListResponse.UserJoinedEvent(it) }
-                    )
+                Database.transaction {
+                    events.map { event ->
+                        EventListResponse.SerializableEvent(
+                            event,
+                            joinedEvents[event.id.value]?.let { EventListResponse.UserJoinedEvent(it) },
+                            othersJoined?.get(event.id.value)?.map { EventListResponse.OthersJoinedEvent(it) }
+                        )
+                    }
                 }
             )
         )

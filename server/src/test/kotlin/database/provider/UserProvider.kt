@@ -87,4 +87,16 @@ class UserProvider {
 
         return user to jwt
     }
+
+    /**
+     * Uses [createSampleUser2] to create the sample user, and then generates a JWT token using [Authentication].
+     *
+     * @return A pair which holds the created user, and the generated token.
+     */
+    fun createSampleUser2AndProvideToken(vararg roles: Role): Pair<User, String> {
+        val user = Database.transaction { createSampleUser2(*roles) }
+        val jwt = Authentication.generateJWT(user.nif)
+
+        return user to jwt
+    }
 }

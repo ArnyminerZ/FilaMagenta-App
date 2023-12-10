@@ -25,7 +25,7 @@ import org.junit.Test
 class TestEventJoinEndpoint : TestServerEnvironment() {
     @Test
     fun `test joining event`() = testServer {
-        val (user, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.Delete) }
+        val (user, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken() }
         val events = Database.transaction { eventProvider.createSampleEvents() }
         val event = events.first()
 
@@ -49,6 +49,19 @@ class TestEventJoinEndpoint : TestServerEnvironment() {
             assertEquals(user.id, joinedEvent.user.id)
             assertEquals(event.id, joinedEvent.event.id)
         }
+    }
+
+    @Test
+    fun `test joining event list`() = testServer {
+        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken() }
+        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val event = events.first()
+
+        httpClient.post(EventJoinEndpoint.url("eventId" to event.id)) {
+            bearerAuth(jwt)
+        }.let { response ->
+            assertResponseSuccess<Void>(response)
+        }
 
         // List all events to make sure it's working correctly
         httpClient.get(EventListEndpoint.url) {
@@ -61,6 +74,54 @@ class TestEventJoinEndpoint : TestServerEnvironment() {
                     assertNotNull(it.joined)
                 }
             }
+        }
+    }
+
+    @Test
+    fun `test joining event list others`() = testServer {
+        val (_, jwt1) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.ListJoined) }
+        val (_, jwt2) = Database.transaction { userProvider.createSampleUser2AndProvideToken() }
+        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val event = events.first()
+
+        httpClient.post(EventJoinEndpoint.url("eventId" to event.id)) {
+            bearerAuth(jwt1)
+        }.let { response ->
+            assertResponseSuccess<Void>(response)
+        }
+        httpClient.post(EventJoinEndpoint.url("eventId" to event.id)) {
+            bearerAuth(jwt2)
+        }.let { response ->
+            assertResponseSuccess<Void>(response)
+        }
+
+        // List all events to make sure it's working correctly
+        httpClient.get(EventListEndpoint.url) {
+            bearerAuth(jwt1)
+        }.let { response ->
+            assertResponseSuccess<EventListEndpoint.EventListResponse>(response) { data ->
+                assertNotNull(data)
+                data.events[1].let {
+                    assertEquals(event.id.value, it.id)
+
+                    val othersJoined = it.othersJoined
+                    assertNotNull(othersJoined)
+                    assertEquals(2, othersJoined.size)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `test joining event deleting event also clears join`() = testServer {
+        val (user, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.Delete) }
+        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val event = events.first()
+
+        httpClient.post(EventJoinEndpoint.url("eventId" to event.id)) {
+            bearerAuth(jwt)
+        }.let { response ->
+            assertResponseSuccess<Void>(response)
         }
 
         // Make sure deleting the event also removes the joins
