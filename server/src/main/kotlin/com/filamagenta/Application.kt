@@ -2,6 +2,7 @@ package com.filamagenta
 
 import KoverIgnore
 import SERVER_PORT
+import com.filamagenta.database.Database
 import com.filamagenta.modules.installAuthentication
 import com.filamagenta.modules.installContentNegotiation
 import com.filamagenta.modules.installRateLimit
@@ -16,6 +17,10 @@ import io.ktor.server.netty.NettyApplicationEngine
 var server: NettyApplicationEngine? = null
 
 fun main(args: Array<String> = emptyArray()) {
+    if (!args.contains("skip-database-init")) {
+        Database.initialize()
+    }
+
     embeddedServer(
         Netty,
         port = SERVER_PORT,
