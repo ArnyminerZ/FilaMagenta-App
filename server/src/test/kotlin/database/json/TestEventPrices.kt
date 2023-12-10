@@ -69,6 +69,8 @@ class TestEventPrices {
         assertFalse { prices1 == prices4 }
         assertFalse { prices1 == prices5 }
         assertFalse { prices1 == prices6 }
+        // Different types
+        assertFalse { prices1.equals("") }
     }
 
     @Test
