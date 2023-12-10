@@ -47,6 +47,10 @@ dependencies {
     implementation(libs.exposed.jdbc)
     implementation(libs.exposed.json)
 
+    // Supported data sources
+    implementation(libs.sqlite)
+    implementation(libs.postgresql)
+
     testImplementation(libs.h2)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.ktor.client.auth)
