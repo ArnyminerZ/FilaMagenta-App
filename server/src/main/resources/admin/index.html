@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Filà Magenta - Admin</title>
+</head>
+<body>
+<div id="loading_indicator">
+    <h1>Loading...</h1>
+</div>
+
+<div id="login_container" style="display: none">
+    <form id="login_form">
+        <h1>Login</h1>
+
+        <table>
+            <tr>
+                <td>
+                    <label for="nif">NIF</label>
+                </td>
+                <td>
+                    <input type="text" id="nif" tabindex="1" autocomplete="username" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="password">Password</label>
+                </td>
+                <td>
+                    <input type="password" id="password" tabindex="2" autocomplete="current-password" />
+                </td>
+            </tr>
+        </table>
+
+        <button type="submit" tabindex="3">Login</button>
+    </form>
+</div>
+
+<script src="/admin/js/login.mjs" type="module"></script>
+</body>
+</html>

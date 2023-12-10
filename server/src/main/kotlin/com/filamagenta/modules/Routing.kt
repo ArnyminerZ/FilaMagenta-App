@@ -33,6 +33,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
+import io.ktor.server.http.content.staticResources
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
@@ -76,6 +77,8 @@ val secureEndpoints: Map<SecureEndpoint, HttpMethod> = mapOf(
 fun Application.installRouting() {
     routing {
         addEndpoints()
+
+        staticResources("/admin", "admin", index = "index.html")
     }
 }
 
