@@ -3,8 +3,10 @@ package com.filamagenta.endpoint
 import KoverIgnore
 import com.filamagenta.database.Database
 import com.filamagenta.database.entity.Event
+import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.json.EventPrices
+import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondSuccess
 import io.ktor.server.application.ApplicationCall
@@ -29,15 +31,29 @@ object EventListEndpoint : SecureEndpoint("/events/list") {
             val name: String,
             val type: Event.Type,
             val description: String,
-            val prices: EventPrices?
+            val prices: EventPrices?,
+            val joined: UserJoinedEvent?
         ) {
-            constructor(event: Event) : this(
+            constructor(event: Event, joined: UserJoinedEvent?) : this(
                 event.id.value,
                 event.date.toString(),
                 event.name,
                 event.type,
                 event.description,
-                event.prices
+                event.prices,
+                joined
+            )
+        }
+
+        @KoverIgnore
+        @Serializable
+        data class UserJoinedEvent(
+            val timestamp: Long,
+            val isPaid: Boolean
+        ) {
+            constructor(joined: JoinedEvent) : this(
+                joined.timestamp.toEpochMilli(),
+                joined.isPaid
             )
         }
     }
@@ -50,9 +66,19 @@ object EventListEndpoint : SecureEndpoint("/events/list") {
             .filter { ev -> workingYearLimit?.let { ev.date.toKotlinLocalDateTime().isInWorkingYear(it) } ?: true }
         events = events.subList(0, countLimit ?: events.size)
 
+        // Fetch all the events the user has joined
+        val joinedEvents = Database.transaction {
+            JoinedEvent.find { JoinedEvents.user eq user.id }.associateBy { it.event.id.value }
+        }
+
         respondSuccess<EventListResponse>(
             EventListResponse(
-                events.map { EventListResponse.SerializableEvent(it) }
+                events.map { event ->
+                    EventListResponse.SerializableEvent(
+                        event,
+                        joinedEvents[event.id.value]?.let { EventListResponse.UserJoinedEvent(it) }
+                    )
+                }
             )
         )
     }

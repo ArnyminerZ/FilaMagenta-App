@@ -4,9 +4,11 @@ import com.filamagenta.database.Database
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.endpoint.EventJoinEndpoint
+import com.filamagenta.endpoint.EventListEndpoint
 import com.filamagenta.response.Errors
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import java.time.Instant
 import kotlin.test.assertFalse
@@ -32,6 +34,7 @@ class TestEventJoinEndpoint : TestServerEnvironment() {
             assertResponseSuccess<Void>(response)
         }
 
+        // Make sure the join has been inserted
         Database.transaction {
             val joinedEvent = JoinedEvent.find { (JoinedEvents.user eq user.id) and (JoinedEvents.event eq event.id) }
                 .firstOrNull()
@@ -42,6 +45,19 @@ class TestEventJoinEndpoint : TestServerEnvironment() {
             assertNull(joinedEvent.paymentReference)
             assertEquals(user.id, joinedEvent.user.id)
             assertEquals(event.id, joinedEvent.event.id)
+        }
+
+        // List all events to make sure it's working correctly
+        httpClient.get(EventListEndpoint.url) {
+            bearerAuth(jwt)
+        }.let { response ->
+            assertResponseSuccess<EventListEndpoint.EventListResponse>(response) { data ->
+                assertNotNull(data)
+                data.events[1].let {
+                    assertEquals(event.id.value, it.id)
+                    assertNotNull(it.joined)
+                }
+            }
         }
     }
 

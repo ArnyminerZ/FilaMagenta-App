@@ -12,6 +12,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import org.junit.Test
 
 class TestEventListEndpoint : TestServerEnvironment() {
@@ -34,6 +35,8 @@ class TestEventListEndpoint : TestServerEnvironment() {
         assertEquals(expected.type, event.type)
         assertEquals(expected.description, event.description)
         assertEquals(expected.prices, event.prices)
+        // User is not joining any events here, see TestEventJoinEndpoint for this test
+        assertNull(event.joined)
     }
 
     @Test
