@@ -2,7 +2,7 @@ package com.filamagenta.response
 
 import KoverIgnore
 
-// Last one: 27
+// Last one: 28
 @KoverIgnore
 object ErrorCodes {
     @KoverIgnore
@@ -67,6 +67,7 @@ object ErrorCodes {
         @KoverIgnore
         object Join {
             const val JOIN_TWICE = 27
+            const val NOT_JOINED = 28
         }
     }
 }

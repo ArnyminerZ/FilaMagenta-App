@@ -153,6 +153,11 @@ object Errors {
                 code = ErrorCodes.Events.Join.JOIN_TWICE,
                 message = "A user cannot join the same event twice."
             ) to HttpStatusCode.PreconditionFailed
+
+            val NotJoined = FailureResponse.Error(
+                code = ErrorCodes.Events.Join.NOT_JOINED,
+                message = "You cannot leave an event you still haven't joined."
+            ) to HttpStatusCode.PreconditionFailed
         }
     }
 }
