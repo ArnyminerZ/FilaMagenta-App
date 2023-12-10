@@ -24,6 +24,7 @@ object EventListEndpoint : SecureEndpoint("/events/list") {
         @KoverIgnore
         @Serializable
         data class SerializableEvent(
+            val id: Int,
             val date: String,
             val name: String,
             val type: Event.Type,
@@ -31,6 +32,7 @@ object EventListEndpoint : SecureEndpoint("/events/list") {
             val prices: EventPrices?
         ) {
             constructor(event: Event) : this(
+                event.id.value,
                 event.date.toString(),
                 event.name,
                 event.type,
