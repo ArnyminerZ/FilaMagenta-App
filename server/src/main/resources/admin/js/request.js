@@ -38,7 +38,11 @@ function httpRequest(method, url, body = null, headers = []) {
                 reject(JSON.parse(xhr.responseText));
             }
         };
-        xhr.send(body);
+        if (body != null) {
+            xhr.send(JSON.stringify(body));
+        } else {
+            xhr.send();
+        }
     });
 }
 
