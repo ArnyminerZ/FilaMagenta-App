@@ -50,6 +50,7 @@ class TestUserProfileEndpoint : TestServerEnvironment() {
         }.let { response ->
             assertResponseSuccess<UserProfileEndpoint.UserProfileResponse>(response) { data ->
                 assertNotNull(data)
+                assertEquals(user.id.value, data.id)
                 assertEquals(UserProvider.SampleUser.NIF, data.nif)
                 assertEquals(UserProvider.SampleUser.NAME, data.name)
                 assertEquals(UserProvider.SampleUser.SURNAME, data.surname)

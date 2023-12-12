@@ -18,6 +18,7 @@ object UserProfileEndpoint : SecureEndpoint("/user/profile") {
     @KoverIgnore
     @Serializable
     data class UserProfileResponse(
+        val id: Int,
         val nif: String,
         val name: String,
         val surname: String,
@@ -36,6 +37,7 @@ object UserProfileEndpoint : SecureEndpoint("/user/profile") {
 
         respondSuccess(
             UserProfileResponse(
+                user.id.value,
                 user.nif,
                 user.name,
                 user.surname,

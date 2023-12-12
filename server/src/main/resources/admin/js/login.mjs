@@ -17,6 +17,7 @@ import {STORAGE_PROFILE, STORAGE_TOKEN} from "./const.js";
 
 /**
  * @typedef {Object} ProfileData
+ * @property {number} id
  * @property {string} name
  * @property {string} surname
  * @property {string} nif
