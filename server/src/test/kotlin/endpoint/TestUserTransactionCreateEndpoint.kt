@@ -16,12 +16,15 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 import org.junit.Test
 
 class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
     private val sampleTransaction = UserTransactionCreateRequest(
-        date = LocalDate.of(2023, 12, 3).toString(),
+        date = ZonedDateTime.of(2023, 12, 3, 0, 0, 0, 0, ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
         description = "Testing description",
         income = true,
         units = 1U,
