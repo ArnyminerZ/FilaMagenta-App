@@ -1,7 +1,8 @@
 import {_, CC} from './utils.mjs';
 import {get, post} from './request.js';
-import {getCache, setCache} from "./data-storage.js";
+import {getCache, getCacheRaw, removeCache, setCache, setCacheRaw} from "./data-storage.js";
 import {STORAGE_PROFILE, STORAGE_TOKEN} from "./const.js";
+import {TOKEN_EXPIRED} from './const/errors.js';
 
 /**
  * @typedef {APIResult} LoginSuccessResult
@@ -91,7 +92,7 @@ window.addEventListener('load', async function () {
             const result = await post('/auth/login', {nif, password});
             const token = result.data.token;
 
-            localStorage.setItem(STORAGE_TOKEN, token);
+            setCacheRaw(STORAGE_TOKEN, token);
 
             window.location.reload();
         } catch (/** @type {APIError} */ error) {
@@ -101,7 +102,7 @@ window.addEventListener('load', async function () {
     })
 
     /** @type {string|null} */
-    const token = localStorage.getItem(STORAGE_TOKEN);
+    const token = getCacheRaw(STORAGE_TOKEN);
     if (token == null) {
         console.log("User not logged in, showing login container...");
         _('loading_indicator').style.display = 'none';
@@ -110,12 +111,29 @@ window.addEventListener('load', async function () {
         console.info('User is logged in.');
 
         // todo: try-catch
-        /** @type {ProfileSuccessResult} */
-        const profileResult = await get('/user/profile', token);
-        const profile = profileResult.data;
+        try {
+            /** @type {ProfileSuccessResult} */
+            const profileResult = await get('/user/profile', token);
+            const profile = profileResult.data;
 
-        setCache(STORAGE_PROFILE, profile);
+            setCache(STORAGE_PROFILE, profile);
 
-        refreshUI();
+            refreshUI();
+        } catch (/** @type {APIError} */ error) {
+            switch (error.error.code) {
+                case TOKEN_EXPIRED:
+                    console.error('Server returned error code', TOKEN_EXPIRED);
+                    alert('Your login has expired, please, log in again.');
+
+                    removeCache(STORAGE_TOKEN);
+
+                    window.location.reload();
+                    break;
+
+                default:
+                    console.error('Unknown error occurred while trying to fetch the data from the server:', error);
+                    break;
+            }
+        }
     }
 });

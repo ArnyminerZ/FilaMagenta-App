@@ -18,19 +18,30 @@
     <dialog id="newTransactionDialog">
         <h3>Create new transaction</h3>
         <form id="newTransactionForm">
+            <label for="transactionIncome">Is Income</label><br/>
+            <input type="checkbox" id="transactionIncome" checked />
+            <br/>
+
             <label for="transactionDate">Date</label><br/>
             <input type="date" id="transactionDate" required />
             <br/>
 
             <label for="transactionType">Type</label><br/>
             <select id="transactionType" required>
-                <option value="GENERIC">Generic</option>
-                <option value="BREAKFAST">Breakfast</option>
-                <option value="LUNCH">Lunch</option>
-                <option value="DINNER">Dinner</option>
-                <option value="ENTRADETA">Entradeta</option>
-                <option value="MEETING">Meeting</option>
-                <option value="GATHERING">Gathering</option>
+                <option value="STARTING_BALANCE">Starting balance</option>
+                <option value="DERRAMA">Derrama</option>
+                <option value="DEBT">Debt</option>
+                <option value="INCOME_CASH">Income Cash</option>
+                <option value="INCOME_BANK">Income Bank</option>
+                <option value="INCOME_CARD">Income Card</option>
+                <option value="FOOD">Food</option>
+                <option value="CLOTHING">Clothing</option>
+                <option value="RETURN">Return</option>
+                <option value="LOTTERY">Lottery</option>
+                <option value="LOTTERY_NON_SOLD">Lottery non-sold</option>
+                <option value="CHAIRS">Chairs</option>
+                <option value="MONTEPIO">Montepio</option>
+                <option value="FULLA">Fulla</option>
             </select>
             <br/>
 

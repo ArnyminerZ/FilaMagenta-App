@@ -10,8 +10,7 @@ import {get, post} from "../request.js";
  * @property {boolean} income
  * @property {number} units
  * @property {number} pricePerUnit
- * @property {Object} type
- * @property {string} type.type
+ * @property {string} type
  */
 
 /**
@@ -41,11 +40,38 @@ let profile;
 const onSubmitNewTransactionDialog = async function (event) {
     event.preventDefault();
 
-    const transactionsResult = await post(
-        `/user/${profile.id}/transaction`,
-        {/* todo: complete request body */},
-        _token
-    );
+    /** @type {HTMLInputElement} */
+    const incomeField = _('transactionIncome');
+    /** @type {HTMLInputElement} */
+    const dateField = _('transactionDate');
+    /** @type {HTMLSelectElement} */
+    const typeField = _('transactionType');
+    /** @type {HTMLTextAreaElement} */
+    const descriptionField = _('transactionDescription');
+    /** @type {HTMLInputElement} */
+    const unitsField = _('transactionUnits');
+    /** @type {HTMLInputElement} */
+    const ppuField = _('transactionPPU');
+
+    const income = incomeField.checked;
+    const date = dateField.valueAsDate;
+    const type = typeField.value;
+    const description = descriptionField.value;
+    const units = unitsField.valueAsNumber;
+    const pricePerUnit = ppuField.valueAsNumber;
+
+    try {
+        const transactionsResult = await post(
+            `/user/${profile.id}/transaction`,
+            { date, description, income, units, pricePerUnit, type },
+            _token
+        );
+        console.info('Result:', transactionsResult);
+
+        window.location.reload();
+    } catch (error) {
+        console.error('Could not create transaction:', error);
+    }
 }
 
 window.addEventListener('load', async function () {
@@ -80,7 +106,7 @@ window.addEventListener('load', async function () {
     for (const transaction of transactions) {
         const row = document.createElement('tr');
         row.innerHTML = `<td>${transaction.date}</td>` +
-            `<td>${transaction.type.type}</td>` +
+            `<td>${transaction.type}</td>` +
             `<td>${transaction.description}</td>` +
             `<td>${transaction.units}</td>` +
             `<td>${transaction.pricePerUnit}</td>` +
