@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.endpoint.EventJoinOtherEndpoint
@@ -21,9 +22,9 @@ import org.junit.Test
 class TestEventJoinOtherEndpoint : TestServerEnvironment() {
     @Test
     fun `test joining event`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.JoinOthers) }
-        val user2 = Database.transaction { userProvider.createSampleUser2() }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken(Roles.Events.JoinOthers) }
+        val user2 = database { userProvider.createSampleUser2() }
+        val events = database { eventProvider.createSampleEvents() }
         val event = events.first()
 
         val now = Instant.now()
@@ -37,7 +38,7 @@ class TestEventJoinOtherEndpoint : TestServerEnvironment() {
         }
 
         // Make sure the join has been inserted
-        Database.transaction {
+        database {
             val joinedEvent = JoinedEvent.find { (JoinedEvents.user eq user2.id) and (JoinedEvents.event eq event.id) }
                 .firstOrNull()
 
@@ -52,9 +53,9 @@ class TestEventJoinOtherEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test joining event twice`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.JoinOthers) }
-        val user2 = Database.transaction { userProvider.createSampleUser2() }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken(Roles.Events.JoinOthers) }
+        val user2 = database { userProvider.createSampleUser2() }
+        val events = database { eventProvider.createSampleEvents() }
         val event = events.first()
 
         // Join the event
@@ -78,8 +79,8 @@ class TestEventJoinOtherEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test joining unknown event`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.JoinOthers) }
-        val user2 = Database.transaction { userProvider.createSampleUser2() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken(Roles.Events.JoinOthers) }
+        val user2 = database { userProvider.createSampleUser2() }
 
         httpClient.post(
             EventJoinOtherEndpoint.url("eventId" to "123", "otherId" to user2.id)
@@ -92,8 +93,8 @@ class TestEventJoinOtherEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test joining unknown user`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.JoinOthers) }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken(Roles.Events.JoinOthers) }
+        val events = database { eventProvider.createSampleEvents() }
         val event = events.first()
 
         httpClient.post(
@@ -107,8 +108,8 @@ class TestEventJoinOtherEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test joining no permission`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken() }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken() }
+        val events = database { eventProvider.createSampleEvents() }
         val event = events.first()
 
         httpClient.post(

@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.UserTransactionUpdateEndpoint
@@ -33,7 +34,7 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
     /**
      * Creates the transaction defined in [sampleTransaction] with a database transaction.
      */
-    private fun provideSampleTransaction(user: User): Transaction = Database.transaction {
+    private fun provideSampleTransaction(user: User): Transaction = database {
         Transaction.new {
             this.date = LocalDate.parse(sampleTransaction.date)
             this.description = sampleTransaction.description!!
@@ -51,7 +52,7 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
         assertion: (transaction: Transaction) -> Unit,
         httpStatusCode: HttpStatusCode = HttpStatusCode.OK
     ) = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Update) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Update) }
         val jwt = Authentication.generateJWT(user.nif)
         val transaction = provideSampleTransaction(user)
 
@@ -67,7 +68,7 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
         }
 
         // Make sure it has been updated correctly
-        val newTransaction = Database.transaction { Transaction[transaction.id] }
+        val newTransaction = database { Transaction[transaction.id] }
         assertion(newTransaction)
     }
 
@@ -128,7 +129,7 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test update transaction invalid price`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Update) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Update) }
         val jwt = Authentication.generateJWT(user.nif)
         val transaction = provideSampleTransaction(user)
 
@@ -159,7 +160,7 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test update transaction invalid units`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Update) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Update) }
         val jwt = Authentication.generateJWT(user.nif)
         val transaction = provideSampleTransaction(user)
 
@@ -178,7 +179,7 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test update transaction invalid date`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Update) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Update) }
         val jwt = Authentication.generateJWT(user.nif)
         val transaction = provideSampleTransaction(user)
 
@@ -197,7 +198,7 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test no permission`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
         val jwt = Authentication.generateJWT(user.nif)
         val transaction = provideSampleTransaction(user)
 
@@ -213,7 +214,7 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test transaction not found`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Update) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Update) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.patch(
@@ -231,7 +232,7 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
     fun `test invalid body`() {
         testServerInvalidBody(
             UserTransactionUpdateEndpoint.url,
-            Database.transaction { userProvider.createSampleUser(Roles.Transaction.Update) }
+            database { userProvider.createSampleUser(Roles.Transaction.Update) }
         ) { url, builder -> patch(url, builder) }
     }
 }

@@ -1,6 +1,7 @@
 package com.filamagenta.endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.utils.UserDataKey
 import com.filamagenta.database.utils.set
@@ -26,7 +27,7 @@ object UserProfileEditEndpoint : SecureEndpoint("/user/profile") {
 
             require(key != null) { "Key cannot be null" }
 
-            Database.set(user, key, value)
+            database.set(user, key, value)
 
             respondSuccess<Void>()
         } catch (e: BadRequestException) {

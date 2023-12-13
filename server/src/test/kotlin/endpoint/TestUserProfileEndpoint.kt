@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.endpoint.UserProfileEndpoint
@@ -18,12 +19,12 @@ import org.junit.Test
 class TestUserProfileEndpoint : TestServerEnvironment() {
     @Test
     fun `test getting profile`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
         // Add some stub meta
-        Database.transaction {
+        database {
             UserMeta.new {
                 this.key = UserMeta.Key.EMAIL
                 this.value = "example@email.com"
@@ -37,7 +38,7 @@ class TestUserProfileEndpoint : TestServerEnvironment() {
         }
 
         // Add some roles to check
-        Database.transaction {
+        database {
             UserRole.new {
                 this.role = Roles.Users.ModifyOthers
                 this.user = user

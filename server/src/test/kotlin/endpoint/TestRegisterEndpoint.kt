@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.RegisterEndpoint
 import com.filamagenta.request.RegisterRequest
@@ -41,7 +42,7 @@ class TestRegisterEndpoint : TestServerEnvironment() {
         }.let { result ->
             assertResponseSuccess<RegisterEndpoint.SuccessfulRegistration>(result) { data ->
                 // Make sure the user exists
-                Database.transaction {
+                database {
                     assertNotNull(data)
 
                     val user = User.findById(data.userId)
@@ -144,7 +145,7 @@ class TestRegisterEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test user already exists`() = testServer {
-        Database.transaction { userProvider.createSampleUser() }
+        database { userProvider.createSampleUser() }
 
         httpClient.post(RegisterEndpoint.url) {
             contentType(ContentType.Application.Json)

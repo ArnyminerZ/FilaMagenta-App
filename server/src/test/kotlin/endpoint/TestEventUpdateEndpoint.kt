@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.json.EventPrices
@@ -27,9 +28,9 @@ class TestEventUpdateEndpoint : TestServerEnvironment() {
         assertion: (event: Event) -> Unit,
         httpStatusCode: HttpStatusCode = HttpStatusCode.OK
     ) = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Events.Update) }
+        val user = database { userProvider.createSampleUser(Roles.Events.Update) }
         val jwt = Authentication.generateJWT(user.nif)
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val events = database { eventProvider.createSampleEvents() }
 
         // Update the transaction
         httpClient.patch(
@@ -43,7 +44,7 @@ class TestEventUpdateEndpoint : TestServerEnvironment() {
         }
 
         // Make sure it has been updated correctly
-        val updatedEvent = Database.transaction { Event[events.first().id] }
+        val updatedEvent = database { Event[events.first().id] }
         assertion(updatedEvent)
     }
 
@@ -119,9 +120,9 @@ class TestEventUpdateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test update event empty name`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Events.Update) }
+        val user = database { userProvider.createSampleUser(Roles.Events.Update) }
         val jwt = Authentication.generateJWT(user.nif)
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val events = database { eventProvider.createSampleEvents() }
 
         httpClient.patch(
             EventUpdateEndpoint.url("eventId" to events.first().id)
@@ -138,9 +139,9 @@ class TestEventUpdateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test update event invalid date`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Events.Update) }
+        val user = database { userProvider.createSampleUser(Roles.Events.Update) }
         val jwt = Authentication.generateJWT(user.nif)
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val events = database { eventProvider.createSampleEvents() }
 
         httpClient.patch(
             EventUpdateEndpoint.url("eventId" to events.first().id)
@@ -157,9 +158,9 @@ class TestEventUpdateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test no permission`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
         val jwt = Authentication.generateJWT(user.nif)
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val events = database { eventProvider.createSampleEvents() }
 
         httpClient.patch(
             EventUpdateEndpoint.url("eventId" to events.first().id)
@@ -173,7 +174,7 @@ class TestEventUpdateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test event not found`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Events.Update) }
+        val user = database { userProvider.createSampleUser(Roles.Events.Update) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.patch(
@@ -191,7 +192,7 @@ class TestEventUpdateEndpoint : TestServerEnvironment() {
     fun `test invalid body`() {
         testServerInvalidBody(
             EventUpdateEndpoint.url,
-            Database.transaction { userProvider.createSampleUser(Roles.Events.Update) }
+            database { userProvider.createSampleUser(Roles.Events.Update) }
         ) { url, builder -> patch(url, builder) }
     }
 }

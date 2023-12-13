@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.entity.User
@@ -21,18 +21,18 @@ object EventJoinEndpoint : SecureEndpoint("/events/{eventId}/join") {
         val eventId: Int by call.parameters
 
         // Make sure the event exists
-        val event = Database.transaction { Event.findById(eventId) }
+        val event = database { Event.findById(eventId) }
             ?: return respondFailure(Errors.Events.NotFound)
 
         // Make sure the user hasn't already joined the event
-        val alreadyJoined = Database.transaction {
+        val alreadyJoined = database {
             JoinedEvent.find { (JoinedEvents.user eq user.id) and (JoinedEvents.event eq event.id) }.firstOrNull()
         }
         if (alreadyJoined != null) {
             return respondFailure(Errors.Events.Join.Double)
         }
 
-        Database.transaction {
+        database {
             JoinedEvent.new {
                 this.timestamp = Instant.now()
 

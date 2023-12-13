@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserRolesTable
@@ -25,8 +26,8 @@ import org.junit.Test
 class TestGrantRoleEndpoint : TestServerEnvironment() {
     @Test
     fun `test setting role`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
-        val user2 = Database.transaction { userProvider.createSampleUser2() }
+        database { userProvider.createSampleUser(Roles.Users.GrantRole) }
+        val user2 = database { userProvider.createSampleUser2() }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -41,7 +42,7 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
         }
 
         // Make sure the role has been inserted
-        Database.transaction {
+        database {
             val role = UserRole.find {
                 (UserRolesTable.role eq Roles.Users.ModifyOthers.name) and (UserRolesTable.user eq user2.id)
             }.firstOrNull()
@@ -52,8 +53,8 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test setting already set role`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
-        val user2 = Database.transaction { userProvider.createSampleUser2(Roles.Users.ModifyOthers) }
+        database { userProvider.createSampleUser(Roles.Users.GrantRole) }
+        val user2 = database { userProvider.createSampleUser2(Roles.Users.ModifyOthers) }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -70,8 +71,8 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test setting role forbidden`() = testServer {
-        Database.transaction { userProvider.createSampleUser() }
-        val user2 = Database.transaction { userProvider.createSampleUser2() }
+        database { userProvider.createSampleUser() }
+        val user2 = database { userProvider.createSampleUser2() }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -88,7 +89,7 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test setting user doesn't exist`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
+        database { userProvider.createSampleUser(Roles.Users.GrantRole) }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -105,8 +106,8 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test granting role for immutable`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
-        val admin = Database.transaction { User.all().first() }
+        database { userProvider.createSampleUser(Roles.Users.GrantRole) }
+        val admin = database { User.all().first() }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -123,8 +124,8 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test granting immutable role forbidden`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
-        val admin = Database.transaction { User.all().first() }
+        database { userProvider.createSampleUser(Roles.Users.GrantRole) }
+        val admin = database { User.all().first() }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -141,7 +142,7 @@ class TestGrantRoleEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test invalid body`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.GrantRole) }
+        database { userProvider.createSampleUser(Roles.Users.GrantRole) }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 

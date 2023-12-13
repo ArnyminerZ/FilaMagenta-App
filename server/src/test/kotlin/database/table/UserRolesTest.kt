@@ -1,6 +1,6 @@
 package database.table
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.security.Roles
 import database.model.DatabaseTestEnvironment
@@ -13,7 +13,7 @@ import org.junit.Test
 class UserRolesTest : DatabaseTestEnvironment() {
     @Test
     fun `test creation`() {
-        val entry = Database.transaction {
+        val entry = database {
             val user = userProvider.createSampleUser()
 
             UserRole.new {
@@ -21,7 +21,7 @@ class UserRolesTest : DatabaseTestEnvironment() {
                 this.user = user
             }
         }
-        Database.transaction {
+        database {
             UserRole[entry.id].let {
                 assertEquals(Roles.Users.ModifyOthers, it.role)
                 assertEquals(UserProvider.SampleUser.NIF, it.user.nif)
@@ -31,16 +31,16 @@ class UserRolesTest : DatabaseTestEnvironment() {
 
     @Test
     fun `test duplicates not allowed`() {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
 
-        Database.transaction {
+        database {
             UserRole.new {
                 this.role = Roles.Users.ModifyOthers
                 this.user = user
             }
         }
         assertThrows(ExposedSQLException::class.java) {
-            Database.transaction {
+            database {
                 UserRole.new {
                     this.role = Roles.Users.ModifyOthers
                     this.user = user
@@ -51,16 +51,16 @@ class UserRolesTest : DatabaseTestEnvironment() {
 
     @Test
     fun `test invalid role name`() {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
 
-        val entry = Database.transaction {
+        val entry = database {
             UserRole.new {
                 this._role = "non-existing"
                 this.user = user
             }
         }
         assertThrows(IllegalArgumentException::class.java) {
-            Database.transaction { UserRole[entry.id].role }
+            database { UserRole[entry.id].role }
         }
     }
 }

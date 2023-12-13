@@ -2,6 +2,7 @@ package com.filamagenta.endpoint
 
 import KoverIgnore
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.entity.UserRole
@@ -27,11 +28,11 @@ object UserProfileEndpoint : SecureEndpoint("/user/profile") {
     )
 
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
-        val meta = Database.transaction {
+        val meta = database {
             UserMeta.find { UserMetaTable.user eq user.id }
                 .associate { it.key to it.value }
         }
-        val roles = Database.transaction {
+        val roles = database {
             UserRole.find { UserRolesTable.user eq user.id }.map { it.role }
         }
 

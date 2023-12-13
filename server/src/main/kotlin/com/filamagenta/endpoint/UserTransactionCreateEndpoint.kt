@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.model.SecureEndpoint
@@ -25,13 +25,13 @@ object UserTransactionCreateEndpoint : SecureEndpoint("/user/{userId}/transactio
             val request = call.receive<UserTransactionCreateRequest>()
             val userId: Int by call.parameters
 
-            val modifyUser = Database.transaction { User.findById(userId) }
+            val modifyUser = database { User.findById(userId) }
                 ?: return respondFailure(Errors.Users.UserIdNotFound)
 
             if (request.pricePerUnit <= 0) return respondFailure(Errors.Transactions.PriceMustBeGreaterThan0)
             if (request.units <= 0u) return respondFailure(Errors.Transactions.UnitsMustBeGreaterThan0)
 
-            Database.transaction {
+            database {
                 Transaction.new {
                     this.date = LocalDate.parse(request.date)
                     this.description = request.description

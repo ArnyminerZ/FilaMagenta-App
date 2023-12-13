@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.model.SecureEndpoint
@@ -25,7 +25,7 @@ object EventCreateEndpoint : SecureEndpoint("/events/create", Roles.Events.Creat
 
             if (request.name.isBlank()) return respondFailure(Errors.Events.NameCannotBeEmpty)
 
-            Database.transaction {
+            database {
                 Event.new {
                     this.name = request.name
                     this.description = request.description

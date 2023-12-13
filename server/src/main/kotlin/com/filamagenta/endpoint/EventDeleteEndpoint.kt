@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.entity.User
@@ -19,15 +19,15 @@ object EventDeleteEndpoint : SecureEndpoint("/events/{eventId}", Roles.Events.De
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         val eventId: Int by call.parameters
 
-        val event = Database.transaction { Event.findById(eventId) }
+        val event = database { Event.findById(eventId) }
             ?: return respondFailure(Errors.Events.NotFound)
 
         // When deleting an event, all the joins must also be deleted
-        Database.transaction {
+        database {
             JoinedEvent.find { JoinedEvents.event eq event.id }.forEach { it.delete() }
         }
 
-        Database.transaction {
+        database {
             event.delete()
         }
 

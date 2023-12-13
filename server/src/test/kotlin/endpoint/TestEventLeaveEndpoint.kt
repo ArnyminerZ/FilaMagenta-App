@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.endpoint.EventLeaveEndpoint
@@ -17,11 +18,11 @@ import org.junit.Test
 class TestEventLeaveEndpoint : TestServerEnvironment() {
     @Test
     fun `test leaving event`() = testServer {
-        val (user, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.Delete) }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val (user, jwt) = database { userProvider.createSampleUserAndProvideToken(Roles.Events.Delete) }
+        val events = database { eventProvider.createSampleEvents() }
         val event = events.first()
 
-        Database.transaction {
+        database {
             JoinedEvent.new {
                 this.timestamp = Instant.now()
 
@@ -37,7 +38,7 @@ class TestEventLeaveEndpoint : TestServerEnvironment() {
         }.let { response ->
             assertResponseSuccess<Void>(response)
         }
-        Database.transaction {
+        database {
             val joinedEvent = JoinedEvent.find { (JoinedEvents.user eq user.id) and (JoinedEvents.event eq event.id) }
                 .firstOrNull()
             assertNull(joinedEvent)
@@ -46,8 +47,8 @@ class TestEventLeaveEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test leaving a non-joined event`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken() }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken() }
+        val events = database { eventProvider.createSampleEvents() }
         val event = events.first()
 
         // Try leaving the event
@@ -60,7 +61,7 @@ class TestEventLeaveEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test leaving unknown event`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken() }
 
         httpClient.post(EventLeaveEndpoint.url("eventId" to "123")) {
             bearerAuth(jwt)

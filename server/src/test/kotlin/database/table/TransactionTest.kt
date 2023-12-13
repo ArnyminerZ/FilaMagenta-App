@@ -1,6 +1,6 @@
 package database.table
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import database.model.DatabaseTestEnvironment
 import database.provider.UserProvider
@@ -13,7 +13,7 @@ import org.junit.Test
 class TransactionTest : DatabaseTestEnvironment() {
     @Test
     fun `test creation`() {
-        val entry = Database.transaction {
+        val entry = database {
             val user = userProvider.createSampleUser()
 
             Transaction.new {
@@ -27,7 +27,7 @@ class TransactionTest : DatabaseTestEnvironment() {
                 this.user = user
             }
         }
-        Database.transaction {
+        database {
             Transaction[entry.id].let {
                 assertEquals(LocalDate.of(2023, 12, 3), it.date)
                 assertEquals("Testing transaction", it.description)
@@ -43,7 +43,7 @@ class TransactionTest : DatabaseTestEnvironment() {
     @Test
     fun `test price cannot be negative or 0`() {
         assertThrows(ExposedSQLException::class.java) {
-            Database.transaction {
+            database {
                 val user = userProvider.createSampleUser()
 
                 Transaction.new {
@@ -60,7 +60,7 @@ class TransactionTest : DatabaseTestEnvironment() {
         }
 
         assertThrows(ExposedSQLException::class.java) {
-            Database.transaction {
+            database {
                 val user = userProvider.createSampleUser()
 
                 Transaction.new {
@@ -80,7 +80,7 @@ class TransactionTest : DatabaseTestEnvironment() {
     @Test
     fun `test amount cannot be 0`() {
         assertThrows(ExposedSQLException::class.java) {
-            Database.transaction {
+            database {
                 val user = userProvider.createSampleUser()
 
                 Transaction.new {

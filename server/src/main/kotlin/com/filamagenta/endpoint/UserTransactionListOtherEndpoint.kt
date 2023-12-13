@@ -2,6 +2,7 @@ package com.filamagenta.endpoint
 
 import KoverIgnore
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.table.Transactions
@@ -46,10 +47,10 @@ object UserTransactionListOtherEndpoint : SecureEndpoint("/user/{userId}/transac
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         val userId: Int by call.parameters
 
-        val listUser = Database.transaction { User.findById(userId) }
+        val listUser = database { User.findById(userId) }
             ?: return respondFailure(Errors.Users.UserIdNotFound)
 
-        val transactions = Database.transaction {
+        val transactions = database {
             Transaction.find { Transactions.user eq listUser.id }.toList()
         }
 

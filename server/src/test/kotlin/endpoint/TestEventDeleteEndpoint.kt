@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.endpoint.EventDeleteEndpoint
 import com.filamagenta.response.Errors
@@ -15,9 +16,9 @@ import org.junit.Test
 class TestEventDeleteEndpoint : TestServerEnvironment() {
     @Test
     fun `test deleting event`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Events.Delete) }
+        val user = database { userProvider.createSampleUser(Roles.Events.Delete) }
         val jwt = Authentication.generateJWT(user.nif)
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val events = database { eventProvider.createSampleEvents() }
 
         // Update the transaction
         httpClient.delete(
@@ -29,15 +30,15 @@ class TestEventDeleteEndpoint : TestServerEnvironment() {
         }
 
         // Make sure it has been deleted correctly
-        val deletedEvent = Database.transaction { Event.findById(events.first().id) }
+        val deletedEvent = database { Event.findById(events.first().id) }
         assertNull(deletedEvent)
     }
 
     @Test
     fun `test no permission`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
         val jwt = Authentication.generateJWT(user.nif)
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val events = database { eventProvider.createSampleEvents() }
 
         httpClient.delete(
             EventDeleteEndpoint.url.replace("{eventId}", events.first().id.value.toString())
@@ -50,7 +51,7 @@ class TestEventDeleteEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test event not found`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Events.Delete) }
+        val user = database { userProvider.createSampleUser(Roles.Events.Delete) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.delete(

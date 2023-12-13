@@ -1,6 +1,6 @@
 package endpoint.model
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.modules.addEndpoints
 import com.filamagenta.modules.configureJwt
@@ -146,7 +146,7 @@ abstract class TestServerEnvironment : DatabaseTestEnvironment() {
 
     fun testServerInvalidBody(
         url: String,
-        user: User = Database.transaction { userProvider.createSampleUser() },
+        user: User = database { userProvider.createSampleUser() },
         method: suspend HttpClient.(
             url: String,
             requestBuilder: HttpRequestBuilder.() -> Unit

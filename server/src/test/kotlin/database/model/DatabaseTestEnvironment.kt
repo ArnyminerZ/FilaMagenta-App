@@ -2,6 +2,7 @@ package database.model
 
 import TestEnvironment
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.system.EnvironmentVariables
 import database.provider.EventProvider
 import database.provider.UserProvider
@@ -28,12 +29,12 @@ abstract class DatabaseTestEnvironment : TestEnvironment() {
         EnvironmentVariables.Database.Url.dispose()
         EnvironmentVariables.Database.Driver.dispose()
 
-        Database.transaction {
+        database {
             Database.tables.values.forEach {
                 it.table.deleteAll()
             }
         }
 
-        Database.instance = null
+        Database.dispose()
     }
 }

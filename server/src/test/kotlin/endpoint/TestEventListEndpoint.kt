@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.endpoint.EventListEndpoint
 import com.filamagenta.endpoint.EventListEndpoint.EventListResponse
 import com.filamagenta.endpoint.EventListEndpoint.EventListResponse.SerializableEvent
@@ -42,7 +43,7 @@ class TestEventListEndpoint : TestServerEnvironment() {
     @Test
     fun `test listing events`() = testServer {
         val (_, jwt) = userProvider.createSampleUserAndProvideToken()
-        Database.transaction { eventProvider.createSampleEvents() }
+        database { eventProvider.createSampleEvents() }
 
         httpClient.get(EventListEndpoint.url) {
             bearerAuth(jwt)
@@ -63,7 +64,7 @@ class TestEventListEndpoint : TestServerEnvironment() {
     @Test
     fun `test listing events in working year`() = testServer {
         val (_, jwt) = userProvider.createSampleUserAndProvideToken()
-        Database.transaction { eventProvider.createSampleEvents() }
+        database { eventProvider.createSampleEvents() }
 
         httpClient.get(EventListEndpoint.url) {
             bearerAuth(jwt)
@@ -83,7 +84,7 @@ class TestEventListEndpoint : TestServerEnvironment() {
     @Test
     fun `test listing events count`() = testServer {
         val (_, jwt) = userProvider.createSampleUserAndProvideToken()
-        Database.transaction { eventProvider.createSampleEvents() }
+        database { eventProvider.createSampleEvents() }
 
         httpClient.get(EventListEndpoint.url) {
             bearerAuth(jwt)

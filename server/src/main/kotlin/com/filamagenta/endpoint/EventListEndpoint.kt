@@ -2,6 +2,7 @@ package com.filamagenta.endpoint
 
 import KoverIgnore
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.entity.User
@@ -82,29 +83,29 @@ object EventListEndpoint : SecureEndpoint("/events/list") {
         val workingYearLimit = call.request.header("Limit-Working-Year")?.toUIntOrNull()
         val countLimit = call.request.header("Limit-Count")?.toIntOrNull()
 
-        var events = Database.transaction { Event.all().sortedBy { it.date } }
+        var events = database { Event.all().sortedBy { it.date } }
             .filter { ev -> workingYearLimit?.let { ev.date.toKotlinLocalDateTime().isInWorkingYear(it) } ?: true }
         events = events.subList(0, countLimit ?: events.size)
 
         // Check if user has the list role
-        val hasListJoinedRole = !Database.transaction {
+        val hasListJoinedRole = !database {
             UserRole.find { (UserRolesTable.role eq Roles.Events.ListJoined.name) and (UserRolesTable.user eq user.id) }
                 .empty()
         }
 
         // Fetch all the events the user has joined
-        val joinedEvents = Database.transaction {
+        val joinedEvents = database {
             JoinedEvent.find { JoinedEvents.user eq user.id }.associateBy { it.event.id.value }
         }
         val othersJoined = if (hasListJoinedRole) {
-            Database.transaction { JoinedEvent.all().groupBy { it.event.id.value } }
+            database { JoinedEvent.all().groupBy { it.event.id.value } }
         } else {
             null
         }
 
         respondSuccess<EventListResponse>(
             EventListResponse(
-                Database.transaction {
+                database {
                     events.map { event ->
                         EventListResponse.SerializableEvent(
                             event,

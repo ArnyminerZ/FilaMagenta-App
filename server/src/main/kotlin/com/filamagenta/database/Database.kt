@@ -27,114 +27,123 @@ import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object Database {
-    /**
-     * The JSON configuration used by the database.
-     */
-    val json = Json {
-        isLenient = true
-        prettyPrint = false
-    }
+val database: com.filamagenta.database.Database
+    get() = com.filamagenta.database.Database.getInstance()
 
-    val tables: Map<Table, IntEntityClass<*>> = mapOf(
-        // Tables must be sorted so that removing them in this order doesn't break any reference
-        UserMetaTable to UserMeta.Companion,
-        UserRolesTable to UserRole.Companion,
-        Transactions to com.filamagenta.database.entity.Transaction.Companion,
-        JoinedEvents to JoinedEvent.Companion,
-        Users to User.Companion,
-        Events to Event.Companion
-    )
+class Database private constructor(@VisibleForTesting val instance: Database) {
+    companion object {
+        /**
+         * The JSON configuration used by the database.
+         */
+        val json = Json {
+            isLenient = true
+            prettyPrint = false
+        }
 
-    @Volatile
-    @VisibleForTesting
-    var instance: Database? = null
+        val tables: Map<Table, IntEntityClass<*>> = mapOf(
+            // Tables must be sorted so that removing them in this order doesn't break any reference
+            UserMetaTable to UserMeta.Companion,
+            UserRolesTable to UserRole.Companion,
+            Transactions to com.filamagenta.database.entity.Transaction.Companion,
+            JoinedEvents to JoinedEvent.Companion,
+            Users to User.Companion,
+            Events to Event.Companion
+        )
 
-    /**
-     * Initializes the database to be used.
-     * Takes the configuration from the environment ([EnvironmentVariables.Database.Url] and
-     * [EnvironmentVariables.Database.Driver]).
-     *
-     * It should only be called once, if it's called again, the operation is ignored.
-     *
-     * Must be called before [transaction].
-     *
-     * @param extraTables If any, for testing, for example, some tables to be created after initialization.
-     * @param createAdminUser If `true`, a default admin user will be created, with all the roles existing.
-     * The user is defined through environment variables, see [EnvironmentVariables.Authentication.Users].
-     */
-    @Synchronized
-    fun initialize(vararg extraTables: Table, createAdminUser: Boolean = true) {
-        if (instance != null) return
+        @Volatile
+        private var instance: com.filamagenta.database.Database? = null
 
-        val url by EnvironmentVariables.Database.Url
-        val driver by EnvironmentVariables.Database.Driver
-        val username by EnvironmentVariables.Database.Username
-        val password by EnvironmentVariables.Database.Password
+        fun getInstance(): com.filamagenta.database.Database = instance!!
 
-        Database.connect(url, driver, username, password).also { instance = it }
+        @VisibleForTesting
+        fun dispose() { instance = null }
 
-        transaction {
-            addLogger(StdOutSqlLogger)
+        /**
+         * Initializes the database to be used.
+         * Takes the configuration from the environment ([EnvironmentVariables.Database.Url] and
+         * [EnvironmentVariables.Database.Driver]).
+         *
+         * It should only be called once, if it's called again, the operation is ignored.
+         *
+         * Must be called before [transaction].
+         *
+         * @param extraTables If any, for testing, for example, some tables to be created after initialization.
+         * @param createAdminUser If `true`, a default admin user will be created, with all the roles existing.
+         * The user is defined through environment variables, see [EnvironmentVariables.Authentication.Users].
+         */
+        @Synchronized
+        fun initialize(vararg extraTables: Table, createAdminUser: Boolean = true) {
+            if (instance == null) return
 
-            // @Suppress("SpreadOperator")
-            // SchemaUtils.createMissingTablesAndColumns(
-            //     *tables.keys.toTypedArray(),
-            //     *extraTables,
-            //     inBatch = true
-            // )
+            val url by EnvironmentVariables.Database.Url
+            val driver by EnvironmentVariables.Database.Driver
+            val username by EnvironmentVariables.Database.Username
+            val password by EnvironmentVariables.Database.Password
 
-            if (driver == "org.sqlite.JDBC") {
-                TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
-            }
+            Database.connect(url, driver, username, password)
 
-            val databases = SchemaUtils.listDatabases()
-            for (table in tables.keys) {
-                if (!databases.contains(table.tableName)) {
-                    SchemaUtils.create(table)
+            transaction {
+                addLogger(StdOutSqlLogger)
+
+                // @Suppress("SpreadOperator")
+                // SchemaUtils.createMissingTablesAndColumns(
+                //     *tables.keys.toTypedArray(),
+                //     *extraTables,
+                //     inBatch = true
+                // )
+
+                if (driver == "org.sqlite.JDBC") {
+                    TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
+                }
+
+                val databases = SchemaUtils.listDatabases()
+                for (table in tables.keys) {
+                    if (!databases.contains(table.tableName)) {
+                        SchemaUtils.create(table)
+                    }
+                }
+                for (table in extraTables) {
+                    if (!databases.contains(table.tableName)) {
+                        SchemaUtils.create(table)
+                    }
                 }
             }
-            for (table in extraTables) {
-                if (!databases.contains(table.tableName)) {
-                    SchemaUtils.create(table)
+            if (createAdminUser) createAdminUser()
+        }
+
+        private fun createAdminUser() {
+            val nif by EnvironmentVariables.Authentication.Users.AdminNif
+            val pwd by EnvironmentVariables.Authentication.Users.AdminPwd
+            val name by EnvironmentVariables.Authentication.Users.AdminName
+            val surname by EnvironmentVariables.Authentication.Users.AdminSurname
+
+            val salt = Passwords.generateSalt()
+            val hash = Passwords.hash(pwd, salt)
+
+            // Fetch the admin user or create it if it doesn't exist
+            val adminUser = transaction {
+                val user = User.find { Users.nif eq nif }.firstOrNull()
+                user ?: User.new {
+                    this.nif = nif
+                    this.name = name
+                    this.surname = surname
+                    this.salt = salt
+                    this.password = hash
                 }
             }
-        }
-        if (createAdminUser) createAdminUser()
-    }
-
-    private fun createAdminUser() {
-        val nif by EnvironmentVariables.Authentication.Users.AdminNif
-        val pwd by EnvironmentVariables.Authentication.Users.AdminPwd
-        val name by EnvironmentVariables.Authentication.Users.AdminName
-        val surname by EnvironmentVariables.Authentication.Users.AdminSurname
-
-        val salt = Passwords.generateSalt()
-        val hash = Passwords.hash(pwd, salt)
-
-        // Fetch the admin user or create it if it doesn't exist
-        val adminUser = transaction {
-            val user = User.find { Users.nif eq nif }.firstOrNull()
-            user ?: User.new {
-                this.nif = nif
-                this.name = name
-                this.surname = surname
-                this.salt = salt
-                this.password = hash
+            // Fetch all the roles the user has
+            val adminRoles = transaction {
+                UserRole.find { UserRolesTable.user eq adminUser.id }.map { it.role }
             }
-        }
-        // Fetch all the roles the user has
-        val adminRoles = transaction {
-            UserRole.find { UserRolesTable.user eq adminUser.id }.map { it.role }
-        }
-        // Add all the roles
-        transaction {
-            for (role in roles) {
-                // Only create the role if the user still doesn't have it
-                if (!adminRoles.contains(role)) {
-                    UserRole.new {
-                        this.role = role
-                        this.user = adminUser
+            // Add all the roles
+            transaction {
+                for (role in roles) {
+                    // Only create the role if the user still doesn't have it
+                    if (!adminRoles.contains(role)) {
+                        UserRole.new {
+                            this.role = role
+                            this.user = adminUser
+                        }
                     }
                 }
             }
@@ -152,9 +161,20 @@ object Database {
      *
      * @throws IllegalStateException If the database has not been initialized yet.
      */
-    fun <Result> transaction(block: Transaction.() -> Result): Result {
-        check(instance != null) { "database has not been initialized yet." }
+    operator fun <Result> invoke(block: Transaction.() -> Result): Result = transaction(block)
 
+    /**
+     * Runs a query in the database.
+     *
+     * **[initialize] must have been called in the lifecycle once before this function**
+     *
+     * @param block The block of code to run. Perform all the database-related operations here.
+     *
+     * @return If any, the result of [block].
+     *
+     * @throws IllegalStateException If the database has not been initialized yet.
+     */
+    fun <Result> transaction(block: Transaction.() -> Result): Result {
         return transaction(instance) { block() }
     }
 }

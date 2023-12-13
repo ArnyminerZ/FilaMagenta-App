@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.json.EventPrices
@@ -92,7 +93,7 @@ class TestEventCreateEndpoint : TestServerEnvironment() {
     fun `test invalid body`() {
         testServerInvalidBody(
             EventCreateEndpoint.url,
-            Database.transaction { userProvider.createSampleUser(Roles.Events.Create) }
+            database { userProvider.createSampleUser(Roles.Events.Create) }
         )
     }
 }

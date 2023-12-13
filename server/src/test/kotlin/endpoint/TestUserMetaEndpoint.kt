@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.endpoint.UserMetaEndpoint
 import com.filamagenta.request.UserMetaRequest
@@ -21,7 +22,7 @@ import org.junit.Test
 class TestUserMetaEndpoint : TestServerEnvironment() {
     @Test
     fun `test getting and setting meta`() = testServer {
-        Database.transaction { userProvider.createSampleUser() }
+        database { userProvider.createSampleUser() }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -73,10 +74,10 @@ class TestUserMetaEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test updating meta`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
-        Database.transaction {
+        database {
             UserMeta.new {
                 this.key = UserMeta.Key.EMAIL
                 this.value = "example@email.com"
@@ -117,7 +118,7 @@ class TestUserMetaEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test invalid body`() = testServer {
-        Database.transaction { userProvider.createSampleUser() }
+        database { userProvider.createSampleUser() }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 

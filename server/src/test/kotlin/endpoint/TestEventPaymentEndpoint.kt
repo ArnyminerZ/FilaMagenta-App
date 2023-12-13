@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.endpoint.EventPaymentEndpoint
@@ -22,13 +23,13 @@ import org.junit.Test
 class TestEventPaymentEndpoint : TestServerEnvironment() {
     @Test
     fun `test event confirm payment`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.Payment) }
-        val user2 = Database.transaction { userProvider.createSampleUser2() }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken(Roles.Events.Payment) }
+        val user2 = database { userProvider.createSampleUser2() }
+        val events = database { eventProvider.createSampleEvents() }
         val event = events.first()
 
         // Create the JoinedEvent entry
-        Database.transaction {
+        database {
             JoinedEvent.new {
                 this.timestamp = Instant.now()
 
@@ -53,7 +54,7 @@ class TestEventPaymentEndpoint : TestServerEnvironment() {
         }.let { response ->
             assertResponseSuccess<Void>(response)
         }
-        Database.transaction {
+        database {
             val joinedEvent = JoinedEvent.find { (JoinedEvents.user eq user2.id) and (JoinedEvents.event eq event.id) }
                 .firstOrNull()
             assertNotNull(joinedEvent)
@@ -65,13 +66,13 @@ class TestEventPaymentEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test event confirm payment invalid config`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.Payment) }
-        val user2 = Database.transaction { userProvider.createSampleUser2() }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken(Roles.Events.Payment) }
+        val user2 = database { userProvider.createSampleUser2() }
+        val events = database { eventProvider.createSampleEvents() }
         val event = events.first()
 
         // Create the JoinedEvent entry
-        Database.transaction {
+        database {
             JoinedEvent.new {
                 this.timestamp = Instant.now()
 
@@ -100,9 +101,9 @@ class TestEventPaymentEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test confirm payment of a non-joined event`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.Payment) }
-        val user2 = Database.transaction { userProvider.createSampleUser2() }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken(Roles.Events.Payment) }
+        val user2 = database { userProvider.createSampleUser2() }
+        val events = database { eventProvider.createSampleEvents() }
         val event = events.first()
 
         // Try leaving the event
@@ -124,8 +125,8 @@ class TestEventPaymentEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test confirm payment of unknown event`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.Payment) }
-        val user2 = Database.transaction { userProvider.createSampleUser2() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken(Roles.Events.Payment) }
+        val user2 = database { userProvider.createSampleUser2() }
 
         httpClient.post(
             EventPaymentEndpoint.url("eventId" to "123", "otherId" to user2.id)
@@ -146,8 +147,8 @@ class TestEventPaymentEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test confirm payment of unknown user`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken(Roles.Events.Payment) }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken(Roles.Events.Payment) }
+        val events = database { eventProvider.createSampleEvents() }
         val event = events.first()
 
         httpClient.post(
@@ -169,7 +170,7 @@ class TestEventPaymentEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test confirm payment no permission`() = testServer {
-        val (_, jwt) = Database.transaction { userProvider.createSampleUserAndProvideToken() }
+        val (_, jwt) = database { userProvider.createSampleUserAndProvideToken() }
 
         httpClient.post(
             EventPaymentEndpoint.url("eventId" to "123", "otherId" to "123")
@@ -191,7 +192,7 @@ class TestEventPaymentEndpoint : TestServerEnvironment() {
     fun `test invalid body`() {
         testServerInvalidBody(
             EventPaymentEndpoint.url("eventId" to "123", "otherId" to "123"),
-            Database.transaction { userProvider.createSampleUser(Roles.Events.Payment) }
+            database { userProvider.createSampleUser(Roles.Events.Payment) }
         )
     }
 }

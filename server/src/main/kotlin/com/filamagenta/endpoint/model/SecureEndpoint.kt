@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint.model
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserRolesTable
@@ -32,7 +32,7 @@ abstract class SecureEndpoint(
     private fun verifyRoles(user: User) {
         if (roles.isNotEmpty()) {
             // Fetch all the user's roles
-            val roles = Database.transaction {
+            val roles = database {
                 UserRole.find { UserRolesTable.user eq user.id }
                     .map { it.role }
             }
@@ -53,7 +53,7 @@ abstract class SecureEndpoint(
                 ?: return respondFailure(Errors.Authentication.JWT.MissingData)
 
             // Make sure the user exists
-            val user = Database.transaction { User.find { Users.nif eq nif }.firstOrNull() }
+            val user = database { User.find { Users.nif eq nif }.firstOrNull() }
                 ?: return respondFailure(Errors.Authentication.JWT.UserNotFound)
 
             // Make sure the user has all the required roles

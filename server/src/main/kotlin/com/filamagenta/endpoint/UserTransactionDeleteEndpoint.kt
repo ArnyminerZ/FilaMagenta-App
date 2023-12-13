@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.model.SecureEndpoint
@@ -20,10 +20,10 @@ object UserTransactionDeleteEndpoint : SecureEndpoint(
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         val transactionId: Int by call.parameters
 
-        val transaction = Database.transaction { Transaction.findById(transactionId) }
+        val transaction = database { Transaction.findById(transactionId) }
             ?: return respondFailure(Errors.Transactions.NotFound)
 
-        Database.transaction {
+        database {
             transaction.delete()
         }
 

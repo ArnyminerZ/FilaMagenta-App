@@ -1,6 +1,6 @@
 package database.table
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.table.Users
 import com.filamagenta.security.Passwords
@@ -17,10 +17,8 @@ import org.junit.Test
 class UsersTest : DatabaseTestEnvironment() {
     @Test
     fun `test creation`() {
-        val user = Database.transaction {
-            userProvider.createSampleUser()
-        }
-        Database.transaction {
+        val user = database { userProvider.createSampleUser() }
+        database {
             User[user.id].let {
                 assertEquals(UserProvider.SampleUser.NIF, it.nif)
                 assertEquals(UserProvider.SampleUser.NAME, it.name)
@@ -40,12 +38,12 @@ class UsersTest : DatabaseTestEnvironment() {
     @Test
     fun `test unique NIF`() {
         // Create a user
-        Database.transaction {
+        database {
             userProvider.createSampleUser()
         }
         // Try to create another one with the same NIF
         assertThrows(ExposedSQLException::class.java) {
-            Database.transaction {
+            database {
                 userProvider.createSampleUser()
             }
         }
@@ -58,7 +56,7 @@ class UsersTest : DatabaseTestEnvironment() {
         val name by EnvironmentVariables.Authentication.Users.AdminName
         val surname by EnvironmentVariables.Authentication.Users.AdminSurname
 
-        Database.transaction {
+        database {
             User.find { Users.nif eq nif }.firstOrNull()
         }.let { user ->
             assertNotNull(user)

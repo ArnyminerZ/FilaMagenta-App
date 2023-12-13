@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.utils.UserDataKey
 import com.filamagenta.database.utils.set
@@ -27,12 +27,12 @@ object UserProfileOtherEditEndpoint : SecureEndpoint("/user/profile/{userId}", R
             val value = request.value
             val userId: Int by call.parameters
 
-            val modifyUser = Database.transaction { User.findById(userId) }
+            val modifyUser = database { User.findById(userId) }
                 ?: return respondFailure(Errors.Users.UserIdNotFound)
 
             require(key != null) { "Key cannot be null" }
 
-            Database.set(modifyUser, key, value)
+            database.set(modifyUser, key, value)
 
             respondSuccess<Void>()
         } catch (e: BadRequestException) {

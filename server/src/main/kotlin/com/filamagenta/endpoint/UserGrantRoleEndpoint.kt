@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserRolesTable
@@ -28,23 +28,23 @@ object UserGrantRoleEndpoint : SecureEndpoint("/user/grant", Roles.Users.GrantRo
             if (role == Roles.Users.Immutable) return respondFailure(Errors.Users.ImmutableCannotBeGranted)
 
             // Make sure the user exists
-            val other = Database.transaction { User.findById(userId) }
+            val other = database { User.findById(userId) }
                 ?: return respondFailure(Errors.Users.UserIdNotFound)
 
             // Check that the user to modify doesn't have the immutable role
-            val isImmutable = Database.transaction {
+            val isImmutable = database {
                 UserRole.find {
                     (UserRolesTable.role eq Roles.Users.Immutable.name) and (UserRolesTable.user eq other.id)
                 }.firstOrNull() != null
             }
             if (isImmutable) return respondFailure(Errors.Users.Immutable)
 
-            val existingRole = Database.transaction {
+            val existingRole = database {
                 UserRole.find { (UserRolesTable.role eq role.name) and (UserRolesTable.user eq userId) }.firstOrNull()
             }
             if (existingRole == null) {
                 // Add the role
-                Database.transaction {
+                database {
                     val grantUser = User[userId]
                     UserRole.new {
                         this.role = role

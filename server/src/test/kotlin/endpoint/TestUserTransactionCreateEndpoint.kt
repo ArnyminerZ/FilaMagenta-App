@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.table.Transactions
 import com.filamagenta.endpoint.UserTransactionCreateEndpoint
@@ -31,7 +32,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test creating transaction`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Create) }
         val jwt = Authentication.generateJWT(user.nif)
 
         // Insert the transaction
@@ -46,7 +47,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
         }
 
         // Make sure it has been inserted
-        val transactions = Database.transaction {
+        val transactions = database {
             Transaction.find { Transactions.user eq user.id }.toList()
         }
         assertEquals(1, transactions.size)
@@ -62,7 +63,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test creating transaction invalid price per unit`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Create) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
@@ -87,7 +88,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test creating transaction invalid units`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Create) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
@@ -103,7 +104,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test creating transaction invalid date`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Create) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
@@ -119,7 +120,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test no permission`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
@@ -135,7 +136,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test user not found`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Create) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
@@ -151,11 +152,11 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test invalid body`() {
-        val other = Database.transaction { userProvider.createSampleUser2() }
+        val other = database { userProvider.createSampleUser2() }
 
         testServerInvalidBody(
             UserTransactionCreateEndpoint.url.replace("{userId}", other.id.value.toString()),
-            Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+            database { userProvider.createSampleUser(Roles.Transaction.Create) }
         )
     }
 }

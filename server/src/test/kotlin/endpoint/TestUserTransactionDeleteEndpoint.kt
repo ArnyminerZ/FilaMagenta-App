@@ -1,6 +1,7 @@
 package endpoint
 
 import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.UserTransactionDeleteEndpoint
@@ -17,7 +18,7 @@ import kotlin.test.assertNull
 import org.junit.Test
 
 class TestUserTransactionDeleteEndpoint : TestServerEnvironment() {
-    private fun provideSampleTransaction(user: User): Transaction = Database.transaction {
+    private fun provideSampleTransaction(user: User): Transaction = database {
         Transaction.new {
             this.date = LocalDate.of(2023, 12, 3)
             this.description = "Testing description"
@@ -32,7 +33,7 @@ class TestUserTransactionDeleteEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test deleting transaction`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Delete) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Delete) }
         val jwt = Authentication.generateJWT(user.nif)
         val transaction = provideSampleTransaction(user)
 
@@ -46,13 +47,13 @@ class TestUserTransactionDeleteEndpoint : TestServerEnvironment() {
         }
 
         // Make sure it has been updated correctly
-        val newTransaction = Database.transaction { Transaction.findById(transaction.id) }
+        val newTransaction = database { Transaction.findById(transaction.id) }
         assertNull(newTransaction)
     }
 
     @Test
     fun `test no permission`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
         val jwt = Authentication.generateJWT(user.nif)
         val transaction = provideSampleTransaction(user)
 
@@ -68,7 +69,7 @@ class TestUserTransactionDeleteEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test transaction not found`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Delete) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Delete) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.delete(

@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.table.Users
 import com.filamagenta.endpoint.model.Endpoint
@@ -35,7 +35,7 @@ object RegisterEndpoint : Endpoint("/auth/register") {
             if (!Passwords.isSecure(password)) return respondFailure(Errors.Authentication.Register.InsecurePassword)
 
             // Check that the user doesn't exist yet
-            val userCount = Database.transaction { User.find { Users.nif eq nif }.count() }
+            val userCount = database { User.find { Users.nif eq nif }.count() }
             if (userCount > 0) return respondFailure(Errors.Authentication.Register.UserAlreadyExists)
 
             // Hash password
@@ -43,7 +43,7 @@ object RegisterEndpoint : Endpoint("/auth/register") {
             val passwordHash = Passwords.hash(password, salt)
 
             // Insert into database
-            val user = Database.transaction {
+            val user = database {
                 User.new {
                     this.nif = nif
                     this.name = name
