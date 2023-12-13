@@ -54,7 +54,7 @@ class Database private constructor(@VisibleForTesting val instance: Database) {
         private var instance: com.filamagenta.database.Database? = null
 
         @Synchronized
-        fun getInstance(): com.filamagenta.database.Database = instance!!
+        fun getInstance(): com.filamagenta.database.Database = instance ?: error("Database has not been initialized.")
 
         @VisibleForTesting
         fun dispose() { instance = null }
