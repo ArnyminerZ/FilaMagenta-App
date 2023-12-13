@@ -16,6 +16,7 @@ import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 object EventCreateEndpoint : SecureEndpoint("/events/create", Roles.Events.Create) {
@@ -29,7 +30,7 @@ object EventCreateEndpoint : SecureEndpoint("/events/create", Roles.Events.Creat
                 Event.new {
                     this.name = request.name
                     this.description = request.description
-                    this.date = LocalDateTime.parse(request.date)
+                    this.date = LocalDateTime.parse(request.date, DateTimeFormatter.ISO_DATE_TIME)
                     this.type = request.type
                     this.prices = request.prices
                 }

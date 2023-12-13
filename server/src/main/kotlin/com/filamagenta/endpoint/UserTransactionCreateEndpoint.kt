@@ -17,6 +17,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 object UserTransactionCreateEndpoint : SecureEndpoint("/user/{userId}/transaction", Roles.Transaction.Create) {
@@ -33,7 +34,7 @@ object UserTransactionCreateEndpoint : SecureEndpoint("/user/{userId}/transactio
 
             database {
                 Transaction.new {
-                    this.date = LocalDate.parse(request.date)
+                    this.date = LocalDate.parse(request.date, DateTimeFormatter.ISO_DATE_TIME)
                     this.description = request.description
                     this.income = request.income
                     this.units = request.units

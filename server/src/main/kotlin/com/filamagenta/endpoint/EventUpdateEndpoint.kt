@@ -18,6 +18,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 object EventUpdateEndpoint : SecureEndpoint(
@@ -42,7 +43,9 @@ object EventUpdateEndpoint : SecureEndpoint(
             }
 
             database {
-                request.date?.let(LocalDateTime::parse)?.let { event.date = it }
+                request.date
+                    ?.let { LocalDateTime.parse(request.date, DateTimeFormatter.ISO_DATE_TIME) }
+                    ?.let { event.date = it }
                 request.name?.let { event.name = it }
                 request.type?.let { event.type = it }
                 request.description?.let { event.description = it }
