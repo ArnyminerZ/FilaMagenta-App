@@ -1,6 +1,5 @@
 package endpoint
 
-import com.filamagenta.database.Database
 import com.filamagenta.database.database
 import com.filamagenta.endpoint.LoginEndpoint
 import com.filamagenta.modules.AUTH_JWT_CLAIM_NIF

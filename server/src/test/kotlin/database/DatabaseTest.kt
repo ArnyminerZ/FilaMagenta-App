@@ -1,10 +1,8 @@
 package database
 
-import com.filamagenta.database.Database
 import com.filamagenta.database.database
 import database.model.DatabaseTestEnvironment
 import database.stub.TestEntity
-import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.Test
 

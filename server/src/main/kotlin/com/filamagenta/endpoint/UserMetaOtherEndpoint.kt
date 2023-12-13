@@ -1,7 +1,6 @@
 package com.filamagenta.endpoint
 
 import KoverIgnore
-import com.filamagenta.database.Database
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserMeta

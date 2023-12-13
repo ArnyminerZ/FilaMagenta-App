@@ -1,6 +1,5 @@
 package endpoint
 
-import com.filamagenta.database.Database
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.UserMeta

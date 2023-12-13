@@ -1,6 +1,5 @@
 package endpoint
 
-import com.filamagenta.database.Database
 import com.filamagenta.database.database
 import com.filamagenta.endpoint.EventListEndpoint
 import com.filamagenta.endpoint.EventListEndpoint.EventListResponse
