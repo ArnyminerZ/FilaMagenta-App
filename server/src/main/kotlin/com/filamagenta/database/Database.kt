@@ -53,6 +53,7 @@ class Database private constructor(@VisibleForTesting val instance: Database) {
         @Volatile
         private var instance: com.filamagenta.database.Database? = null
 
+        @Synchronized
         fun getInstance(): com.filamagenta.database.Database = instance!!
 
         @VisibleForTesting
@@ -73,16 +74,17 @@ class Database private constructor(@VisibleForTesting val instance: Database) {
          */
         @Synchronized
         fun initialize(vararg extraTables: Table, createAdminUser: Boolean = true) {
-            if (instance == null) return
+            if (instance != null) return
 
             val url by EnvironmentVariables.Database.Url
             val driver by EnvironmentVariables.Database.Driver
             val username by EnvironmentVariables.Database.Username
             val password by EnvironmentVariables.Database.Password
 
-            Database.connect(url, driver, username, password)
+            val database = Database.connect(url, driver, username, password)
+            instance = Database(database)
 
-            transaction {
+            database {
                 addLogger(StdOutSqlLogger)
 
                 // @Suppress("SpreadOperator")
@@ -121,7 +123,7 @@ class Database private constructor(@VisibleForTesting val instance: Database) {
             val hash = Passwords.hash(pwd, salt)
 
             // Fetch the admin user or create it if it doesn't exist
-            val adminUser = transaction {
+            val adminUser = database {
                 val user = User.find { Users.nif eq nif }.firstOrNull()
                 user ?: User.new {
                     this.nif = nif
@@ -132,11 +134,11 @@ class Database private constructor(@VisibleForTesting val instance: Database) {
                 }
             }
             // Fetch all the roles the user has
-            val adminRoles = transaction {
+            val adminRoles = database {
                 UserRole.find { UserRolesTable.user eq adminUser.id }.map { it.role }
             }
             // Add all the roles
-            transaction {
+            database {
                 for (role in roles) {
                     // Only create the role if the user still doesn't have it
                     if (!adminRoles.contains(role)) {
