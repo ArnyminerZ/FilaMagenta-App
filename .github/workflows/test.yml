@@ -59,6 +59,14 @@ jobs:
           ENV_TEST_VAR_ENUM: TEST2
         with:
           arguments: :server:check
+      - name: Store reports
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/
 
   test-app:
     name: Run App tests
@@ -82,3 +90,11 @@ jobs:
         uses: gradle/gradle-build-action@87a9a15658c426a54dd469d4fc7dc1a73ca9d4a6
         with:
           arguments: :composeApp:check
+      - name: Store reports
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            **/build/test-results/
