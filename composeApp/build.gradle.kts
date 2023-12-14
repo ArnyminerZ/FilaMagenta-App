@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kover)
+    alias(libs.plugins.moko)
 }
 
 kotlin {
@@ -27,6 +28,9 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+
+            export(libs.moko.resources)
+            export(libs.moko.graphics)
         }
     }
 
@@ -39,6 +43,11 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.material3)
 
+                // Compose - Resources
+                implementation(libs.moko.resources)
+                implementation(libs.moko.compose)
+
+                // Compose - Navigation
                 implementation(libs.voyager.navigator)
                 // implementation(libs.voyager.screenModel)
             }
@@ -46,6 +55,7 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
+                implementation(libs.moko.test)
             }
         }
 
@@ -176,4 +186,8 @@ detekt {
     config.setFrom(
         file("../config/detekt/detekt-app.yml")
     )
+}
+
+multiplatformResources {
+    multiplatformResourcesPackage = "filamagenta"
 }
