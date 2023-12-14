@@ -1,4 +1,3 @@
-import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -30,27 +29,47 @@ kotlin {
             isStatic = true
         }
     }
-    
+
+    @Suppress("UnusedPrivateProperty")
     sourceSets {
-        val desktopMain by getting
-        
-        androidMain.dependencies {
-            implementation(libs.compose.ui)
-            implementation(libs.compose.ui.tooling.preview)
-            implementation(libs.androidx.activity.compose)
+        val commonMain by getting {
+            dependencies {
+                implementation(projects.shared)
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+
+                implementation(libs.voyager.navigator)
+                // implementation(libs.voyager.screenModel)
+            }
         }
 
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
+        val androidMain by getting {
+            dependsOn(commonMain)
+
+            dependencies {
+                implementation(libs.compose.ui)
+                implementation(libs.compose.ui.tooling.preview)
+                implementation(libs.androidx.activity.compose)
+            }
         }
 
-        commonMain.dependencies {
-            implementation(projects.shared)
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            @OptIn(ExperimentalComposeLibrary::class)
-            implementation(compose.components.resources)
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            dependsOn(commonMain)
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+        }
+
+        val desktopMain by getting {
+            dependsOn(commonMain)
+
+            dependencies {
+                implementation(compose.desktop.currentOs)
+            }
         }
     }
 }
