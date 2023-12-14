@@ -51,6 +51,13 @@ kotlin {
                 implementation(libs.compose.ui)
                 implementation(libs.compose.ui.tooling.preview)
                 implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.appcompat)
+            }
+        }
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test.junit)
+                implementation(libs.compose.ui.test)
             }
         }
 
