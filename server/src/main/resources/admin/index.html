@@ -64,7 +64,29 @@
     </table>
 
     <h3>Here's your extra information:</h3>
-    <table id="metadata-table" class="data-table"></table>
+    <form id="addMetadataForm">
+        <select id="metadataKeyField" required>
+            <option value="ADDRESS_STREET">Address Street</option>
+            <option value="ADDRESS_NUMBER">Address Number</option>
+            <option value="ADDRESS_CP">CP</option>
+            <option value="ADDRESS_CITY">City</option>
+            <option value="ADDRESS_COUNTRY">Country</option>
+            <option value="EMAIL">Email</option>
+            <option value="PHONE">Phone</option>
+            <option value="PHONE_WORK">Work Phone</option>
+            <option value="PHONE_HOME">Home Phone</option>
+        </select>
+
+        <input type="text" id="metadataValueField" placeholder="Value" required />
+
+        <button type="submit">Save</button>
+    </form>
+    <table id="metadataTable" class="data-table">
+        <tr>
+            <th><b>Key</b></th>
+            <th><b>Value</b></th>
+        </tr>
+    </table>
 
     <h3>Those are your privileges:</h3>
     <ul id="roles-list"></ul>

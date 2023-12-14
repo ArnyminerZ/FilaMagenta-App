@@ -1,7 +1,8 @@
 import {prepare} from "./pages.mjs";
 import {_} from "../utils.mjs";
-import {get, httpDelete, post} from "../request.js";
-import {USER_IMMUTABLE} from "../const/errors.js";
+import {post} from "../request.mjs";
+import {loadUserMetaTable} from "../dom/users.mjs";
+import {setUserMeta} from "../modules/users.mjs";
 
 /**
  * @typedef {APIResult} UsersListResult
@@ -31,26 +32,6 @@ let _profile;
  */
 let _usersList;
 
-async function removeUser(id) {
-    try {
-        /** @type {APIResult} */
-        const result = await httpDelete(`/user/${id}`, null, _token);
-        console.info('User deleted correctly:', result);
-
-        window.location.reload()
-    } catch (/** @type {APIError} */ error) {
-        switch (error.error.code) {
-            case USER_IMMUTABLE:
-                alert('Tried to delete an immutable user.');
-                break;
-            default:
-                alert('Could not delete user');
-                console.error('Could not delete user:', error);
-                break;
-        }
-    }
-}
-
 /**
  * Shows the user's metadata dialog after having loaded it with the data of the user with id `userId`.
  * @param {number} userId
@@ -59,50 +40,13 @@ async function removeUser(id) {
 async function showMetadata(userId) {
     _('metadataUserIdField').value = userId;
 
-    await loadUserMetadata(userId);
+    await loadUserMetaTable(userId, 'metadataTable');
 
     /** @type {HTMLDialogElement} */
     const dialog = _('metadataDialog');
     dialog.showModal();
 }
 
-/**
- * Loads the given user's metadata into the metadata dialog (`#metadataTable`).
- * @param {number} userId The id of the user to load the data from.
- * @returns {Promise<void>}
- */
-async function loadUserMetadata(userId) {
-    await reloadUsersList();
-
-    const tableElement = document.getElementById('metadataTable');
-    const rowElements = tableElement.getElementsByTagName('tr');
-    /** @type {HTMLTableRowElement[]} */
-    const dataRowElements = [...rowElements].slice(1);
-    for (const row of dataRowElements) { row.remove() }
-
-    const data = _usersList.find((profile) => profile.id === userId);
-    /** @type {[string,string][]} */
-    const meta = Object.entries(data.meta);
-    for (const entry of meta) {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${entry[0]}</td>` +
-            `<td>${entry[1]}</td>`;
-        tableElement.append(row);
-    }
-    console.info('Meta:', data);
-}
-
-/**
- * Fetches the server and updates the value of `_usersList`.
- * @returns {Promise<void>}
- */
-async function reloadUsersList() {
-    /** @type {UsersListResult} */
-    const result = await get('/user/list', _token);
-    _usersList = result.data.users;
-}
-
-window.removeUser = removeUser;
 window.showMetadata = showMetadata;
 
 async function onSubmitUserCreateDialog(event) {
@@ -146,13 +90,9 @@ async function onSubmitMetadataAddForm(event) {
     const key = keyField.value;
     const value = valueField.value;
 
-    try {
-        await post(`/user/meta/${userId}`, {key, value}, _token);
-
-        await loadUserMetadata(userId);
-    } catch (/** @type {APIError} */ error) {
-        alert(`Could not store metadata. Error: ${error.error.message}`);
-        console.error('Could not store metadata:', error);
+    const success = await setUserMeta(userId, key, value);
+    if (success) {
+        await loadUserMetaTable(userId, 'metadataTable');
     }
 }
 
@@ -195,7 +135,7 @@ prepare(
         _('newUserForm').addEventListener('submit', onSubmitUserCreateDialog);
         _('addMetadataForm').addEventListener('submit', onSubmitMetadataAddForm);
     },
-    (error) => {
+    () => {
         alert('Could not load users.')
     }
 );

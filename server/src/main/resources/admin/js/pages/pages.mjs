@@ -1,7 +1,7 @@
-import {STORAGE_PROFILE, STORAGE_TOKEN} from "../const.js";
+import {STORAGE_PROFILE, STORAGE_TOKEN} from "../const.mjs";
 import {_} from "../utils.mjs";
-import {getCache} from "../data-storage.js";
-import {get} from "../request.js";
+import {getCache} from "../data-storage.mjs";
+import {get} from "../request.mjs";
 
 /**
  * @callback OnTokenObtained

@@ -1,5 +1,5 @@
 import {_} from "../utils.mjs";
-import {post} from "../request.js";
+import {post} from "../request.mjs";
 import {prepare} from "./pages.mjs";
 
 /**

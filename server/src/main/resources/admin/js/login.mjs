@@ -1,8 +1,11 @@
 import {_, CC} from './utils.mjs';
-import {get, post} from './request.js';
-import {getCache, getCacheRaw, removeCache, setCache, setCacheRaw} from "./data-storage.js";
-import {STORAGE_PROFILE, STORAGE_TOKEN} from "./const.js";
-import {TOKEN_EXPIRED} from './const/errors.js';
+import {get, post} from './request.mjs';
+import {getCache, getCacheRaw, removeCache, setCache, setCacheRaw} from "./data-storage.mjs";
+import {STORAGE_PROFILE, STORAGE_TOKEN} from "./const.mjs";
+import {TOKEN_EXPIRED} from './const/errors.mjs';
+import {fillUserMetaTable} from "./dom/users.mjs";
+import {setUserMeta} from "./modules/users.mjs";
+import {getToken} from "./modules/auth.mjs";
 
 /**
  * @typedef {APIResult} LoginSuccessResult
@@ -57,14 +60,37 @@ function refreshUI() {
     fill('ma-fill-surname', profile.surname);
     fill('ma-fill-nif', profile.nif);
 
-    // const metadataTable = _('metadata-table');
-    // todo: fill metadata table
+    fillUserMetaTable(profile, 'metadataTable');
 
     const rolesList = _('roles-list');
     for (const role of profile.roles) {
         const item = document.createElement('li');
         item.innerText = role.type;
         rolesList.append(item);
+    }
+}
+
+async function onSubmitMetadataForm(event) {
+    event.preventDefault();
+
+    /** @type {HTMLSelectElement} */
+    const keyField = _('metadataKeyField');
+    /** @type {HTMLInputElement} */
+    const valueField = _('metadataValueField');
+
+    const key = keyField.value;
+    const value = valueField.value;
+
+    const success = await setUserMeta(null, key, value);
+    if (success) {
+        /** @type {ProfileSuccessResult} */
+        const profileResult = await get('/user/profile', await getToken());
+        const profileData = profileResult.data;
+
+        await fillUserMetaTable(profileData, 'metadataTable');
+
+        keyField.value = null;
+        valueField.value = null;
     }
 }
 
@@ -123,6 +149,8 @@ window.addEventListener('load', async function () {
             if (usersListRole != null) {
                 _('navbar_users').style.display = 'inline-block';
             }
+
+            _('addMetadataForm').addEventListener('submit', onSubmitMetadataForm);
 
             refreshUI();
         } catch (/** @type {APIError} */ error) {
