@@ -60,7 +60,10 @@ class Database private constructor(private val instance: Database) {
         fun getInstance(): com.filamagenta.database.Database = instance ?: error("Database has not been initialized.")
 
         @VisibleForTesting
-        fun dispose() { instance = null }
+        suspend fun dispose() {
+            logger.warn { "Disposing database instance..." }
+            instance = null
+        }
 
         /**
          * Initializes the database to be used.
@@ -87,7 +90,9 @@ class Database private constructor(private val instance: Database) {
 
             val database = Database.connect(url, driver, username, password)
             instance = Database(database)
+            logger.debug { "Database instance initialized." }
 
+            logger.debug { "Preparing database..." }
             database {
                 addLogger(StdOutSqlLogger)
 
@@ -117,7 +122,9 @@ class Database private constructor(private val instance: Database) {
             if (createAdminUser) createAdminUser()
         }
 
-        private fun createAdminUser() {
+        private suspend fun createAdminUser() {
+            logger.debug { "Creating default admin user..." }
+
             val nif by EnvironmentVariables.Authentication.Users.AdminNif
             val pwd by EnvironmentVariables.Authentication.Users.AdminPwd
             val name by EnvironmentVariables.Authentication.Users.AdminName

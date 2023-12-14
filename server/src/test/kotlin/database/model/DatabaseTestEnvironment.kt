@@ -36,6 +36,6 @@ abstract class DatabaseTestEnvironment : TestEnvironment() {
             }
         }
 
-        Database.dispose()
+        runBlocking { Database.dispose() }
     }
 }
