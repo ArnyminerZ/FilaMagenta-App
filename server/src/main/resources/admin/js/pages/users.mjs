@@ -3,6 +3,7 @@ import {_} from "../utils.mjs";
 import {post} from "../request.mjs";
 import {loadUserMetaTable} from "../dom/users.mjs";
 import {setUserMeta} from "../modules/users.mjs";
+import {onSubmitNewTransactionDialog} from "../modules/transactions.js";
 
 /**
  * @typedef {APIResult} UsersListResult
@@ -33,6 +34,14 @@ let _profile;
 let _usersList;
 
 /**
+ * Whether the currently logged-in user has the role required to create transactions:
+ * `com.filamagenta.security.Roles.Transaction.Create`
+ * @type {boolean}
+ * @private
+ */
+let _hasCreateTransactionsRole = false;
+
+/**
  * Shows the user's metadata dialog after having loaded it with the data of the user with id `userId`.
  * @param {number} userId
  * @returns {Promise<void>}
@@ -47,6 +56,26 @@ async function showMetadata(userId) {
     dialog.showModal();
 }
 
+/**
+ * Shows the dialog that allows to create a new transaction.
+ *
+ * The logged-in user requires the `com.filamagenta.security.Roles.Transaction.Create` role.
+ *
+ * @param {number} userId The id of the user that will be the owner of the transaction.
+ */
+function showCreateTransactionDialog(userId) {
+    /** @type {HTMLDialogElement} */
+    const dialog = _('newTransactionDialog');
+    /** @type {HTMLFormElement} */
+    const form = _('newTransactionForm');
+
+    _('transactionUserId').value = userId;
+
+    form.reset();
+    dialog.showModal();
+}
+
+window.showCreateTransactionDialog = showCreateTransactionDialog;
 window.showMetadata = showMetadata;
 
 async function onSubmitUserCreateDialog(event) {
@@ -109,6 +138,9 @@ prepare(
     },
     (profile) => {
         _profile = profile
+
+        _hasCreateTransactionsRole = profile.roles
+            .find((role) => role.type === 'com.filamagenta.security.Roles.Transaction.Create') != null;
     },
     (/** @type {UsersListResult} */ list) => {
         console.log('Result:', list.data);
@@ -120,12 +152,13 @@ prepare(
             const row = document.createElement('tr');
             const removeButton = `<button onclick="if (confirm('Are you sure?')) removeUser(${item.id})">Remove</button>`;
             const metadataButton = `<button onclick="showMetadata(${item.id})">Metadata</button>`;
+            const transactionButton = _hasCreateTransactionsRole ? `<button onclick="showCreateTransactionDialog(${item.id})">Transaction</button>` : ``;
             row.innerHTML = `<td>${item.id}</td>` +
                 `<td>${item.nif}</td>` +
                 `<td>${item.name}</td>` +
                 `<td>${item.surname}</td>` +
                 `<td>${item.id === _profile.id ? 'You' : ''}</td>` +
-                `<td>${removeButton}${metadataButton}</td>`;
+                `<td>${removeButton}${metadataButton}${transactionButton}</td>`;
             domList.append(row);
         }
         if (users.length <= 0) {
@@ -134,6 +167,7 @@ prepare(
 
         _('newUserForm').addEventListener('submit', onSubmitUserCreateDialog);
         _('addMetadataForm').addEventListener('submit', onSubmitMetadataAddForm);
+        _('newTransactionDialog').addEventListener('submit', onSubmitNewTransactionDialog);
     },
     () => {
         alert('Could not load users.')

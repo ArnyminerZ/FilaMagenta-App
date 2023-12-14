@@ -1,6 +1,6 @@
 import {_} from "../utils.mjs";
-import {post} from "../request.mjs";
 import {prepare} from "./pages.mjs";
+import {onSubmitNewTransactionDialog} from "../modules/transactions.js";
 
 /**
  * @typedef {Object} Transaction
@@ -33,46 +33,6 @@ let _token;
  */
 let _profile;
 
-/**
- * @param {Event} event
- */
-const onSubmitNewTransactionDialog = async function (event) {
-    event.preventDefault();
-
-    /** @type {HTMLInputElement} */
-    const incomeField = _('transactionIncome');
-    /** @type {HTMLInputElement} */
-    const dateField = _('transactionDate');
-    /** @type {HTMLSelectElement} */
-    const typeField = _('transactionType');
-    /** @type {HTMLTextAreaElement} */
-    const descriptionField = _('transactionDescription');
-    /** @type {HTMLInputElement} */
-    const unitsField = _('transactionUnits');
-    /** @type {HTMLInputElement} */
-    const ppuField = _('transactionPPU');
-
-    const income = incomeField.checked;
-    const date = dateField.valueAsDate;
-    const type = typeField.value;
-    const description = descriptionField.value;
-    const units = unitsField.valueAsNumber;
-    const pricePerUnit = ppuField.valueAsNumber;
-
-    try {
-        const transactionsResult = await post(
-            `/user/${_profile.id}/transaction`,
-            { date, description, income, units, pricePerUnit, type },
-            _token
-        );
-        console.info('Result:', transactionsResult);
-
-        window.location.reload();
-    } catch (error) {
-        console.error('Could not create transaction:', error);
-    }
-}
-
 prepare(
     '/user/transactions',
     new Map(
@@ -81,8 +41,13 @@ prepare(
             ['com.filamagenta.security.Roles.Users.List', 'navbar_users']
         ]
     ),
-    (token) => { _token = token; },
-    (profile) => { _profile = profile; },
+    (token) => {
+        _token = token;
+    },
+    (profile) => {
+        _profile = profile;
+        _('transactionUserId').value = profile.id;
+    },
     (/** @type {TransactionsListResult} */ list) => {
         const transactions = list.data.transactions;
 
@@ -103,5 +68,7 @@ prepare(
 
         _('newTransactionDialog').addEventListener('submit', onSubmitNewTransactionDialog);
     },
-    () => { alert('Could not load transactions.') }
+    () => {
+        alert('Could not load transactions.')
+    }
 );
