@@ -15,7 +15,6 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -54,7 +53,10 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
         }
         assertEquals(1, transactions.size)
         transactions[0].let { transaction ->
-            assertEquals(LocalDate.parse(sampleTransaction.date), transaction.date)
+            assertEquals(
+                ZonedDateTime.parse(sampleTransaction.date, DateTimeFormatter.ISO_DATE_TIME).toLocalDate(),
+                transaction.date
+            )
             assertEquals(sampleTransaction.description, transaction.description)
             assertEquals(sampleTransaction.income, transaction.income)
             assertEquals(sampleTransaction.units, transaction.units)

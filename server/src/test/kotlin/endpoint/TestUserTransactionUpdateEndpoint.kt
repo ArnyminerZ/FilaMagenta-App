@@ -38,7 +38,7 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
      */
     private fun provideSampleTransaction(user: User): Transaction = database {
         Transaction.new {
-            this.date = LocalDate.parse(sampleTransaction.date)
+            this.date = ZonedDateTime.parse(sampleTransaction.date, DateTimeFormatter.ISO_DATE_TIME).toLocalDate()
             this.description = sampleTransaction.description!!
             this.income = sampleTransaction.income!!
             this.units = sampleTransaction.units!!
@@ -84,7 +84,7 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
     @Test
     fun `test update transaction date`() = testUpdating(
         request = UserTransactionUpdateRequest(
-            date = LocalDate.of(2022, 11, 5).toString()
+            date = ZonedDateTime.of(2022, 11, 5, 0, 0, 0, 0, ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME)
         ),
         assertion = { assertEquals(LocalDate.of(2022, 11, 5), it.date) }
     )
