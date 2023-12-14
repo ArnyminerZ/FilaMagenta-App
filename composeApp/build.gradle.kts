@@ -43,6 +43,11 @@ kotlin {
                 // implementation(libs.voyager.screenModel)
             }
         }
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
+        }
 
         val androidMain by getting {
             dependsOn(commonMain)
@@ -52,12 +57,6 @@ kotlin {
                 implementation(libs.compose.ui.tooling.preview)
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.androidx.appcompat)
-            }
-        }
-        val androidInstrumentedTest by getting {
-            dependencies {
-                implementation(libs.kotlin.test.junit)
-                implementation(libs.compose.ui.test)
             }
         }
 
@@ -76,6 +75,11 @@ kotlin {
 
             dependencies {
                 implementation(compose.desktop.currentOs)
+            }
+        }
+        val desktopTest by getting {
+            dependencies {
+                implementation(compose.desktop.uiTestJUnit4)
             }
         }
     }
