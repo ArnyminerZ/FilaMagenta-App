@@ -26,3 +26,25 @@ docker compose -f compose.yml -f compose.prod.yml up -d
 
 > [!TIP]
 > You can run the app in the foreground by removing the `-d` argument.
+
+## Tests
+
+The server is tested thoughtfully automatically. To run tests on your device, run the following command:
+```shell
+# All the required environment variables for testing
+export AUTH_JWT_AUDIENCE=http://0.0.0.0:8080/
+export AUTH_JWT_ISSUER=http://0.0.0.0:8080/
+export AUTH_JWT_REALM=Access to secure endpoints
+# Can be replaced with any random sequence of characters
+export AUTH_JWT_SECRET=secret
+export DATABASE_DRIVER=org.postgresql.Driver
+export DATABASE_URL=jdbc:postgresql://127.0.0.1:5432/postgres
+export RATE_CAPACITY=100
+export RATE_PERIOD=10
+export DATABASE_USERNAME=postgres
+# Can be replaced with any random sequence of characters
+export DATABASE_PASSWORD=AbfEwudQ8AqhhVVqTiRURpbMmQTW46
+
+# Run the tests (will also run detekt)
+./gradlew :shared:check :server:check
+```
