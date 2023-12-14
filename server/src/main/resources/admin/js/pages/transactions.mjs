@@ -77,7 +77,8 @@ prepare(
     '/user/transactions',
     new Map(
         [
-            ['com.filamagenta.security.Roles.Transaction.Create', 'newTransactionButton']
+            ['com.filamagenta.security.Roles.Transaction.Create', 'newTransactionButton'],
+            ['com.filamagenta.security.Roles.Users.List', 'navbar_users']
         ]
     ),
     (token) => { _token = token; },

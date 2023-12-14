@@ -71,7 +71,7 @@ export function prepare(
         for (const pair of showRoles) {
             const [role, id] = pair;
             if (roles.includes(role)) {
-                _(id).style.display = 'block';
+                _(id).style.display = 'inline-block';
             }
         }
 

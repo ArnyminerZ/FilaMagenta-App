@@ -77,7 +77,8 @@ prepare(
     '/user/list',
     new Map(
         [
-            ['com.filamagenta.security.Roles.Users.Create', 'newUserButton']
+            ['com.filamagenta.security.Roles.Users.Create', 'newUserButton'],
+            ['com.filamagenta.security.Roles.Users.List', 'navbar_users']
         ]
     ),
     (token) => {

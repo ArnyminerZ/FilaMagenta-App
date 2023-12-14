@@ -41,9 +41,9 @@
 
 <div id="main_container" style="display: none">
     <nav>
-        <b><a href="/admin">Admin</a></b> |
-        <a href="/admin/transactions">Transactions</a> |
-        <a href="/admin/users">Users</a>
+        <b><a href="/admin">Home</a></b> |
+        <a href="/admin/transactions">Transactions</a>
+        <span id="navbar_users" style="display: none"> | <b><a href="/admin/users">Users</a></b></span>
         &emsp;
         <a href="#" onclick="localStorage.removeItem('TOKEN'); window.location.reload()">Logout</a>
     </nav>

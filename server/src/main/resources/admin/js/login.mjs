@@ -118,6 +118,12 @@ window.addEventListener('load', async function () {
 
             setCache(STORAGE_PROFILE, profile);
 
+            const usersListRole = profile.roles
+                .find((role) => role.type === 'com.filamagenta.security.Roles.Users.List');
+            if (usersListRole != null) {
+                _('navbar_users').style.display = 'inline-block';
+            }
+
             refreshUI();
         } catch (/** @type {APIError} */ error) {
             switch (error.error.code) {
