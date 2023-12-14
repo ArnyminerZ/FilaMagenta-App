@@ -28,4 +28,4 @@ jobs:
           DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
           IS_PRODUCTION: ${{ github.event_name == 'release' }}
         with:
-          arguments: publishImage
+          arguments: :server:check :server:publishImage
