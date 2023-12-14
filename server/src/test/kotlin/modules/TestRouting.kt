@@ -17,6 +17,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.testing.testApplication
 import io.ktor.util.pipeline.PipelineContext
 import kotlin.test.assertEquals
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertThrows
 import org.junit.Test
 
@@ -41,15 +42,17 @@ class TestRouting : TestEnvironment() {
                 configureJwt()
             }
             routing {
-                addEndpoints(
-                    mapOf(
-                        endpointGet to HttpMethod.Get,
-                        endpointPost to HttpMethod.Post,
-                        endpointPatch to HttpMethod.Patch,
-                        endpointDelete to HttpMethod.Delete
-                    ),
-                    mapOf()
-                )
+                runBlocking {
+                    addEndpoints(
+                        mapOf(
+                            endpointGet to HttpMethod.Get,
+                            endpointPost to HttpMethod.Post,
+                            endpointPatch to HttpMethod.Patch,
+                            endpointDelete to HttpMethod.Delete
+                        ),
+                        mapOf()
+                    )
+                }
             }
 
             assertEquals("ok", client.get("get").bodyAsText())
@@ -67,12 +70,14 @@ class TestRouting : TestEnvironment() {
             }
             routing {
                 assertThrows(java.lang.IllegalStateException::class.java) {
-                    addEndpoints(
-                        mapOf(
-                            generate("custom") to HttpMethod("CUSTOM")
-                        ),
-                        mapOf()
-                    )
+                    runBlocking {
+                        addEndpoints(
+                            mapOf(
+                                generate("custom") to HttpMethod("CUSTOM")
+                            ),
+                            mapOf()
+                        )
+                    }
                 }
             }
         }

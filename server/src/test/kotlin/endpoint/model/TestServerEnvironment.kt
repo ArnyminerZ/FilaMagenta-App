@@ -28,6 +28,7 @@ import io.ktor.server.testing.testApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -171,6 +172,8 @@ abstract class TestServerEnvironment : DatabaseTestEnvironment() {
     }
 
     private fun ApplicationTestBuilder.installServerEndpoints() {
-        routing { addEndpoints() }
+        routing {
+            runBlocking { addEndpoints() }
+        }
     }
 }

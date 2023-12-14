@@ -29,6 +29,7 @@ import com.filamagenta.endpoint.model.delete
 import com.filamagenta.endpoint.model.get
 import com.filamagenta.endpoint.model.patch
 import com.filamagenta.endpoint.model.post
+import io.klogging.logger
 import io.ktor.http.HttpMethod
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
@@ -38,6 +39,9 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import kotlinx.coroutines.runBlocking
+
+private val logger = logger("routing")
 
 /**
  * Holds all the endpoints defined for the server, and the HTTP method to be used.
@@ -74,15 +78,17 @@ val secureEndpoints: Map<SecureEndpoint, HttpMethod> = mapOf(
     UserTransactionUpdateEndpoint to HttpMethod.Patch,
 )
 
-fun Application.installRouting() {
+suspend fun Application.installRouting() {
+    logger.debug { "Installing Routing..." }
     routing {
-        addEndpoints()
+        runBlocking { addEndpoints() }
 
         staticResources("/admin", "admin", index = "index.html")
     }
 }
 
-private fun Route.installEndpoint(endpoint: Endpoint, method: HttpMethod) {
+private suspend fun Route.installEndpoint(endpoint: Endpoint, method: HttpMethod) {
+    logger.debug { "Installing endpoint $method ${endpoint.url}..." }
     when (method) {
         HttpMethod.Get -> get(endpoint)
         HttpMethod.Post -> post(endpoint)
@@ -92,16 +98,22 @@ private fun Route.installEndpoint(endpoint: Endpoint, method: HttpMethod) {
     }
 }
 
-fun Route.addEndpoints(
+suspend fun Route.addEndpoints(
     endpointsList: Map<Endpoint, HttpMethod> = endpoints,
     secureEndpointsList: Map<SecureEndpoint, HttpMethod> = secureEndpoints
 ) {
     get("/") {
         call.respondText("Welcome!")
     }
-    for ((endpoint, method) in endpointsList) installEndpoint(endpoint, method)
+    for ((endpoint, method) in endpointsList) {
+        installEndpoint(endpoint, method)
+    }
 
     authenticate(AUTH_JWT_NAME) {
-        for ((endpoint, method) in secureEndpointsList) installEndpoint(endpoint, method)
+        runBlocking {
+            for ((endpoint, method) in secureEndpointsList) {
+                installEndpoint(endpoint, method)
+            }
+        }
     }
 }

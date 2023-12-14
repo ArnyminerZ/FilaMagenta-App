@@ -5,12 +5,15 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.response.Errors
 import com.filamagenta.system.EnvironmentVariables
+import io.klogging.logger
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.AuthenticationConfig
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
+
+private val logger = logger("auth")
 
 const val AUTH_JWT_NAME = "auth-jwt"
 
@@ -46,7 +49,8 @@ fun AuthenticationConfig.configureJwt() {
     }
 }
 
-fun Application.installAuthentication() {
+suspend fun Application.installAuthentication() {
+    logger.debug { "Installing JWT authentication..." }
     install(Authentication) {
         configureJwt()
     }

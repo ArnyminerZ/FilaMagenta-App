@@ -8,6 +8,7 @@ import com.filamagenta.modules.installContentNegotiation
 import com.filamagenta.modules.installRateLimit
 import com.filamagenta.modules.installRouting
 import com.filamagenta.modules.installStatusPages
+import com.filamagenta.system.EnvironmentVariables
 import io.klogging.config.ANSI_CONSOLE
 import io.klogging.config.loggingConfiguration
 import io.ktor.server.application.Application
@@ -21,7 +22,12 @@ var server: NettyApplicationEngine? = null
 
 fun main(args: Array<String> = emptyArray()) {
     // Configure logging
-    loggingConfiguration { ANSI_CONSOLE() }
+    loggingConfiguration {
+        ANSI_CONSOLE()
+
+        val logLevel by EnvironmentVariables.LogLevel
+        minDirectLogLevel(logLevel)
+    }
 
     if (!args.contains("skip-database-init")) runBlocking { Database.initialize() }
 
@@ -37,7 +43,7 @@ fun main(args: Array<String> = emptyArray()) {
     ).also { server = it }.start(wait = !args.contains("do-not-wait"))
 }
 
-fun Application.module() {
+fun Application.module() = runBlocking {
     installAuthentication()
     installContentNegotiation()
     installRateLimit()
