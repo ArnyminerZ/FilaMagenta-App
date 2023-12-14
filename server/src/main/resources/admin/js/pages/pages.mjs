@@ -76,6 +76,7 @@ export function prepare(
         }
 
         try {
+            /** @type {APIResult} */
             const result = await get(listEndpoint, token);
             onListObtained(result)
         } catch (/** @type {APIError} */ error) {
