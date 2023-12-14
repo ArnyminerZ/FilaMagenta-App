@@ -24,6 +24,8 @@ sealed class Role(val name: String) {
     override fun hashCode(): Int {
         return name.hashCode()
     }
+
+    override fun toString(): String = name
 }
 
 val roles: List<Role> = listOf(
@@ -42,6 +44,7 @@ val roles: List<Role> = listOf(
     Roles.Users.Immutable,
     Roles.Users.ModifyOthers,
     Roles.Users.RevokeRole,
+    Roles.Users.List,
 )
 
 @KoverIgnore
@@ -71,6 +74,13 @@ object Roles {
         @KoverIgnore
         @Serializable
         data object RevokeRole : Role("revoke_role")
+
+        /**
+         * Allows listing all the registered users.
+         */
+        @KoverIgnore
+        @Serializable
+        data object List : Role("user_list")
     }
 
     @KoverIgnore
