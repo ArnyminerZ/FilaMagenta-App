@@ -1,41 +1,38 @@
 package ui.screen
 
-import accounts.Account
 import accounts.AccountManager
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import cafe.adriel.voyager.navigator.LocalNavigator
 import ui.screen.model.BaseScreen
 
-object LoginScreen : BaseScreen {
+object MainScreen: BaseScreen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.current
 
-        var accountAdded by remember { mutableStateOf(false) }
+        val accounts by AccountManager.getAccountsFlow().collectAsState(null)
 
-        LaunchedEffect(accountAdded) {
-            if (accountAdded) {
-                navigator?.push(MainScreen)
+        LaunchedEffect(accounts) {
+            if (accounts != null && accounts?.isEmpty() == true) {
+                navigator?.push(LoginScreen)
             }
         }
 
         Column {
-            Text("Login")
+            Text("Main Screen")
 
             Button(
                 onClick = {
-                    accountAdded = AccountManager.addAccount(Account("test"), "password")
+                    AccountManager.clearAccounts()
                 }
             ) {
-                Text("Add Account")
+                Text("Remove Account")
             }
         }
     }
