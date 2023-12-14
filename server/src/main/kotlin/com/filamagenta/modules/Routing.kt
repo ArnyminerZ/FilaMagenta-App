@@ -11,7 +11,11 @@ import com.filamagenta.endpoint.EventPaymentEndpoint
 import com.filamagenta.endpoint.EventUpdateEndpoint
 import com.filamagenta.endpoint.LoginEndpoint
 import com.filamagenta.endpoint.RegisterEndpoint
+import com.filamagenta.endpoint.RolesListEndpoint
+import com.filamagenta.endpoint.UserDeleteEndpoint
+import com.filamagenta.endpoint.UserDeleteOtherEndpoint
 import com.filamagenta.endpoint.UserGrantRoleEndpoint
+import com.filamagenta.endpoint.UserListEndpoint
 import com.filamagenta.endpoint.UserMetaEndpoint
 import com.filamagenta.endpoint.UserMetaOtherEndpoint
 import com.filamagenta.endpoint.UserProfileEditEndpoint
@@ -29,20 +33,24 @@ import com.filamagenta.endpoint.model.delete
 import com.filamagenta.endpoint.model.get
 import com.filamagenta.endpoint.model.patch
 import com.filamagenta.endpoint.model.post
+import io.klogging.logger
 import io.ktor.http.HttpMethod
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.auth.authenticate
+import io.ktor.server.http.content.staticResources
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import kotlinx.coroutines.runBlocking
+
+private val logger = logger("routing")
 
 /**
  * Holds all the endpoints defined for the server, and the HTTP method to be used.
  */
 val endpoints: Map<Endpoint, HttpMethod> = mapOf(
-    RegisterEndpoint to HttpMethod.Post,
     LoginEndpoint to HttpMethod.Post
 )
 
@@ -59,13 +67,18 @@ val secureEndpoints: Map<SecureEndpoint, HttpMethod> = mapOf(
     EventPaymentEndpoint to HttpMethod.Post,
     EventUpdateEndpoint to HttpMethod.Patch,
     EventListEndpoint to HttpMethod.Get,
+    RegisterEndpoint to HttpMethod.Post,
+    UserDeleteEndpoint to HttpMethod.Delete,
+    UserDeleteOtherEndpoint to HttpMethod.Delete,
     UserGrantRoleEndpoint to HttpMethod.Post,
+    UserListEndpoint to HttpMethod.Get,
     UserMetaEndpoint to HttpMethod.Post,
     UserMetaOtherEndpoint to HttpMethod.Post,
     UserProfileEndpoint to HttpMethod.Get,
     UserProfileEditEndpoint to HttpMethod.Post,
     UserProfileOtherEditEndpoint to HttpMethod.Post,
     UserRevokeRoleEndpoint to HttpMethod.Post,
+    RolesListEndpoint to HttpMethod.Get,
     UserTransactionCreateEndpoint to HttpMethod.Post,
     UserTransactionDeleteEndpoint to HttpMethod.Delete,
     UserTransactionListEndpoint to HttpMethod.Get,
@@ -73,13 +86,17 @@ val secureEndpoints: Map<SecureEndpoint, HttpMethod> = mapOf(
     UserTransactionUpdateEndpoint to HttpMethod.Patch,
 )
 
-fun Application.installRouting() {
+suspend fun Application.installRouting() {
+    logger.debug { "Installing Routing..." }
     routing {
-        addEndpoints()
+        runBlocking { addEndpoints() }
+
+        staticResources("/admin", "admin", index = "index.html")
     }
 }
 
-private fun Route.installEndpoint(endpoint: Endpoint, method: HttpMethod) {
+private suspend fun Route.installEndpoint(endpoint: Endpoint, method: HttpMethod) {
+    logger.debug { "Installing endpoint $method ${endpoint.url}..." }
     when (method) {
         HttpMethod.Get -> get(endpoint)
         HttpMethod.Post -> post(endpoint)
@@ -89,16 +106,22 @@ private fun Route.installEndpoint(endpoint: Endpoint, method: HttpMethod) {
     }
 }
 
-fun Route.addEndpoints(
+suspend fun Route.addEndpoints(
     endpointsList: Map<Endpoint, HttpMethod> = endpoints,
     secureEndpointsList: Map<SecureEndpoint, HttpMethod> = secureEndpoints
 ) {
     get("/") {
         call.respondText("Welcome!")
     }
-    for ((endpoint, method) in endpointsList) installEndpoint(endpoint, method)
+    for ((endpoint, method) in endpointsList) {
+        installEndpoint(endpoint, method)
+    }
 
     authenticate(AUTH_JWT_NAME) {
-        for ((endpoint, method) in secureEndpointsList) installEndpoint(endpoint, method)
+        runBlocking {
+            for ((endpoint, method) in secureEndpointsList) {
+                installEndpoint(endpoint, method)
+            }
+        }
     }
 }

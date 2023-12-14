@@ -1,6 +1,6 @@
 package database.provider
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.security.Authentication
@@ -82,7 +82,7 @@ class UserProvider {
      * @return A pair which holds the created user, and the generated token.
      */
     fun createSampleUserAndProvideToken(vararg roles: Role): Pair<User, String> {
-        val user = Database.transaction { createSampleUser(*roles) }
+        val user = database { createSampleUser(*roles) }
         val jwt = Authentication.generateJWT(user.nif)
 
         return user to jwt
@@ -94,7 +94,7 @@ class UserProvider {
      * @return A pair which holds the created user, and the generated token.
      */
     fun createSampleUser2AndProvideToken(vararg roles: Role): Pair<User, String> {
-        val user = Database.transaction { createSampleUser2(*roles) }
+        val user = database { createSampleUser2(*roles) }
         val jwt = Authentication.generateJWT(user.nif)
 
         return user to jwt

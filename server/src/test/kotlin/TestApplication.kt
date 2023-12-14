@@ -20,7 +20,7 @@ class TestApplication : TestEnvironment() {
 
     @Test
     fun `test application starts server`() = runBlocking {
-        main(arrayOf("do-not-wait"))
+        main(arrayOf("skip-database-init", "do-not-wait"))
 
         client.get("http://0.0.0.0:${SERVER_PORT}/").let { response ->
             assertEquals(HttpStatusCode.OK, response.status)
@@ -31,7 +31,7 @@ class TestApplication : TestEnvironment() {
     @Test
     fun `test application waiting`() = runBlocking {
         val runner = Thread {
-            main()
+            main(arrayOf("skip-database-init"))
         }
         runner.start()
 

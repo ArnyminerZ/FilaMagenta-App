@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.table.JoinedEvents
@@ -20,14 +20,14 @@ object EventLeaveEndpoint : SecureEndpoint("/events/{eventId}/leave") {
 
         // Not necessary to check if the event exists, because if the user has joined it, it must exist
         // Make sure the user has joined the event
-        val alreadyJoined = Database.transaction {
+        val alreadyJoined = database {
             JoinedEvent.find { (JoinedEvents.user eq user.id) and (JoinedEvents.event eq eventId) }.firstOrNull()
         }
         if (alreadyJoined == null) {
             return respondFailure(Errors.Events.Join.NotJoined)
         }
 
-        Database.transaction {
+        database {
             alreadyJoined.delete()
         }
 

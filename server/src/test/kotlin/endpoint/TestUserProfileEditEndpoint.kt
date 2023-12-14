@@ -1,6 +1,6 @@
 package endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.utils.UserDataKey
 import com.filamagenta.endpoint.UserProfileEditEndpoint
@@ -28,7 +28,7 @@ class TestUserProfileEditEndpoint : TestServerEnvironment() {
         value: String,
         assertion: (User) -> Unit
     ) = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -42,14 +42,14 @@ class TestUserProfileEditEndpoint : TestServerEnvironment() {
             assertResponseSuccess<Void>(response)
         }
 
-        Database.transaction { User[user.id] }.let(assertion)
+        database { User[user.id] }.let(assertion)
     }
     private fun testUpdateFails(
         key: UserDataKey?,
         value: String,
         error: Pair<FailureResponse.Error, HttpStatusCode>
     ) = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
 
         val jwt = Authentication.generateJWT(user.nif)
 

@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.model.SecureEndpoint
@@ -17,6 +17,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 object UserTransactionCreateEndpoint : SecureEndpoint("/user/{userId}/transaction", Roles.Transaction.Create) {
@@ -25,15 +26,15 @@ object UserTransactionCreateEndpoint : SecureEndpoint("/user/{userId}/transactio
             val request = call.receive<UserTransactionCreateRequest>()
             val userId: Int by call.parameters
 
-            val modifyUser = Database.transaction { User.findById(userId) }
+            val modifyUser = database { User.findById(userId) }
                 ?: return respondFailure(Errors.Users.UserIdNotFound)
 
             if (request.pricePerUnit <= 0) return respondFailure(Errors.Transactions.PriceMustBeGreaterThan0)
             if (request.units <= 0u) return respondFailure(Errors.Transactions.UnitsMustBeGreaterThan0)
 
-            Database.transaction {
+            database {
                 Transaction.new {
-                    this.date = LocalDate.parse(request.date)
+                    this.date = LocalDate.parse(request.date, DateTimeFormatter.ISO_DATE_TIME)
                     this.description = request.description
                     this.income = request.income
                     this.units = request.units

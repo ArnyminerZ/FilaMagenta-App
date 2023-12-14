@@ -1,7 +1,7 @@
 package com.filamagenta.endpoint
 
 import KoverIgnore
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.utils.setUserMeta
@@ -33,10 +33,10 @@ object UserMetaOtherEndpoint : SecureEndpoint("/user/meta/{userId}", Roles.Users
             val (key, value) = call.receive<UserMetaRequest>()
             val userId: Int by call.parameters
 
-            val modifyUser = Database.transaction { User.findById(userId) }
+            val modifyUser = database { User.findById(userId) }
                 ?: return respondFailure(Errors.Users.UserIdNotFound)
 
-            val result = Database.setUserMeta(modifyUser, key, value)
+            val result = database.setUserMeta(modifyUser, key, value)
 
             respondSuccess(
                 UserMetaResponse(key, result)

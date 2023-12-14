@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.table.Users
 import com.filamagenta.endpoint.model.Endpoint
@@ -29,7 +29,7 @@ object LoginEndpoint : Endpoint("/auth/login") {
             val (nif, password) = call.receive<LoginRequest>()
 
             // Check that user exists
-            val user = Database.transaction { User.find { Users.nif eq nif }.firstOrNull() }
+            val user = database { User.find { Users.nif eq nif }.firstOrNull() }
                 ?: return respondFailure(Errors.Authentication.Login.UserNotFound)
 
             // Check that the password is correct

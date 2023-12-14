@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.entity.User
@@ -33,22 +33,22 @@ object EventPaymentEndpoint : SecureEndpoint("/events/{eventId}/payment/{otherId
             }
 
             // Make sure the user exists
-            val other = Database.transaction { User.findById(otherId) }
+            val other = database { User.findById(otherId) }
                 ?: return respondFailure(Errors.Events.Join.UserNotFound)
 
             // Make sure the event exists
-            val event = Database.transaction { Event.findById(eventId) }
+            val event = database { Event.findById(eventId) }
                 ?: return respondFailure(Errors.Events.NotFound)
 
             // Make sure the user has joined the event
-            val alreadyJoined = Database.transaction {
+            val alreadyJoined = database {
                 JoinedEvent.find { (JoinedEvents.user eq other.id) and (JoinedEvents.event eq event.id) }.firstOrNull()
             }
             if (alreadyJoined == null) {
                 return respondFailure(Errors.Events.Join.NotJoined)
             }
 
-            Database.transaction {
+            database {
                 alreadyJoined.isPaid = request.isPaid
                 alreadyJoined.paymentReference = request.paymentReference
             }

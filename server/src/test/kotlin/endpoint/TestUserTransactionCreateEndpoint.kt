@@ -1,6 +1,6 @@
 package endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.table.Transactions
 import com.filamagenta.endpoint.UserTransactionCreateEndpoint
@@ -15,13 +15,15 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 import org.junit.Test
 
 class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
     private val sampleTransaction = UserTransactionCreateRequest(
-        date = LocalDate.of(2023, 12, 3).toString(),
+        date = ZonedDateTime.of(2023, 12, 3, 0, 0, 0, 0, ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
         description = "Testing description",
         income = true,
         units = 1U,
@@ -31,7 +33,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test creating transaction`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Create) }
         val jwt = Authentication.generateJWT(user.nif)
 
         // Insert the transaction
@@ -46,12 +48,15 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
         }
 
         // Make sure it has been inserted
-        val transactions = Database.transaction {
+        val transactions = database {
             Transaction.find { Transactions.user eq user.id }.toList()
         }
         assertEquals(1, transactions.size)
         transactions[0].let { transaction ->
-            assertEquals(LocalDate.parse(sampleTransaction.date), transaction.date)
+            assertEquals(
+                ZonedDateTime.parse(sampleTransaction.date, DateTimeFormatter.ISO_DATE_TIME).toLocalDate(),
+                transaction.date
+            )
             assertEquals(sampleTransaction.description, transaction.description)
             assertEquals(sampleTransaction.income, transaction.income)
             assertEquals(sampleTransaction.units, transaction.units)
@@ -62,7 +67,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test creating transaction invalid price per unit`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Create) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
@@ -87,7 +92,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test creating transaction invalid units`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Create) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
@@ -103,7 +108,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test creating transaction invalid date`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Create) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
@@ -119,7 +124,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test no permission`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
@@ -135,7 +140,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test user not found`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Create) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.post(
@@ -151,11 +156,11 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test invalid body`() {
-        val other = Database.transaction { userProvider.createSampleUser2() }
+        val other = database { userProvider.createSampleUser2() }
 
         testServerInvalidBody(
             UserTransactionCreateEndpoint.url.replace("{userId}", other.id.value.toString()),
-            Database.transaction { userProvider.createSampleUser(Roles.Transaction.Create) }
+            database { userProvider.createSampleUser(Roles.Transaction.Create) }
         )
     }
 }

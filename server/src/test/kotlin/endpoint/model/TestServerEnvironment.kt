@@ -1,6 +1,6 @@
 package endpoint.model
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.modules.addEndpoints
 import com.filamagenta.modules.configureJwt
@@ -28,6 +28,7 @@ import io.ktor.server.testing.testApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -146,7 +147,7 @@ abstract class TestServerEnvironment : DatabaseTestEnvironment() {
 
     fun testServerInvalidBody(
         url: String,
-        user: User = Database.transaction { userProvider.createSampleUser() },
+        user: User = database { userProvider.createSampleUser() },
         method: suspend HttpClient.(
             url: String,
             requestBuilder: HttpRequestBuilder.() -> Unit
@@ -171,6 +172,8 @@ abstract class TestServerEnvironment : DatabaseTestEnvironment() {
     }
 
     private fun ApplicationTestBuilder.installServerEndpoints() {
-        routing { addEndpoints() }
+        routing {
+            runBlocking { addEndpoints() }
+        }
     }
 }

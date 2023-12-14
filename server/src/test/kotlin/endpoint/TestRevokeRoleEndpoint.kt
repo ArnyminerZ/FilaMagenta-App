@@ -1,6 +1,6 @@
 package endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserRolesTable
@@ -25,8 +25,8 @@ import org.junit.Test
 class TestRevokeRoleEndpoint : TestServerEnvironment() {
     @Test
     fun `test revoking role`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.RevokeRole) }
-        val user2 = Database.transaction { userProvider.createSampleUser2(Roles.Users.ModifyOthers) }
+        database { userProvider.createSampleUser(Roles.Users.RevokeRole) }
+        val user2 = database { userProvider.createSampleUser2(Roles.Users.ModifyOthers) }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -41,7 +41,7 @@ class TestRevokeRoleEndpoint : TestServerEnvironment() {
         }
 
         // Make sure the role has been removed
-        Database.transaction {
+        database {
             val role = UserRole.find {
                 (UserRolesTable.role eq Roles.Users.ModifyOthers.name) and (UserRolesTable.user eq user2.id)
             }.firstOrNull()
@@ -52,8 +52,8 @@ class TestRevokeRoleEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test removing non-existing role`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.RevokeRole) }
-        val user2 = Database.transaction { userProvider.createSampleUser2() }
+        database { userProvider.createSampleUser(Roles.Users.RevokeRole) }
+        val user2 = database { userProvider.createSampleUser2() }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -70,8 +70,8 @@ class TestRevokeRoleEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test revoking role forbidden`() = testServer {
-        Database.transaction { userProvider.createSampleUser() }
-        val user2 = Database.transaction { userProvider.createSampleUser2(Roles.Users.ModifyOthers) }
+        database { userProvider.createSampleUser() }
+        val user2 = database { userProvider.createSampleUser2(Roles.Users.ModifyOthers) }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -88,7 +88,7 @@ class TestRevokeRoleEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test revoking user doesn't exist`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.RevokeRole) }
+        database { userProvider.createSampleUser(Roles.Users.RevokeRole) }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -105,8 +105,8 @@ class TestRevokeRoleEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test revoking role immutable`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.RevokeRole) }
-        val admin = Database.transaction { User.all().first() }
+        database { userProvider.createSampleUser(Roles.Users.RevokeRole) }
+        val admin = database { User.all().first() }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -123,7 +123,7 @@ class TestRevokeRoleEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test invalid body`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.RevokeRole) }
+        database { userProvider.createSampleUser(Roles.Users.RevokeRole) }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 

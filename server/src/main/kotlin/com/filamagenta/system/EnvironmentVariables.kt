@@ -1,10 +1,13 @@
 package com.filamagenta.system
 
 import KoverIgnore
+import io.klogging.Level
 
 @KoverIgnore
 @Suppress("MagicNumber")
 object EnvironmentVariables {
+    data object LogLevel : EnvironmentVariable<Level>("LOG_LEVEL", Level::class, Level.DEBUG)
+
     @KoverIgnore
     object Database {
         @KoverIgnore
@@ -12,6 +15,12 @@ object EnvironmentVariables {
 
         @KoverIgnore
         data object Driver : EnvironmentVariable<String>("DATABASE_DRIVER", String::class)
+
+        @KoverIgnore
+        data object Username : EnvironmentVariable<String>("DATABASE_USERNAME", String::class, "")
+
+        @KoverIgnore
+        data object Password : EnvironmentVariable<String>("DATABASE_PASSWORD", String::class, "")
     }
 
     @KoverIgnore

@@ -1,6 +1,6 @@
 package endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.endpoint.LoginEndpoint
 import com.filamagenta.modules.AUTH_JWT_CLAIM_NIF
 import com.filamagenta.request.LoginRequest
@@ -20,7 +20,7 @@ import org.junit.Test
 class TestLoginEndpoint : TestServerEnvironment() {
     @Test
     fun `test correct login`() = testServer {
-        Database.transaction { userProvider.createSampleUser() }
+        database { userProvider.createSampleUser() }
 
         httpClient.post(LoginEndpoint.url) {
             contentType(ContentType.Application.Json)
@@ -58,7 +58,7 @@ class TestLoginEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test wrong password`() = testServer {
-        Database.transaction { userProvider.createSampleUser() }
+        database { userProvider.createSampleUser() }
 
         httpClient.post(LoginEndpoint.url) {
             contentType(ContentType.Application.Json)

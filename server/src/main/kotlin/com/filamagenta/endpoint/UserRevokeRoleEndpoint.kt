@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserRolesTable
@@ -25,18 +25,18 @@ object UserRevokeRoleEndpoint : SecureEndpoint("/user/revoke", Roles.Users.Revok
             val (userId, role) = call.receive<UserRoleRequest>()
 
             // Make sure the user exists
-            Database.transaction { User.findById(userId) }
+            database { User.findById(userId) }
                 ?: return respondFailure(Errors.Users.UserIdNotFound)
 
             // Check that the user to modify doesn't have the immutable role
-            val isImmutable = Database.transaction {
+            val isImmutable = database {
                 UserRole.find {
                     (UserRolesTable.role eq Roles.Users.Immutable.name) and (UserRolesTable.user eq userId)
                 }.firstOrNull() != null
             }
             if (isImmutable) return respondFailure(Errors.Users.Immutable)
 
-            val existingRole = Database.transaction {
+            val existingRole = database {
                 UserRole.find { (UserRolesTable.role eq role.name) and (UserRolesTable.user eq userId) }.firstOrNull()
             }
             if (existingRole == null) {
@@ -44,7 +44,7 @@ object UserRevokeRoleEndpoint : SecureEndpoint("/user/revoke", Roles.Users.Revok
                 respondSuccess<Void>(status = HttpStatusCode.Accepted)
             } else {
                 // Remove the role
-                Database.transaction { existingRole.delete() }
+                database { existingRole.delete() }
                 respondSuccess<Void>()
             }
         } catch (e: BadRequestException) {

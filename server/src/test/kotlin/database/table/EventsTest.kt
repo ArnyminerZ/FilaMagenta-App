@@ -1,6 +1,6 @@
 package database.table
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.json.EventPrices
@@ -27,7 +27,7 @@ class EventsTest : DatabaseTestEnvironment() {
 
     @Test
     fun `test creation`() {
-        val e = Database.transaction {
+        val e = database {
             Event.new {
                 this.name = SampleEvent.NAME
                 this.date = SampleEvent.date
@@ -36,7 +36,7 @@ class EventsTest : DatabaseTestEnvironment() {
                 this.prices = SampleEvent.prices
             }
         }
-        Database.transaction {
+        database {
             Event[e.id].let { event ->
                 assertEquals(SampleEvent.NAME, event.name)
                 assertEquals(SampleEvent.date, event.date)

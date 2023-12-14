@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Filà Magenta - Users</title>
+
+    <link rel="stylesheet" href="/admin/css/tables.css" />
+    <link rel="stylesheet" href="/admin/css/buttons.css" />
+</head>
+<body>
+<div id="loading_indicator">
+    <h1>Loading...</h1>
+</div>
+
+<div id="main_container">
+    <nav>
+        <a href="/admin">Home</a> |
+        <a href="/admin/transactions">Transactions</a>
+        <span id="navbar_users" style="display: none"> | <b><a href="/admin/users">Users</a></b></span>
+        &emsp;
+        <a href="#" onclick="localStorage.removeItem('TOKEN'); window.location.reload()">Logout</a>
+    </nav>
+
+    <dialog id="newUserDialog">
+        <h3>Create new user</h3>
+        <form id="newUserForm" autocomplete="off">
+            <label for="userNIF">NIF</label><br/>
+            <input type="text" id="userNIF" required />
+            <br/>
+
+            <label for="userName">Name</label><br/>
+            <input type="text" id="userName" required />
+            <br/>
+
+            <label for="userSurname">Surname</label><br/>
+            <input type="text" id="userSurname" required />
+            <br/>
+
+            <label for="userPassword">Password</label><br/>
+            <input type="password" id="userPassword" required />
+            <br/>
+
+            <button type="submit">Save</button>
+        </form>
+        <hr/>
+        <button type="button" onclick="document.getElementById('newUserDialog').close()">Close</button>
+    </dialog>
+
+    <dialog id="metadataDialog">
+        <h3>User Metadata</h3>
+        <form id="addMetadataForm">
+            <input type="hidden" id="metadataUserIdField" />
+            <select id="metadataKeyField" required>
+                <option value="ADDRESS_STREET">Address Street</option>
+                <option value="ADDRESS_NUMBER">Address Number</option>
+                <option value="ADDRESS_CP">CP</option>
+                <option value="ADDRESS_CITY">City</option>
+                <option value="ADDRESS_COUNTRY">Country</option>
+                <option value="EMAIL">Email</option>
+                <option value="PHONE">Phone</option>
+                <option value="PHONE_WORK">Work Phone</option>
+                <option value="PHONE_HOME">Home Phone</option>
+            </select>
+            <input type="text" id="metadataValueField" placeholder="Value" required />
+            <button type="submit">Save</button>
+        </form>
+        <table id="metadataTable" class="data-table">
+            <tr>
+                <th><b>Key</b></th>
+                <th><b>Value</b></th>
+            </tr>
+        </table>
+        <hr/>
+        <button type="button" onclick="document.getElementById('metadataDialog').close()">Close</button>
+    </dialog>
+
+    <dialog id="newTransactionDialog">
+        <h3>Create new transaction</h3>
+        <form id="newTransactionForm" autocomplete="off">
+            <input type="hidden" id="transactionUserId" />
+
+            <label for="transactionIncome">Is Income</label><br/>
+            <input type="checkbox" id="transactionIncome" checked />
+            <br/>
+
+            <label for="transactionDate">Date</label><br/>
+            <input type="date" id="transactionDate" required />
+            <br/>
+
+            <label for="transactionType">Type</label><br/>
+            <select id="transactionType" required>
+                <option value="STARTING_BALANCE">Starting balance</option>
+                <option value="DERRAMA">Derrama</option>
+                <option value="DEBT">Debt</option>
+                <option value="INCOME_CASH">Income Cash</option>
+                <option value="INCOME_BANK">Income Bank</option>
+                <option value="INCOME_CARD">Income Card</option>
+                <option value="FOOD">Food</option>
+                <option value="CLOTHING">Clothing</option>
+                <option value="RETURN">Return</option>
+                <option value="LOTTERY">Lottery</option>
+                <option value="LOTTERY_NON_SOLD">Lottery non-sold</option>
+                <option value="CHAIRS">Chairs</option>
+                <option value="MONTEPIO">Montepio</option>
+                <option value="FULLA">Fulla</option>
+            </select>
+            <br/>
+
+            <label for="transactionDescription">Description</label><br/>
+            <textarea id="transactionDescription" required></textarea>
+            <br/>
+
+            <label for="transactionUnits">Units</label><br/>
+            <input type="number" id="transactionUnits" value="1" min="1" step="1" required />
+            <br/>
+
+            <label for="transactionPPU">Price per unit</label><br/>
+            <input type="number" id="transactionPPU" min="0.01" step="0.01" required />
+            <br/><br/>
+
+            <button type="submit">Save</button>
+        </form>
+        <hr/>
+        <button type="button" onclick="document.getElementById('newTransactionDialog').close()">Close</button>
+    </dialog>
+
+    <button id="newUserButton"
+            class="create-button"
+            style="display: none"
+            onclick="document.getElementById('newUserDialog').showModal()"
+    >Create User</button>
+
+    <table id="usersList" class="data-table">
+        <tr>
+            <th><b>ID</b></th>
+            <th><b>NIF</b></th>
+            <th><b>Name</b></th>
+            <th><b>Surname</b></th>
+            <th><!-- Is it you? --></th>
+            <th><b>Actions</b></th>
+        </tr>
+    </table>
+    <p id="usersEmpty" style="display: none">There are no users</p>
+</div>
+
+<script src="/admin/js/pages/users.mjs" type="module"></script>
+</body>
+</html>

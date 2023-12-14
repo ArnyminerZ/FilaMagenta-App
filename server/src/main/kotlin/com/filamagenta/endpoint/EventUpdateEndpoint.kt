@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.model.SecureEndpoint
@@ -18,6 +18,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 object EventUpdateEndpoint : SecureEndpoint(
@@ -29,7 +30,7 @@ object EventUpdateEndpoint : SecureEndpoint(
             val request = call.receive<EventUpdateRequest>()
             val eventId: Int by call.parameters
 
-            val event = Database.transaction { Event.findById(eventId) }
+            val event = database { Event.findById(eventId) }
                 ?: return respondFailure(Errors.Events.NotFound)
 
             // If there's nothing to modify, return Accepted
@@ -41,8 +42,10 @@ object EventUpdateEndpoint : SecureEndpoint(
                 return respondFailure(Errors.Events.NameCannotBeEmpty)
             }
 
-            Database.transaction {
-                request.date?.let(LocalDateTime::parse)?.let { event.date = it }
+            database {
+                request.date
+                    ?.let { LocalDateTime.parse(request.date, DateTimeFormatter.ISO_DATE_TIME) }
+                    ?.let { event.date = it }
                 request.name?.let { event.name = it }
                 request.type?.let { event.type = it }
                 request.description?.let { event.description = it }

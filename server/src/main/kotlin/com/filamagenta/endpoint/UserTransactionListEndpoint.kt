@@ -1,7 +1,7 @@
 package com.filamagenta.endpoint
 
 import KoverIgnore
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.table.Transactions
@@ -39,7 +39,7 @@ object UserTransactionListEndpoint : SecureEndpoint("/user/transactions") {
     }
 
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
-        val transactions = Database.transaction {
+        val transactions = database {
             Transaction.find { Transactions.user eq user.id }.toList()
         }
 

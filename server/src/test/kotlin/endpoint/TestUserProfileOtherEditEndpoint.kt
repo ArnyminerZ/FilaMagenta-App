@@ -1,6 +1,6 @@
 package endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.utils.UserDataKey
 import com.filamagenta.endpoint.UserProfileOtherEditEndpoint
@@ -27,8 +27,8 @@ class TestUserProfileOtherEditEndpoint : TestServerEnvironment() {
         value: String,
         assertion: (User) -> Unit
     ) = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
-        val other = Database.transaction { userProvider.createSampleUser2() }
+        val user = database { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
+        val other = database { userProvider.createSampleUser2() }
 
         val jwt = Authentication.generateJWT(user.nif)
 
@@ -44,7 +44,7 @@ class TestUserProfileOtherEditEndpoint : TestServerEnvironment() {
             assertResponseSuccess<Void>(response)
         }
 
-        Database.transaction { User[other.id] }.let(assertion)
+        database { User[other.id] }.let(assertion)
     }
     private fun testUpdateFails(
         key: UserDataKey?,
@@ -52,8 +52,8 @@ class TestUserProfileOtherEditEndpoint : TestServerEnvironment() {
         error: Pair<FailureResponse.Error, HttpStatusCode>,
         overrideUserId: Int? = null
     ) = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
-        val other = Database.transaction { userProvider.createSampleUser2() }
+        val user = database { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
+        val other = database { userProvider.createSampleUser2() }
 
         val jwt = Authentication.generateJWT(user.nif)
 
@@ -131,6 +131,6 @@ class TestUserProfileOtherEditEndpoint : TestServerEnvironment() {
     @Test
     fun `test invalid body`() = testServerInvalidBody(
         UserProfileOtherEditEndpoint.url.replace("{userId}", "10"),
-        Database.transaction { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
+        database { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
     )
 }

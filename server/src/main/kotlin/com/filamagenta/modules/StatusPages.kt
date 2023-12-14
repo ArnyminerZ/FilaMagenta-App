@@ -2,11 +2,14 @@ package com.filamagenta.modules
 
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.response.Errors
+import io.klogging.logger
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.statuspages.StatusPagesConfig
+
+private val logger = logger("status")
 
 fun StatusPagesConfig.configure() {
     exception<Throwable> { call, cause ->
@@ -18,7 +21,8 @@ fun StatusPagesConfig.configure() {
     }
 }
 
-fun Application.installStatusPages() {
+suspend fun Application.installStatusPages() {
+    logger.debug { "Installing Status Pages..." }
     install(StatusPages) {
         configure()
     }

@@ -1,7 +1,7 @@
 package com.filamagenta.endpoint
 
 import KoverIgnore
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.utils.setUserMeta
@@ -29,7 +29,7 @@ object UserMetaEndpoint : SecureEndpoint("/user/meta") {
         try {
             val (key, value) = call.receive<UserMetaRequest>()
 
-            val result = Database.setUserMeta(user, key, value)
+            val result = database.setUserMeta(user, key, value)
 
             respondSuccess(
                 UserMetaResponse(key, result)

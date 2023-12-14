@@ -1,6 +1,6 @@
 package endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.UserTransactionListOtherEndpoint
@@ -17,7 +17,7 @@ import org.junit.Test
 
 class TestUserTransactionListOtherEndpoint : TestServerEnvironment() {
     private fun provideSampleTransactions(user: User) {
-        Database.transaction {
+        database {
             Transaction.new {
                 this.date = LocalDate.of(2023, 12, 3)
                 this.description = "Testing description"
@@ -43,7 +43,7 @@ class TestUserTransactionListOtherEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test listing transactions`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.ListOthers) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.ListOthers) }
         val jwt = Authentication.generateJWT(user.nif)
         provideSampleTransactions(user)
 
@@ -64,7 +64,7 @@ class TestUserTransactionListOtherEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test no permission`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.get(
@@ -78,7 +78,7 @@ class TestUserTransactionListOtherEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test user not found`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.ListOthers) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.ListOthers) }
         val jwt = Authentication.generateJWT(user.nif)
 
         httpClient.get(

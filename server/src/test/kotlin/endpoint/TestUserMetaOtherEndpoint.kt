@@ -1,6 +1,6 @@
 package endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.endpoint.UserMetaOtherEndpoint
 import com.filamagenta.request.UserMetaRequest
@@ -22,8 +22,8 @@ import org.junit.Test
 class TestUserMetaOtherEndpoint : TestServerEnvironment() {
     @Test
     fun `test getting and setting meta`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
-        val other = Database.transaction { userProvider.createSampleUser2() }
+        database { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
+        val other = database { userProvider.createSampleUser2() }
 
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -81,11 +81,11 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test updating meta`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
-        val other = Database.transaction { userProvider.createSampleUser2() }
+        val user = database { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
+        val other = database { userProvider.createSampleUser2() }
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
-        Database.transaction {
+        database {
             UserMeta.new {
                 this.key = UserMeta.Key.EMAIL
                 this.value = "example@email.com"
@@ -130,8 +130,8 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test no permission`() = testServer {
-        Database.transaction { userProvider.createSampleUser() }
-        val other = Database.transaction { userProvider.createSampleUser2() }
+        database { userProvider.createSampleUser() }
+        val other = database { userProvider.createSampleUser2() }
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
         httpClient.post(
@@ -149,7 +149,7 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test user not found`() = testServer {
-        Database.transaction { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
+        database { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
         val jwt = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
         httpClient.post(
@@ -167,11 +167,11 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test invalid body`() {
-        val other = Database.transaction { userProvider.createSampleUser2() }
+        val other = database { userProvider.createSampleUser2() }
 
         testServerInvalidBody(
             UserMetaOtherEndpoint.url.replace("{userId}", other.id.value.toString()),
-            Database.transaction { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
+            database { userProvider.createSampleUser(Roles.Users.ModifyOthers) }
         )
     }
 }

@@ -32,6 +32,7 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
 
+    // Ktor Server libraries
     api(libs.ktor.server.auth.base)
     api(libs.ktor.server.auth.jwt)
     api(libs.ktor.server.contentNegotiation)
@@ -41,12 +42,21 @@ dependencies {
     api(libs.ktor.server.serialization.kotlinx.json)
     api(libs.ktor.server.statusPages)
 
+    // Exposed database
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
     implementation(libs.exposed.datetime)
     implementation(libs.exposed.jdbc)
     implementation(libs.exposed.json)
 
+    // Supported data sources
+    implementation(libs.sqlite)
+    implementation(libs.postgresql)
+
+    // Logging library
+    implementation(libs.klogging)
+
+    // Testing libraries
     testImplementation(libs.h2)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.ktor.client.auth)

@@ -24,6 +24,8 @@ sealed class Role(val name: String) {
     override fun hashCode(): Int {
         return name.hashCode()
     }
+
+    override fun toString(): String = name
 }
 
 val roles: List<Role> = listOf(
@@ -38,8 +40,12 @@ val roles: List<Role> = listOf(
     Roles.Transaction.Delete,
     Roles.Transaction.ListOthers,
     Roles.Transaction.Update,
+    Roles.Users.Create,
+    Roles.Users.Delete,
     Roles.Users.GrantRole,
     Roles.Users.Immutable,
+    Roles.Users.List,
+    Roles.Users.ListRoles,
     Roles.Users.ModifyOthers,
     Roles.Users.RevokeRole,
 )
@@ -71,6 +77,34 @@ object Roles {
         @KoverIgnore
         @Serializable
         data object RevokeRole : Role("revoke_role")
+
+        /**
+         * Allows listing all the registered users.
+         */
+        @KoverIgnore
+        @Serializable
+        data object List : Role("user_list")
+
+        /**
+         * Allows listing all the roles available.
+         */
+        @KoverIgnore
+        @Serializable
+        data object ListRoles : Role("role_list")
+
+        /**
+         * Allows deleting other users.
+         */
+        @KoverIgnore
+        @Serializable
+        data object Delete : Role("user_delete")
+
+        /**
+         * Allows creating other users.
+         */
+        @KoverIgnore
+        @Serializable
+        data object Create : Role("user_create")
     }
 
     @KoverIgnore

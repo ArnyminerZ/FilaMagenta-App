@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Filà Magenta - Transactions</title>
+
+    <link rel="stylesheet" href="/admin/css/tables.css" />
+    <link rel="stylesheet" href="/admin/css/buttons.css" />
+</head>
+<body>
+<div id="loading_indicator">
+    <h1>Loading...</h1>
+</div>
+
+<div id="main_container">
+    <nav>
+        <a href="/admin">Home</a> |
+        <b><a href="/admin/transactions">Transactions</a></b>
+        <span id="navbar_users" style="display: none"> | <a href="/admin/users">Users</a></span>
+        &emsp;
+        <a href="#" onclick="localStorage.removeItem('TOKEN'); window.location.reload()">Logout</a>
+    </nav>
+
+    <dialog id="newTransactionDialog">
+        <h3>Create new transaction</h3>
+        <form id="newTransactionForm" autocomplete="off">
+            <input type="hidden" id="transactionUserId" />
+
+            <label for="transactionIncome">Is Income</label><br/>
+            <input type="checkbox" id="transactionIncome" checked />
+            <br/>
+
+            <label for="transactionDate">Date</label><br/>
+            <input type="date" id="transactionDate" required />
+            <br/>
+
+            <label for="transactionType">Type</label><br/>
+            <select id="transactionType" required>
+                <option value="STARTING_BALANCE">Starting balance</option>
+                <option value="DERRAMA">Derrama</option>
+                <option value="DEBT">Debt</option>
+                <option value="INCOME_CASH">Income Cash</option>
+                <option value="INCOME_BANK">Income Bank</option>
+                <option value="INCOME_CARD">Income Card</option>
+                <option value="FOOD">Food</option>
+                <option value="CLOTHING">Clothing</option>
+                <option value="RETURN">Return</option>
+                <option value="LOTTERY">Lottery</option>
+                <option value="LOTTERY_NON_SOLD">Lottery non-sold</option>
+                <option value="CHAIRS">Chairs</option>
+                <option value="MONTEPIO">Montepio</option>
+                <option value="FULLA">Fulla</option>
+            </select>
+            <br/>
+
+            <label for="transactionDescription">Description</label><br/>
+            <textarea id="transactionDescription" required></textarea>
+            <br/>
+
+            <label for="transactionUnits">Units</label><br/>
+            <input type="number" id="transactionUnits" value="1" min="1" step="1" required />
+            <br/>
+
+            <label for="transactionPPU">Price per unit</label><br/>
+            <input type="number" id="transactionPPU" min="0.01" step="0.01" required />
+            <br/><br/>
+
+            <button type="submit">Save</button>
+        </form>
+        <hr/>
+        <button type="button" onclick="document.getElementById('newTransactionDialog').close()">Close</button>
+    </dialog>
+
+    <button id="newTransactionButton"
+            class="create-button"
+            style="display: none"
+            onclick="document.getElementById('newTransactionDialog').showModal()"
+    >Create Transaction</button>
+
+    <table id="transactionsList" class="data-table">
+        <tr>
+            <th><b>Date</b></th>
+            <th><b>Type</b></th>
+            <th><b>Description</b></th>
+            <th><b>Units</b></th>
+            <th><b>Price Per Unit</b></th>
+            <th><b>Subtotal</b></th>
+        </tr>
+    </table>
+    <p id="transactionsEmpty" style="display: none">There are no transactions</p>
+</div>
+
+<script src="/admin/js/pages/transactions.mjs" type="module"></script>
+</body>
+</html>

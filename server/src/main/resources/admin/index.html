@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Filà Magenta - Admin</title>
+    <link rel="stylesheet" href="/admin/css/tables.css" />
+</head>
+<body>
+<div id="loading_indicator">
+    <h1>Loading...</h1>
+</div>
+
+<div id="login_container" style="display: none">
+    <form id="login_form">
+        <h1>Login</h1>
+
+        <table>
+            <tr>
+                <td>
+                    <label for="nif">NIF</label>
+                </td>
+                <td>
+                    <input type="text" id="nif" tabindex="1" autocomplete="username" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="password">Password</label>
+                </td>
+                <td>
+                    <input type="password" id="password" tabindex="2" autocomplete="current-password" />
+                </td>
+            </tr>
+        </table>
+
+        <button type="submit" tabindex="3">Login</button>
+    </form>
+</div>
+
+<div id="main_container" style="display: none">
+    <nav>
+        <b><a href="/admin">Home</a></b> |
+        <a href="/admin/transactions">Transactions</a>
+        <span id="navbar_users" style="display: none"> | <a href="/admin/users">Users</a></span>
+        &emsp;
+        <a href="#" onclick="localStorage.removeItem('TOKEN'); window.location.reload()">Logout</a>
+    </nav>
+
+    <h3>Welcome back <span class="ma-fill-fullname"></span>, here's your personal information:</h3>
+    <table class="data-table">
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>NIF</th>
+        </tr>
+        <tr>
+            <td class="ma-fill-name"></td>
+            <td class="ma-fill-surname"></td>
+            <td class="ma-fill-nif"></td>
+        </tr>
+    </table>
+
+    <h3>Here's your extra information:</h3>
+    <form id="addMetadataForm">
+        <select id="metadataKeyField" required>
+            <option value="ADDRESS_STREET">Address Street</option>
+            <option value="ADDRESS_NUMBER">Address Number</option>
+            <option value="ADDRESS_CP">CP</option>
+            <option value="ADDRESS_CITY">City</option>
+            <option value="ADDRESS_COUNTRY">Country</option>
+            <option value="EMAIL">Email</option>
+            <option value="PHONE">Phone</option>
+            <option value="PHONE_WORK">Work Phone</option>
+            <option value="PHONE_HOME">Home Phone</option>
+        </select>
+
+        <input type="text" id="metadataValueField" placeholder="Value" required />
+
+        <button type="submit">Save</button>
+    </form>
+    <table id="metadataTable" class="data-table">
+        <tr>
+            <th><b>Key</b></th>
+            <th><b>Value</b></th>
+        </tr>
+    </table>
+
+    <h3>Those are your privileges:</h3>
+    <ul id="roles-list"></ul>
+</div>
+
+<script src="/admin/js/login.mjs" type="module"></script>
+</body>
+</html>

@@ -19,6 +19,13 @@ sealed class EnvironmentVariable<DataType : Any>(
 ) {
     companion object {
         /**
+         * Obtains a map of all the entries in the [enumClass] associated with their respective names as keys.
+         */
+        private fun getEntries(enumClass: Class<out Enum<*>>): Map<String, Enum<*>> {
+            return enumClass.enumConstants.associateBy(Enum<*>::name)
+        }
+
+        /**
          * Converts a string to the specified data type.
          *
          * @param src The string to be converted.
@@ -27,13 +34,17 @@ sealed class EnvironmentVariable<DataType : Any>(
          */
         @VisibleForTesting
         @Suppress("UNCHECKED_CAST")
-        fun <DataType : Any> convert(name: String, kClass: KClass<DataType>, src: String): DataType? = when (kClass) {
-            String::class -> src as? DataType?
-            Int::class -> src.toIntOrNull() as? DataType?
-            Long::class -> src.toLongOrNull() as? DataType?
-            Float::class -> src.toFloatOrNull() as? DataType?
-            Double::class -> src.toDoubleOrNull() as? DataType?
-            Boolean::class -> src.toBooleanStrictOrNull() as? DataType?
+        fun <DataType : Any> convert(name: String, kClass: KClass<DataType>, src: String): DataType? = when {
+            kClass == String::class -> src as? DataType?
+            kClass == Int::class -> src.toIntOrNull() as? DataType?
+            kClass == Long::class -> src.toLongOrNull() as? DataType?
+            kClass == Float::class -> src.toFloatOrNull() as? DataType?
+            kClass == Double::class -> src.toDoubleOrNull() as? DataType?
+            kClass == Boolean::class -> src.toBooleanStrictOrNull() as? DataType?
+            kClass.java.isEnum -> {
+                val entries = getEntries(kClass.java as Class<Enum<*>>)
+                entries[src]?.let { it as? DataType? }
+            }
             else -> throw IllegalArgumentException("Type for $name (${kClass.simpleName}) is not compatible.")
         }
     }

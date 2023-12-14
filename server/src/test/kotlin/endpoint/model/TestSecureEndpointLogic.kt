@@ -1,6 +1,6 @@
 package endpoint.model
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.endpoint.model.SecureEndpoint
@@ -91,7 +91,7 @@ class TestSecureEndpointLogic : TestServerEnvironment() {
     fun `test success`() = testServer(false) {
         provideSampleEndpoints()
 
-        Database.transaction { userProvider.createSampleUser() }
+        database { userProvider.createSampleUser() }
 
         val token = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -106,7 +106,7 @@ class TestSecureEndpointLogic : TestServerEnvironment() {
     fun `test missing roles`() = testServer(false) {
         provideSampleEndpoints()
 
-        Database.transaction { userProvider.createSampleUser() }
+        database { userProvider.createSampleUser() }
 
         val token = Authentication.generateJWT(UserProvider.SampleUser.NIF)
 
@@ -121,9 +121,9 @@ class TestSecureEndpointLogic : TestServerEnvironment() {
     fun `test success roles`() = testServer(false) {
         provideSampleEndpoints()
 
-        val user = Database.transaction { userProvider.createSampleUser() }
+        val user = database { userProvider.createSampleUser() }
 
-        Database.transaction {
+        database {
             UserRole.new {
                 this.role = Roles.Users.ModifyOthers
                 this.user = user

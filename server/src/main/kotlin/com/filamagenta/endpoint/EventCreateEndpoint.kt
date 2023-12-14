@@ -1,6 +1,6 @@
 package com.filamagenta.endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.model.SecureEndpoint
@@ -16,6 +16,7 @@ import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 object EventCreateEndpoint : SecureEndpoint("/events/create", Roles.Events.Create) {
@@ -25,11 +26,11 @@ object EventCreateEndpoint : SecureEndpoint("/events/create", Roles.Events.Creat
 
             if (request.name.isBlank()) return respondFailure(Errors.Events.NameCannotBeEmpty)
 
-            Database.transaction {
+            database {
                 Event.new {
                     this.name = request.name
                     this.description = request.description
-                    this.date = LocalDateTime.parse(request.date)
+                    this.date = LocalDateTime.parse(request.date, DateTimeFormatter.ISO_DATE_TIME)
                     this.type = request.type
                     this.prices = request.prices
                 }

@@ -1,0 +1,21 @@
+.data-table {
+    border-spacing: 0;
+    border: solid black 1px;
+}
+
+.data-table tr th {
+    font-weight: bold;
+    border: solid black 1px;
+    background: #afafaf;
+    margin: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.data-table tr td {
+    border: solid black 1px;
+    background: #fafafa;
+    margin: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+}

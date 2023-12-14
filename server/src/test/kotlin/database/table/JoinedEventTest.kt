@@ -1,6 +1,6 @@
 package database.table
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.JoinedEvent
 import database.model.DatabaseTestEnvironment
 import java.time.Instant
@@ -13,12 +13,12 @@ import org.junit.Test
 class JoinedEventTest : DatabaseTestEnvironment() {
     @Test
     fun `test creation without payment`() {
-        val user = Database.transaction { userProvider.createSampleUser() }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val user = database { userProvider.createSampleUser() }
+        val events = database { eventProvider.createSampleEvents() }
 
         val instant = Instant.now()
 
-        val e = Database.transaction {
+        val e = database {
             JoinedEvent.new {
                 this.timestamp = instant
 
@@ -28,7 +28,7 @@ class JoinedEventTest : DatabaseTestEnvironment() {
                 this.user = user
             }
         }
-        Database.transaction {
+        database {
             JoinedEvent[e.id].let { joined ->
                 assertEquals(instant, joined.timestamp)
 
@@ -43,12 +43,12 @@ class JoinedEventTest : DatabaseTestEnvironment() {
 
     @Test
     fun `test creation with payment`() {
-        val user = Database.transaction { userProvider.createSampleUser() }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val user = database { userProvider.createSampleUser() }
+        val events = database { eventProvider.createSampleEvents() }
 
         val instant = Instant.now()
 
-        val e = Database.transaction {
+        val e = database {
             JoinedEvent.new {
                 this.timestamp = instant
 
@@ -59,7 +59,7 @@ class JoinedEventTest : DatabaseTestEnvironment() {
                 this.user = user
             }
         }
-        Database.transaction {
+        database {
             JoinedEvent[e.id].let { joined ->
                 assertEquals(instant, joined.timestamp)
 
@@ -74,13 +74,13 @@ class JoinedEventTest : DatabaseTestEnvironment() {
 
     @Test
     fun `test creation with payment isPaid must be true`() {
-        val user = Database.transaction { userProvider.createSampleUser() }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val user = database { userProvider.createSampleUser() }
+        val events = database { eventProvider.createSampleEvents() }
 
         val instant = Instant.now()
 
         assertThrows(ExposedSQLException::class.java) {
-            Database.transaction {
+            database {
                 JoinedEvent.new {
                     this.timestamp = instant
 
@@ -98,12 +98,12 @@ class JoinedEventTest : DatabaseTestEnvironment() {
     @Test
     fun `test creation double forbidden`() {
         // One user cannot join the same event twice
-        val user = Database.transaction { userProvider.createSampleUser() }
-        val events = Database.transaction { eventProvider.createSampleEvents() }
+        val user = database { userProvider.createSampleUser() }
+        val events = database { eventProvider.createSampleEvents() }
 
         val instant = Instant.now()
 
-        fun joinEvent() = Database.transaction {
+        fun joinEvent() = database {
             JoinedEvent.new {
                 this.timestamp = instant
 

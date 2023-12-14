@@ -49,6 +49,7 @@ jobs:
           ENV_TEST_VAR_INT: 123456
           ENV_TEST_VAR_FLO: 123.456
           ENV_TEST_VAR_BOO: true
+          ENV_TEST_VAR_ENUM: TEST2
         with:
           arguments: :server:koverXmlReport
 
@@ -64,6 +65,11 @@ jobs:
           min-coverage-overall: 80
           min-coverage-changed-files: 80
           coverage-counter-type: LINE
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   app-coverage:
     runs-on: ubuntu-latest
@@ -99,3 +105,8 @@ jobs:
           min-coverage-overall: 80
           min-coverage-changed-files: 80
           coverage-counter-type: LINE
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

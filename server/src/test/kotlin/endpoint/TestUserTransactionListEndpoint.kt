@@ -1,6 +1,6 @@
 package endpoint
 
-import com.filamagenta.database.Database
+import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.UserTransactionListEndpoint
@@ -16,7 +16,7 @@ import org.junit.Test
 
 class TestUserTransactionListEndpoint : TestServerEnvironment() {
     private fun provideSampleTransactions(user: User) {
-        Database.transaction {
+        database {
             Transaction.new {
                 this.date = LocalDate.of(2023, 12, 3)
                 this.description = "Testing description"
@@ -42,7 +42,7 @@ class TestUserTransactionListEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test listing transactions`() = testServer {
-        val user = Database.transaction { userProvider.createSampleUser(Roles.Transaction.Delete) }
+        val user = database { userProvider.createSampleUser(Roles.Transaction.Delete) }
         val jwt = Authentication.generateJWT(user.nif)
         provideSampleTransactions(user)
 
