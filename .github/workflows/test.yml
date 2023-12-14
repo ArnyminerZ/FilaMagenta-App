@@ -63,10 +63,10 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: reports
+          name: Server Reports
           path: |
-            **/build/reports/
-            **/build/test-results/
+            server/build/reports/
+            server/build/test-results/
 
   test-app:
     name: Run App tests
@@ -94,7 +94,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: reports
+          name: App Reports
           path: |
-            **/build/reports/
-            **/build/test-results/
+            composeApp/build/reports/
+            composeApp/build/test-results/
