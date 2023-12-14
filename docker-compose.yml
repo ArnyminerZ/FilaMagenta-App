@@ -10,8 +10,7 @@ services:
       DATABASE_URL: "jdbc:postgresql://db:5432/postgres"
       DATABASE_DRIVER: "org.postgresql.Driver"
       DATABASE_USERNAME: "postgres"
-      # Replace with a safe password for production
-      DATABASE_PASSWORD: "AbfEwudQ8AqhhVVqTiRURpbMmQTW46"
+      DATABASE_PASSWORD: "replace-with-safe-password"
       # -- Configure JWT
       AUTH_JWT_AUDIENCE: "http://0.0.0.0:8080/"
       AUTH_JWT_ISSUER: "http://0.0.0.0:8080/"
@@ -33,7 +32,7 @@ services:
     image: postgres
     container_name: filamagenta_db
     environment:
-      POSTGRES_PASSWORD: AbfEwudQ8AqhhVVqTiRURpbMmQTW46 # This should be modified
+      POSTGRES_PASSWORD: "replace-with-safe-password"
       PGUSER: postgres
     networks:
       - filamagenta_backend
