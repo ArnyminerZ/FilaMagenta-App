@@ -51,17 +51,32 @@ prepare(
     (/** @type {TransactionsListResult} */ list) => {
         const transactions = list.data.transactions;
 
+        let sum = 0;
+
         const transactionsList = _('transactionsList');
         for (const transaction of transactions) {
             const row = document.createElement('tr');
+            let subtotal = transaction.units * transaction.pricePerUnit;
             row.innerHTML = `<td>${transaction.date}</td>` +
                 `<td>${transaction.type}</td>` +
                 `<td>${transaction.description}</td>` +
                 `<td>${transaction.units}</td>` +
-                `<td>${transaction.pricePerUnit}</td>` +
-                `<td>${transaction.units * transaction.pricePerUnit}</td>`;
+                `<td style="color: ${transaction.income ? 'green' : 'red'}">${transaction.pricePerUnit} €</td>` +
+                `<td>${subtotal} €</td>`;
             transactionsList.append(row);
+            if (!transaction.income) subtotal *= -1;
+            sum += subtotal;
         }
+
+        const balanceRow = document.createElement('tr');
+        balanceRow.innerHTML = `<td style="background-color: #afafaf"></td>` +
+            `<td style="background-color: #afafaf"></td>` +
+            `<td style="background-color: #afafaf"></td>` +
+            `<td style="background-color: #afafaf"></td>` +
+            `<td style="background-color: #afafaf"><b>Balance:</b></td>` +
+            `<td>${sum} €</td>`;
+        transactionsList.append(balanceRow);
+
         if (transactions.length <= 0) {
             _('transactionsEmpty').style.display = 'block';
         }
