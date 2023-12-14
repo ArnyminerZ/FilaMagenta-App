@@ -10,6 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
+          <option value=":composeApp:detekt" />
           <option value=":composeApp:check" />
         </list>
       </option>
