@@ -5,9 +5,10 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import org.jetbrains.annotations.VisibleForTesting
 
+@set:VisibleForTesting
 internal lateinit var applicationContext: Context
-    private set
 
 class ContextProvider : ContentProvider() {
     override fun onCreate(): Boolean {

@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -34,6 +35,11 @@ kotlin {
         }
     }
 
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     @Suppress("UnusedPrivateProperty")
     sourceSets {
         val commonMain by getting {
@@ -44,12 +50,15 @@ kotlin {
                 implementation(compose.material3)
 
                 // Compose - Resources
-                implementation(libs.moko.resources)
-                implementation(libs.moko.compose)
+                api(libs.moko.resources)
+                api(libs.moko.compose)
 
                 // Compose - Navigation
                 implementation(libs.voyager.navigator)
                 // implementation(libs.voyager.screenModel)
+
+                // Logging
+                implementation(libs.napier)
             }
         }
         val commonTest by getting {
@@ -69,6 +78,16 @@ kotlin {
                 implementation(libs.androidx.appcompat)
             }
         }
+        val androidInstrumentedTest by getting {
+            dependencies {
+                // AndroidX Tests
+                implementation(libs.androidx.test.runner)
+                implementation(libs.androidx.test.rules)
+
+                // Compose Tests
+                implementation(libs.compose.ui.test)
+            }
+        }
 
         val iosX64Main by getting
         val iosArm64Main by getting
@@ -79,6 +98,15 @@ kotlin {
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
         }
+        val iosX64Test by getting
+        val iosArm64Test by getting
+        val iosSimulatorArm64Test by getting
+        val iosTest by creating {
+            dependsOn(commonTest)
+            iosX64Test.dependsOn(this)
+            iosArm64Test.dependsOn(this)
+            iosSimulatorArm64Test.dependsOn(this)
+        }
 
         val desktopMain by getting {
             dependsOn(commonMain)
@@ -88,6 +116,8 @@ kotlin {
             }
         }
         val desktopTest by getting {
+            dependsOn(commonTest)
+
             dependencies {
                 implementation(compose.desktop.uiTestJUnit4)
             }
@@ -105,10 +135,14 @@ android {
 
     defaultConfig {
         applicationId = "com.filamagenta"
+
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
+
         versionCode = 1
         versionName = "1.0.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
@@ -121,7 +155,7 @@ android {
 
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/*"
         }
     }
 

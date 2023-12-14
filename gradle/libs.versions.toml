@@ -5,6 +5,8 @@ android-minSdk = "24"
 android-targetSdk = "34"
 androidx-activityCompose = "1.8.1"
 androidx-appcompat = "1.6.1"
+androidx-test-runner = "1.5.2"
+androidx-test-rules = "1.5.0"
 compose = "1.5.4"
 compose-compiler = "1.5.4"
 compose-plugin = "1.5.11"
@@ -22,6 +24,7 @@ logback = "1.4.14"
 mockk = "1.13.8"
 moko = "0.23.0"
 moko-graphics = "0.9.0"
+napier = "2.6.1"
 postgresql = "42.6.0"
 sqlite = "3.44.1.0"
 voyager = "1.0.0"
@@ -29,6 +32,8 @@ voyager = "1.0.0"
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test-rules" }
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
@@ -63,6 +68,7 @@ moko-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "m
 moko-graphics = { module = "dev.icerock.moko:graphics", version.ref = "moko-graphics" }
 moko-resources = { module = "dev.icerock.moko:resources", version.ref = "moko" }
 moko-test = { module = "dev.icerock.moko:resources-test", version.ref = "moko" }
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite" }
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
