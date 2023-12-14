@@ -5,6 +5,7 @@ android-minSdk = "24"
 android-targetSdk = "34"
 androidx-activityCompose = "1.8.1"
 androidx-appcompat = "1.6.1"
+androidx-datastore = "1.0.0"
 androidx-test-runner = "1.5.2"
 androidx-test-rules = "1.5.0"
 compose = "1.5.4"
@@ -21,6 +22,7 @@ kotlinx-serialization = "1.6.2"
 kover = "0.7.5"
 ktor = "2.3.7"
 logback = "1.4.14"
+multiplatform-settings = "1.1.1"
 mockk = "1.13.8"
 moko = "0.23.0"
 moko-graphics = "0.9.0"
@@ -32,6 +34,7 @@ voyager = "1.0.0"
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test-rules" }
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
@@ -63,6 +66,11 @@ ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "k
 ktor-server-auth-base = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
 ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+multiplatformSettings-core = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
+multiplatformSettings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
+multiplatformSettings-datastore = { module = "com.russhwolf:multiplatform-settings-datastore", version.ref = "multiplatform-settings" }
+multiplatformSettings-serialization = { module = "com.russhwolf:multiplatform-settings-serialization", version.ref = "multiplatform-settings" }
+multiplatformSettings-test = { module = "com.russhwolf:multiplatform-settings-test", version.ref = "multiplatform-settings" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 moko-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "moko" }
 moko-graphics = { module = "dev.icerock.moko:graphics", version.ref = "moko-graphics" }

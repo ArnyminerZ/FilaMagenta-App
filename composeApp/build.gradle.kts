@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.detekt)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.kover)
     alias(libs.plugins.moko)
 }
@@ -59,12 +60,22 @@ kotlin {
 
                 // Logging
                 implementation(libs.napier)
+
+                // Settings
+                implementation(libs.multiplatformSettings.core)
+                implementation(libs.multiplatformSettings.coroutines)
+                implementation(libs.multiplatformSettings.datastore)
+                implementation(libs.multiplatformSettings.serialization)
+
+                // JSON Serialization
+                implementation(libs.kotlinx.serialization.json)
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.moko.test)
+                implementation(libs.multiplatformSettings.test)
             }
         }
 
@@ -76,6 +87,7 @@ kotlin {
                 implementation(libs.compose.ui.tooling.preview)
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.androidx.appcompat)
+                implementation(libs.androidx.datastore)
             }
         }
         val androidInstrumentedTest by getting {
@@ -124,6 +136,10 @@ kotlin {
         }
     }
 }
+
+tasks.findByName("iosX64ProcessResources")?.dependsOn("generateMRcommonMain")
+tasks.findByName("iosArm64ProcessResources")?.dependsOn("generateMRcommonMain")
+tasks.findByName("iosSimulatorArm64ProcessResources")?.dependsOn("generateMRcommonMain")
 
 android {
     namespace = "com.filamagenta"
