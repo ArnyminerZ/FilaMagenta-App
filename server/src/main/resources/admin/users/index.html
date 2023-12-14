@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Filà Magenta - Users</title>
+</head>
+<body>
+<div id="loading_indicator">
+    <h1>Loading...</h1>
+</div>
+
+<div id="main_container">
+    <nav>
+        <a href="/admin">Admin</a> |
+        <a href="/admin/transactions">Transactions</a> |
+        <b><a href="/admin/users">Users</a></b>
+    </nav>
+
+    <table id="usersList">
+        <tr>
+            <th><b>ID</b></th>
+            <th><b>NIF</b></th>
+            <th><b>Name</b></th>
+            <th><b>Surname</b></th>
+            <th><!-- Is it you? --></th>
+        </tr>
+    </table>
+    <p id="usersEmpty" style="display: none">There are no users</p>
+</div>
+
+<script src="/admin/js/pages/users.mjs" type="module"></script>
+</body>
+</html>
