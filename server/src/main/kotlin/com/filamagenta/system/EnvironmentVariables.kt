@@ -6,7 +6,7 @@ import io.klogging.Level
 @KoverIgnore
 @Suppress("MagicNumber")
 object EnvironmentVariables {
-    data object LogLevel : EnvironmentVariable<Level>("LOG_LEVEL", Level::class)
+    data object LogLevel : EnvironmentVariable<Level>("LOG_LEVEL", Level::class, Level.DEBUG)
 
     @KoverIgnore
     object Database {
