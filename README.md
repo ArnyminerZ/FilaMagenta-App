@@ -1,5 +1,8 @@
 # Filà Magenta App
 
+[![codecov](https://codecov.io/gh/ArnyminerZ/FilaMagenta-App/graph/badge.svg?token=QMGC6IJ7KI)](https://codecov.io/gh/ArnyminerZ/FilaMagenta-App)
+[![Build and Publish](https://github.com/ArnyminerZ/FilaMagenta-App/actions/workflows/build.yml/badge.svg)](https://github.com/ArnyminerZ/FilaMagenta-App/actions/workflows/build.yml)
+
 This repository contains all the source code of the software that runs all the applications for the Filà Magenta.
 
 It's divided into multiple modules.
