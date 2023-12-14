@@ -1,7 +1,6 @@
-import {getCache} from "../data-storage.js";
-import {STORAGE_PROFILE, STORAGE_TOKEN} from "../const.js";
 import {_} from "../utils.mjs";
-import {get, post} from "../request.js";
+import {post} from "../request.js";
+import {prepare} from "./pages.mjs";
 
 /**
  * @typedef {Object} Transaction
@@ -32,7 +31,7 @@ let _token;
  * @private
  * @type {ProfileData}
  */
-let profile;
+let _profile;
 
 /**
  * @param {Event} event
@@ -62,7 +61,7 @@ const onSubmitNewTransactionDialog = async function (event) {
 
     try {
         const transactionsResult = await post(
-            `/user/${profile.id}/transaction`,
+            `/user/${_profile.id}/transaction`,
             { date, description, income, units, pricePerUnit, type },
             _token
         );
@@ -74,50 +73,34 @@ const onSubmitNewTransactionDialog = async function (event) {
     }
 }
 
-window.addEventListener('load', async function () {
-    if (localStorage == null) {
-        alert('Your device doesn\'t support localStorage.')
-        return
-    }
+prepare(
+    '/user/transactions',
+    new Map(
+        [
+            ['com.filamagenta.security.Roles.Transaction.Create', 'newTransactionButton']
+        ]
+    ),
+    (token) => { _token = token; },
+    (profile) => { _profile = profile; },
+    (/** @type {TransactionsListResult} */ list) => {
+        const transactions = list.data.transactions;
 
-    _('newTransactionDialog').addEventListener('submit', onSubmitNewTransactionDialog);
+        const transactionsList = _('transactionsList');
+        for (const transaction of transactions) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${transaction.date}</td>` +
+                `<td>${transaction.type}</td>` +
+                `<td>${transaction.description}</td>` +
+                `<td>${transaction.units}</td>` +
+                `<td>${transaction.pricePerUnit}</td>` +
+                `<td>${transaction.units * transaction.pricePerUnit}</td>`;
+            transactionsList.append(row);
+        }
+        if (transactions.length <= 0) {
+            _('transactionsEmpty').style.display = 'block';
+        }
 
-    /** @type {string|null} */
-    _token = localStorage.getItem(STORAGE_TOKEN);
-    if (_token == null) {
-        console.log("User not logged in, redirecting to root...");
-        window.location.replace('/admin');
-        return
-    }
-
-    _('loading_indicator').style.display = 'none';
-    _('main_container').style.display = 'block';
-
-    /** @type {ProfileData} */
-    profile = getCache(STORAGE_PROFILE);
-    const roles = profile.roles.map((role) => role.type);
-
-    /** @type {TransactionsListResult} */
-    const transactionsResult = await get('/user/transactions', _token);
-    const transactions = transactionsResult.data.transactions;
-    console.info('Transactions:', transactions);
-
-    const transactionsList = _('transactionsList');
-    for (const transaction of transactions) {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${transaction.date}</td>` +
-            `<td>${transaction.type}</td>` +
-            `<td>${transaction.description}</td>` +
-            `<td>${transaction.units}</td>` +
-            `<td>${transaction.pricePerUnit}</td>` +
-            `<td>${transaction.units * transaction.pricePerUnit}</td>`;
-        transactionsList.append(row);
-    }
-    if (transactions.length <= 0) {
-        _('transactionsEmpty').style.display = 'block';
-    }
-
-    if (roles.includes('com.filamagenta.security.Roles.Transaction.Create')) {
-        _('newTransactionButton').style.display = 'block';
-    }
-});
+        _('newTransactionDialog').addEventListener('submit', onSubmitNewTransactionDialog);
+    },
+    () => { alert('Could not load transactions.') }
+);
