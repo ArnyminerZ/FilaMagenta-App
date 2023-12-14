@@ -8,8 +8,10 @@ import com.filamagenta.request.RegisterRequest
 import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Passwords
+import com.filamagenta.security.Roles
 import database.provider.UserProvider
 import endpoint.model.TestServerEnvironment
+import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -29,14 +31,17 @@ class TestRegisterEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test valid registration`() = testServer {
+        val (_, jwt) = userProvider.createSampleUserAndProvideToken(Roles.Users.Create)
+
         httpClient.post(RegisterEndpoint.url) {
+            bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
                 RegisterRequest(
-                    nif = UserProvider.SampleUser.NIF,
-                    name = UserProvider.SampleUser.NAME,
-                    surname = UserProvider.SampleUser.SURNAME,
-                    password = UserProvider.SampleUser.PASSWORD,
+                    nif = UserProvider.SampleUser2.NIF,
+                    name = UserProvider.SampleUser2.NAME,
+                    surname = UserProvider.SampleUser2.SURNAME,
+                    password = UserProvider.SampleUser2.PASSWORD,
                 )
             )
         }.let { result ->
@@ -47,12 +52,12 @@ class TestRegisterEndpoint : TestServerEnvironment() {
 
                     val user = User.findById(data.userId)
                     assertNotNull(user)
-                    assertEquals(UserProvider.SampleUser.NIF, user.nif)
-                    assertEquals(UserProvider.SampleUser.NAME, user.name)
-                    assertEquals(UserProvider.SampleUser.SURNAME, user.surname)
+                    assertEquals(UserProvider.SampleUser2.NIF, user.nif)
+                    assertEquals(UserProvider.SampleUser2.NAME, user.name)
+                    assertEquals(UserProvider.SampleUser2.SURNAME, user.surname)
 
                     assertTrue(
-                        Passwords.verifyPassword(UserProvider.SampleUser.PASSWORD, user.salt, user.password)
+                        Passwords.verifyPassword(UserProvider.SampleUser2.PASSWORD, user.salt, user.password)
                     )
                 }
             }
@@ -61,13 +66,17 @@ class TestRegisterEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test invalid body`() = testServer {
+        val (_, jwt) = userProvider.createSampleUserAndProvideToken(Roles.Users.Create)
+
         httpClient.post(RegisterEndpoint.url) {
+            bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody("{}")
         }.let { response ->
             assertResponseFailure(response, errorCode = ErrorCodes.Generic.INVALID_REQUEST)
         }
         httpClient.post(RegisterEndpoint.url) {
+            bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody("abc")
         }.let { response ->
@@ -77,14 +86,17 @@ class TestRegisterEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test invalid NIF`() = testServer {
+        val (_, jwt) = userProvider.createSampleUserAndProvideToken(Roles.Users.Create)
+
         httpClient.post(RegisterEndpoint.url) {
+            bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
                 RegisterRequest(
                     nif = "12345678X",
-                    name = UserProvider.SampleUser.NAME,
-                    surname = UserProvider.SampleUser.SURNAME,
-                    password = UserProvider.SampleUser.PASSWORD,
+                    name = UserProvider.SampleUser2.NAME,
+                    surname = UserProvider.SampleUser2.SURNAME,
+                    password = UserProvider.SampleUser2.PASSWORD,
                 )
             )
         }.let { response ->
@@ -94,14 +106,17 @@ class TestRegisterEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test empty name`() = testServer {
+        val (_, jwt) = userProvider.createSampleUserAndProvideToken(Roles.Users.Create)
+
         httpClient.post(RegisterEndpoint.url) {
+            bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
                 RegisterRequest(
-                    nif = UserProvider.SampleUser.NIF,
+                    nif = UserProvider.SampleUser2.NIF,
                     name = "",
-                    surname = UserProvider.SampleUser.SURNAME,
-                    password = UserProvider.SampleUser.PASSWORD,
+                    surname = UserProvider.SampleUser2.SURNAME,
+                    password = UserProvider.SampleUser2.PASSWORD,
                 )
             )
         }.let { response ->
@@ -111,14 +126,17 @@ class TestRegisterEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test empty surname`() = testServer {
+        val (_, jwt) = userProvider.createSampleUserAndProvideToken(Roles.Users.Create)
+
         httpClient.post(RegisterEndpoint.url) {
+            bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
                 RegisterRequest(
-                    nif = UserProvider.SampleUser.NIF,
-                    name = UserProvider.SampleUser.NAME,
+                    nif = UserProvider.SampleUser2.NIF,
+                    name = UserProvider.SampleUser2.NAME,
                     surname = "",
-                    password = UserProvider.SampleUser.PASSWORD,
+                    password = UserProvider.SampleUser2.PASSWORD,
                 )
             )
         }.let { response ->
@@ -128,13 +146,16 @@ class TestRegisterEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test insecure password`() = testServer {
+        val (_, jwt) = userProvider.createSampleUserAndProvideToken(Roles.Users.Create)
+
         httpClient.post(RegisterEndpoint.url) {
+            bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
                 RegisterRequest(
-                    nif = UserProvider.SampleUser.NIF,
-                    name = UserProvider.SampleUser.NAME,
-                    surname = UserProvider.SampleUser.SURNAME,
+                    nif = UserProvider.SampleUser2.NIF,
+                    name = UserProvider.SampleUser2.NAME,
+                    surname = UserProvider.SampleUser2.SURNAME,
                     password = "insecure-password",
                 )
             )
@@ -145,16 +166,19 @@ class TestRegisterEndpoint : TestServerEnvironment() {
 
     @Test
     fun `test user already exists`() = testServer {
-        database { userProvider.createSampleUser() }
+        val (_, jwt) = userProvider.createSampleUserAndProvideToken(Roles.Users.Create)
+
+        database { userProvider.createSampleUser2() }
 
         httpClient.post(RegisterEndpoint.url) {
+            bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
                 RegisterRequest(
-                    nif = UserProvider.SampleUser.NIF,
-                    name = UserProvider.SampleUser.NAME,
-                    surname = UserProvider.SampleUser.SURNAME,
-                    password = UserProvider.SampleUser.PASSWORD,
+                    nif = UserProvider.SampleUser2.NIF,
+                    name = UserProvider.SampleUser2.NAME,
+                    surname = UserProvider.SampleUser2.SURNAME,
+                    password = UserProvider.SampleUser2.PASSWORD,
                 )
             )
         }.let { response ->

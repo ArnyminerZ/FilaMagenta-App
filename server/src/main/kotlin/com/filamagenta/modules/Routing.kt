@@ -50,7 +50,6 @@ private val logger = logger("routing")
  * Holds all the endpoints defined for the server, and the HTTP method to be used.
  */
 val endpoints: Map<Endpoint, HttpMethod> = mapOf(
-    RegisterEndpoint to HttpMethod.Post,
     LoginEndpoint to HttpMethod.Post
 )
 
@@ -67,6 +66,7 @@ val secureEndpoints: Map<SecureEndpoint, HttpMethod> = mapOf(
     EventPaymentEndpoint to HttpMethod.Post,
     EventUpdateEndpoint to HttpMethod.Patch,
     EventListEndpoint to HttpMethod.Get,
+    RegisterEndpoint to HttpMethod.Post,
     UserDeleteEndpoint to HttpMethod.Delete,
     UserDeleteOtherEndpoint to HttpMethod.Delete,
     UserGrantRoleEndpoint to HttpMethod.Post,
