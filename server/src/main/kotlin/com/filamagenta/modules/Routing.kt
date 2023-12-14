@@ -11,6 +11,8 @@ import com.filamagenta.endpoint.EventPaymentEndpoint
 import com.filamagenta.endpoint.EventUpdateEndpoint
 import com.filamagenta.endpoint.LoginEndpoint
 import com.filamagenta.endpoint.RegisterEndpoint
+import com.filamagenta.endpoint.UserDeleteEndpoint
+import com.filamagenta.endpoint.UserDeleteOtherEndpoint
 import com.filamagenta.endpoint.UserGrantRoleEndpoint
 import com.filamagenta.endpoint.UserListEndpoint
 import com.filamagenta.endpoint.UserMetaEndpoint
@@ -65,6 +67,8 @@ val secureEndpoints: Map<SecureEndpoint, HttpMethod> = mapOf(
     EventPaymentEndpoint to HttpMethod.Post,
     EventUpdateEndpoint to HttpMethod.Patch,
     EventListEndpoint to HttpMethod.Get,
+    UserDeleteEndpoint to HttpMethod.Delete,
+    UserDeleteOtherEndpoint to HttpMethod.Delete,
     UserGrantRoleEndpoint to HttpMethod.Post,
     UserListEndpoint to HttpMethod.Get,
     UserMetaEndpoint to HttpMethod.Post,

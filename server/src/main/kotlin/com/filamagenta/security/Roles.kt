@@ -40,11 +40,12 @@ val roles: List<Role> = listOf(
     Roles.Transaction.Delete,
     Roles.Transaction.ListOthers,
     Roles.Transaction.Update,
+    Roles.Users.Delete,
     Roles.Users.GrantRole,
     Roles.Users.Immutable,
+    Roles.Users.List,
     Roles.Users.ModifyOthers,
     Roles.Users.RevokeRole,
-    Roles.Users.List,
 )
 
 @KoverIgnore
@@ -81,6 +82,13 @@ object Roles {
         @KoverIgnore
         @Serializable
         data object List : Role("user_list")
+
+        /**
+         * Allows deleting other users.
+         */
+        @KoverIgnore
+        @Serializable
+        data object Delete : Role("user_delete")
     }
 
     @KoverIgnore
