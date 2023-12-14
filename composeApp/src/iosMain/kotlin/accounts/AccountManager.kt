@@ -7,7 +7,10 @@ import com.russhwolf.settings.serialization.decodeValueOrNull
 import com.russhwolf.settings.serialization.encodeValue
 import com.russhwolf.settings.set
 import io.github.aakira.napier.Napier
+import kotlin.concurrent.Volatile
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.serialization.ExperimentalSerializationApi
 
 @OptIn(ExperimentalSettingsImplementation::class, ExperimentalSerializationApi::class, ExperimentalSettingsApi::class)
@@ -19,6 +22,9 @@ actual object AccountManager {
     private val storage by lazy {
         KeychainSettings("filamagenta_accounts")
     }
+
+    @Volatile
+    private var flows = listOf<MutableStateFlow<List<Account>>>()
 
     /**
      * Asks the system for the list of currently added accounts.
@@ -42,7 +48,23 @@ actual object AccountManager {
      * @return A [Flow] that is updated every time a new account is added, updated or removed.
      */
     actual fun getAccountsFlow(): Flow<List<Account>> {
-        TODO("Not yet implemented")
+        val flow = MutableStateFlow(getAccounts())
+        val position = flows.size
+        flows = flows.toMutableList().apply { add(flow) }
+        flow.onCompletion {
+            flows = flows.toMutableList().apply { removeAt(position) }
+        }
+        return flow
+    }
+
+    /**
+     * Notifies all the [flows] that the accounts list has been updated.
+     */
+    private fun notifyUpdate() {
+        val accounts = getAccounts()
+        for (flow in flows) {
+            flow.tryEmit(accounts)
+        }
     }
 
     /**
@@ -65,6 +87,7 @@ actual object AccountManager {
         Napier.v { "Increasing accounts count to ${count + 1}" }
         storage[KEY_ACCOUNTS_COUNT] = count + 1
 
+        notifyUpdate()
         return true
     }
 
@@ -73,6 +96,7 @@ actual object AccountManager {
      */
     actual fun clearAccounts() {
         storage.clear()
+        notifyUpdate()
     }
 
     /**
@@ -124,6 +148,7 @@ actual object AccountManager {
         Napier.v { "Reducing accounts count to ${count - 1}" }
         storage[KEY_ACCOUNTS_COUNT] = count - 1
 
+        notifyUpdate()
         return true
     }
 }

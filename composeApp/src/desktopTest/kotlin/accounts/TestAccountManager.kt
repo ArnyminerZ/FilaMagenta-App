@@ -1,7 +1,17 @@
 package accounts
 
 import kotlin.test.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeout
 import org.junit.After
+import org.junit.Assert
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TestAccountManager {
@@ -54,6 +64,34 @@ class TestAccountManager {
         AccountManager.getAccounts().let { accounts ->
             assertEquals(1, accounts.size)
             assertEquals(Account("account2"), accounts[0])
+        }
+    }
+
+    @Test
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun testGetAccountsFlow() = runTest {
+        val accounts = mutableListOf<List<Account>>()
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            AccountManager.getAccountsFlow().toList(accounts)
+        }
+
+        assertTrue(accounts[0].isEmpty())
+
+        val account = Account("test_account")
+        assertTrue(
+            AccountManager.addAccount(account, "password")
+        )
+
+        // Give a bit of time for the flow to update
+        runBlocking {
+            withTimeout(2_000) {
+                while (accounts.size == 1) { delay(1) }
+            }
+        }
+
+        accounts[1].let { list ->
+            Assert.assertEquals(1, list.size)
+            Assert.assertEquals(account.name, list[0].name)
         }
     }
 }
