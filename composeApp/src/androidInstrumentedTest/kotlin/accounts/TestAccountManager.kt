@@ -1,7 +1,6 @@
 package accounts
 
 import android.os.Bundle
-import android.os.Handler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.toList
@@ -14,23 +13,10 @@ import model.AndroidTestEnvironment
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 
 class TestAccountManager : AndroidTestEnvironment() {
     private val am: android.accounts.AccountManager by lazy { android.accounts.AccountManager.get(targetContext) }
-
-    @Before
-    fun startWatchingAccounts() {
-        AccountManager.startWatching(
-            Handler(targetContext.mainLooper)
-        )
-    }
-
-    @After
-    fun stopWatchingAccounts() {
-        AccountManager.stopWatching()
-    }
 
     @After
     fun removeAccounts() {
