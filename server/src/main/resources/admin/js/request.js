@@ -67,3 +67,21 @@ export function post(url, body = null, token = null) {
         [['Content-Type', 'application/json; charset=UTF-8'], ['Authorization', `Bearer ${token}`]]
     );
 }
+
+/**
+ * Sends a DELETE request to the specified URL with the provided body.
+ *
+ * @param {string} url - The URL to send the POST request to.
+ * @param {Document|XMLHttpRequestBodyInit|null} body - The body of the POST request. Should be a valid JSON object.
+ * @param {string|null} token - If any, the authorization token to use for accessing the endpoint.
+ * @returns {Promise<APIResult>} - A Promise that resolves with the response text if the request is successful, or rejects
+ * with the error message if the request fails.
+ */
+export function httpDelete(url, body = null, token = null) {
+    return httpRequest(
+        'DELETE',
+        url,
+        body,
+        [['Content-Type', 'application/json; charset=UTF-8'], ['Authorization', `Bearer ${token}`]]
+    );
+}
