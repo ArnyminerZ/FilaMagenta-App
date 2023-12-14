@@ -2,6 +2,7 @@ package system
 
 import com.filamagenta.system.EnvironmentVariable
 import com.filamagenta.system.TestingEnvironmentVariables
+import com.filamagenta.system.TestingEnvironmentVariables.TestEnum
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -18,6 +19,7 @@ class TestEnvironmentVariable {
         TestingEnvironmentVariables.VarFloat.dispose()
         TestingEnvironmentVariables.VarDouble.dispose()
         TestingEnvironmentVariables.VarBoolean.dispose()
+        TestingEnvironmentVariables.VarEnum.dispose()
     }
 
     @Test
@@ -46,6 +48,10 @@ class TestEnvironmentVariable {
             assertNotNull(value)
             assertEquals(true, value)
         }
+        TestingEnvironmentVariables.VarEnum.get().let { value ->
+            assertNotNull(value)
+            assertEquals(TestEnum.VALUE2, value)
+        }
     }
 
     @Test
@@ -66,6 +72,9 @@ class TestEnvironmentVariable {
             assertNull(value)
         }
         TestingEnvironmentVariables.VarBooleanNull.get().let { value ->
+            assertNull(value)
+        }
+        TestingEnvironmentVariables.VarEnumNull.get().let { value ->
             assertNull(value)
         }
     }
@@ -124,6 +133,10 @@ class TestEnvironmentVariable {
             true,
             EnvironmentVariable.convert("TEST", Boolean::class, "true")
         )
+        assertEquals(
+            TestEnum.VALUE2,
+            EnvironmentVariable.convert("TEST", TestEnum::class, "VALUE2")
+        )
     }
 
     @Test
@@ -142,6 +155,9 @@ class TestEnvironmentVariable {
         )
         assertNull(
             EnvironmentVariable.convert("TEST", Boolean::class, "bad")
+        )
+        assertNull(
+            EnvironmentVariable.convert("TEST", TestEnum::class, "bad")
         )
     }
 

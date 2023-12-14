@@ -4,6 +4,7 @@
       <option name="env">
         <map>
           <entry key="ENV_TEST_VAR_BOO" value="true" />
+          <entry key="ENV_TEST_VAR_ENUM" value="VALUE2" />
           <entry key="ENV_TEST_VAR_FLO" value="123.456" />
           <entry key="ENV_TEST_VAR_INT" value="123456" />
           <entry key="ENV_TEST_VAR_STR" value="testing" />

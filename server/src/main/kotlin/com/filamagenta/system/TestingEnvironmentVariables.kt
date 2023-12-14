@@ -8,6 +8,10 @@ import org.jetbrains.annotations.VisibleForTesting
 object TestingEnvironmentVariables {
     @KoverIgnore
     @VisibleForTesting
+    enum class TestEnum { VALUE1, VALUE2, VALUE3 }
+
+    @KoverIgnore
+    @VisibleForTesting
     data object VarString : EnvironmentVariable<String>("ENV_TEST_VAR_STR", String::class)
 
     @KoverIgnore
@@ -57,6 +61,14 @@ object TestingEnvironmentVariables {
     @KoverIgnore
     @VisibleForTesting
     data object VarBooleanNull : EnvironmentVariable<Int>("ENV_TEST_VAR_BOO_NULL", Int::class)
+
+    @KoverIgnore
+    @VisibleForTesting
+    data object VarEnum : EnvironmentVariable<TestEnum>("ENV_TEST_VAR_ENUM", TestEnum::class)
+
+    @KoverIgnore
+    @VisibleForTesting
+    data object VarEnumNull : EnvironmentVariable<TestEnum>("ENV_TEST_VAR_ENUM_NULL", TestEnum::class)
 
     @KoverIgnore
     @VisibleForTesting

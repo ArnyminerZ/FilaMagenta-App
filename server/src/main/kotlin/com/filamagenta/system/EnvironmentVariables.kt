@@ -1,10 +1,13 @@
 package com.filamagenta.system
 
 import KoverIgnore
+import io.klogging.Level
 
 @KoverIgnore
 @Suppress("MagicNumber")
 object EnvironmentVariables {
+    data object LogLevel : EnvironmentVariable<Level>("LOG_LEVEL", Level::class)
+
     @KoverIgnore
     object Database {
         @KoverIgnore
