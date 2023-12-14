@@ -1,6 +1,6 @@
 import {prepare} from "./pages.mjs";
 import {_} from "../utils.mjs";
-import {httpDelete} from "../request.js";
+import {httpDelete, post} from "../request.js";
 import {USER_IMMUTABLE} from "../const/errors.js";
 
 /**
@@ -43,13 +43,49 @@ async function removeUser(id) {
         }
     }
 }
+
 window.removeUser = removeUser;
+
+async function onSubmitUserCreateDialog(event) {
+    event.preventDefault();
+
+    /** @type {HTMLInputElement} */
+    const nifField = _('userNIF');
+    /** @type {HTMLInputElement} */
+    const nameField = _('userName');
+    /** @type {HTMLInputElement} */
+    const surnameField = _('userSurname');
+    /** @type {HTMLInputElement} */
+    const passwordField = _('userPassword');
+
+    const nif = nifField.value;
+    const name = nameField.value;
+    const surname = surnameField.value;
+    const password = passwordField.value;
+
+    try {
+        await post('/auth/register', {nif, name, surname, password}, _token);
+
+        window.location.reload();
+    } catch (/** @type {APIError} */ error) {
+        alert(`Could not create user. Error: ${error.error.message}`);
+        console.error('Could not delete user:', error);
+    }
+}
 
 prepare(
     '/user/list',
-    new Map(),
-    (token) => { _token = token },
-    (profile) => { _profile = profile },
+    new Map(
+        [
+            ['com.filamagenta.security.Roles.Users.Create', 'newUserButton']
+        ]
+    ),
+    (token) => {
+        _token = token
+    },
+    (profile) => {
+        _profile = profile
+    },
     (/** @type {UsersListResult} */ list) => {
         console.log('Result:', list.data);
         const users = list.data.users;
@@ -69,6 +105,10 @@ prepare(
         if (users.length <= 0) {
             _('usersList').style.display = 'block';
         }
+
+        _('newUserForm').addEventListener('submit', onSubmitUserCreateDialog);
     },
-    (error) => { alert('Could not load users.') }
+    (error) => {
+        alert('Could not load users.')
+    }
 );

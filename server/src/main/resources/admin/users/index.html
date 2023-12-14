@@ -18,6 +18,36 @@
         <a href="#" onclick="localStorage.removeItem('TOKEN'); window.location.reload()">Logout</a>
     </nav>
 
+    <dialog id="newUserDialog">
+        <h3>Create new user</h3>
+        <form id="newUserForm">
+            <label for="userNIF">NIF</label><br/>
+            <input type="text" id="userNIF" required />
+            <br/>
+
+            <label for="userName">Name</label><br/>
+            <input type="text" id="userName" required />
+            <br/>
+
+            <label for="userSurname">Surname</label><br/>
+            <input type="text" id="userSurname" required />
+            <br/>
+
+            <label for="userPassword">Password</label><br/>
+            <input type="password" id="userPassword" required />
+            <br/>
+
+            <button type="submit">Save</button>
+        </form>
+        <hr/>
+        <button type="button" onclick="document.getElementById('newUserDialog').close()">Close</button>
+    </dialog>
+
+    <button id="newUserButton"
+            style="display: none"
+            onclick="document.getElementById('newUserDialog').showModal()"
+    >Create User</button>
+
     <table id="usersList">
         <tr>
             <th><b>ID</b></th>
