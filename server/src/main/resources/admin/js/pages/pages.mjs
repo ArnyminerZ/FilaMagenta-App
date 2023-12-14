@@ -31,7 +31,7 @@ import {get} from "../request.js";
  *
  * @template {APIResult} ListResultType
  * @param {string} listEndpoint The endpoint to fetch for loading the list of `ListResultType`.
- * @param {Map<string, string>} showRoles values match ID of a DOM element to display if the user has the key role.
+ * @param {Map<string, string|string[]>} showRoles values match ID of a DOM element to display if the user has the key role.
  * @param {OnTokenObtained} onTokenObtained Called when the token is obtained.
  * @param {OnProfileObtained} onProfileObtained Called when the user's profile is obtained.
  * @param {OnListObtained<ListResultType>} onListObtained Called when the list of `listEndpoint` is loaded.
@@ -69,9 +69,25 @@ export function prepare(
         onProfileObtained(profile);
 
         for (const pair of showRoles) {
-            const [role, id] = pair;
+            const [role, ids] = pair;
             if (roles.includes(role)) {
-                _(id).style.display = 'inline-block';
+                if (typeof ids === 'string') {
+                    const o = _(ids);
+                    if (o == null) {
+                        console.warn('Tried to display DOM with id', ids, 'but it wasn\'t found.');
+                        continue;
+                    }
+                    o.style.display = 'inline-block';
+                } else {
+                    for (const id of ids) {
+                        const o = _(id);
+                        if (o == null) {
+                            console.warn('Tried to display DOM with id', id, 'but it wasn\'t found.');
+                            continue;
+                        }
+                        o.style.display = 'inline-block';
+                    }
+                }
             }
         }
 

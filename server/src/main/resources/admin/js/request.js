@@ -20,7 +20,7 @@
  * @param {string} url The endpoint to make the request to.
  * @param {Document|XMLHttpRequestBodyInit|null} body If any, the body of the request.
  * @param {[[string,string]]} headers A list of headers to append to the request.
- * @returns {Promise<unknown>}
+ * @returns {Promise<APIResult>}
  */
 function httpRequest(method, url, body = null, headers = []) {
     return new Promise((resolve, reject) => {

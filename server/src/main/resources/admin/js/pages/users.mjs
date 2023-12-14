@@ -1,6 +1,6 @@
 import {prepare} from "./pages.mjs";
 import {_} from "../utils.mjs";
-import {httpDelete, post} from "../request.js";
+import {get, httpDelete, post} from "../request.js";
 import {USER_IMMUTABLE} from "../const/errors.js";
 
 /**
@@ -24,6 +24,13 @@ let _token;
  */
 let _profile;
 
+/**
+ * Holds the data of all the users in memory.
+ * @private
+ * @type {ProfileData[]}
+ */
+let _usersList;
+
 async function removeUser(id) {
     try {
         /** @type {APIResult} */
@@ -44,7 +51,59 @@ async function removeUser(id) {
     }
 }
 
+/**
+ * Shows the user's metadata dialog after having loaded it with the data of the user with id `userId`.
+ * @param {number} userId
+ * @returns {Promise<void>}
+ */
+async function showMetadata(userId) {
+    _('metadataUserIdField').value = userId;
+
+    await loadUserMetadata(userId);
+
+    /** @type {HTMLDialogElement} */
+    const dialog = _('metadataDialog');
+    dialog.showModal();
+}
+
+/**
+ * Loads the given user's metadata into the metadata dialog (`#metadataTable`).
+ * @param {number} userId The id of the user to load the data from.
+ * @returns {Promise<void>}
+ */
+async function loadUserMetadata(userId) {
+    await reloadUsersList();
+
+    const tableElement = document.getElementById('metadataTable');
+    const rowElements = tableElement.getElementsByTagName('tr');
+    /** @type {HTMLTableRowElement[]} */
+    const dataRowElements = [...rowElements].slice(1);
+    for (const row of dataRowElements) { row.remove() }
+
+    const data = _usersList.find((profile) => profile.id === userId);
+    /** @type {[string,string][]} */
+    const meta = Object.entries(data.meta);
+    for (const entry of meta) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${entry[0]}</td>` +
+            `<td>${entry[1]}</td>`;
+        tableElement.append(row);
+    }
+    console.info('Meta:', data);
+}
+
+/**
+ * Fetches the server and updates the value of `_usersList`.
+ * @returns {Promise<void>}
+ */
+async function reloadUsersList() {
+    /** @type {UsersListResult} */
+    const result = await get('/user/list', _token);
+    _usersList = result.data.users;
+}
+
 window.removeUser = removeUser;
+window.showMetadata = showMetadata;
 
 async function onSubmitUserCreateDialog(event) {
     event.preventDefault();
@@ -73,12 +132,36 @@ async function onSubmitUserCreateDialog(event) {
     }
 }
 
+async function onSubmitMetadataAddForm(event) {
+    event.preventDefault();
+
+    /** @type {HTMLInputElement} */
+    const userIdField = _('metadataUserIdField');
+    /** @type {HTMLSelectElement} */
+    const keyField = _('metadataKeyField');
+    /** @type {HTMLInputElement} */
+    const valueField = _('metadataValueField');
+
+    const userId = parseInt(userIdField.value);
+    const key = keyField.value;
+    const value = valueField.value;
+
+    try {
+        await post(`/user/meta/${userId}`, {key, value}, _token);
+
+        await loadUserMetadata(userId);
+    } catch (/** @type {APIError} */ error) {
+        alert(`Could not store metadata. Error: ${error.error.message}`);
+        console.error('Could not store metadata:', error);
+    }
+}
+
 prepare(
     '/user/list',
     new Map(
         [
             ['com.filamagenta.security.Roles.Users.Create', 'newUserButton'],
-            ['com.filamagenta.security.Roles.Users.List', 'navbar_users']
+            ['com.filamagenta.security.Roles.Users.List', ['navbar_users', 'addMetadataForm']]
         ]
     ),
     (token) => {
@@ -90,17 +173,19 @@ prepare(
     (/** @type {UsersListResult} */ list) => {
         console.log('Result:', list.data);
         const users = list.data.users;
+        _usersList = users;
 
         const domList = _('usersList');
         for (const item of users) {
             const row = document.createElement('tr');
             const removeButton = `<button onclick="if (confirm('Are you sure?')) removeUser(${item.id})">Remove</button>`;
+            const metadataButton = `<button onclick="showMetadata(${item.id})">Metadata</button>`;
             row.innerHTML = `<td>${item.id}</td>` +
                 `<td>${item.nif}</td>` +
                 `<td>${item.name}</td>` +
                 `<td>${item.surname}</td>` +
                 `<td>${item.id === _profile.id ? 'You' : ''}</td>` +
-                `<td>${removeButton}<button>Metadata</button></td>`;
+                `<td>${removeButton}${metadataButton}</td>`;
             domList.append(row);
         }
         if (users.length <= 0) {
@@ -108,6 +193,7 @@ prepare(
         }
 
         _('newUserForm').addEventListener('submit', onSubmitUserCreateDialog);
+        _('addMetadataForm').addEventListener('submit', onSubmitMetadataAddForm);
     },
     (error) => {
         alert('Could not load users.')

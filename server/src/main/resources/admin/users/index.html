@@ -49,6 +49,34 @@
         <button type="button" onclick="document.getElementById('newUserDialog').close()">Close</button>
     </dialog>
 
+    <dialog id="metadataDialog">
+        <h3>User Metadata</h3>
+        <form id="addMetadataForm">
+            <input type="hidden" id="metadataUserIdField" />
+            <select id="metadataKeyField" required>
+                <option value="ADDRESS_STREET">Address Street</option>
+                <option value="ADDRESS_NUMBER">Address Number</option>
+                <option value="ADDRESS_CP">CP</option>
+                <option value="ADDRESS_CITY">City</option>
+                <option value="ADDRESS_COUNTRY">Country</option>
+                <option value="EMAIL">Email</option>
+                <option value="PHONE">Phone</option>
+                <option value="PHONE_WORK">Work Phone</option>
+                <option value="PHONE_HOME">Home Phone</option>
+            </select>
+            <input type="text" id="metadataValueField" placeholder="Value" required />
+            <button type="submit">Save</button>
+        </form>
+        <table id="metadataTable" class="data-table">
+            <tr>
+                <th><b>Key</b></th>
+                <th><b>Value</b></th>
+            </tr>
+        </table>
+        <hr/>
+        <button type="button" onclick="document.getElementById('metadataDialog').close()">Close</button>
+    </dialog>
+
     <button id="newUserButton"
             class="create-button"
             style="display: none"
