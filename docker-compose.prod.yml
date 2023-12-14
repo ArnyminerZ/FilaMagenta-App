@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  backend:
+    image: arnyminerz/filamagenta:latest
+    restart: "unless-stopped"
+    environment:
+      # -- Configure Rate Limiter
+      RATE_CAPACITY: 100
+      RATE_PERIOD: 60
+
+  db:
+    ports: []
