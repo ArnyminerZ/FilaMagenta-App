@@ -8,6 +8,10 @@ on:
     types:
       - released
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_and_publish:
     runs-on: ubuntu-latest
