@@ -44,6 +44,14 @@ jobs:
           IS_PRODUCTION: ${{ github.event_name == 'release' }}
         with:
           arguments: :server:publishImage
+      - name: Store reports
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Server Reports
+          path: |
+            server/build/reports/
+            server/build/test-results/
   coverage:
     name: Publish coverage reports
     runs-on: ubuntu-latest
