@@ -6,6 +6,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Filà Magenta - Admin</title>
+    <link rel="stylesheet" href="/admin/css/tables.css" />
 </head>
 <body>
 <div id="loading_indicator">
@@ -43,13 +44,13 @@
     <nav>
         <b><a href="/admin">Home</a></b> |
         <a href="/admin/transactions">Transactions</a>
-        <span id="navbar_users" style="display: none"> | <b><a href="/admin/users">Users</a></b></span>
+        <span id="navbar_users" style="display: none"> | <a href="/admin/users">Users</a></span>
         &emsp;
         <a href="#" onclick="localStorage.removeItem('TOKEN'); window.location.reload()">Logout</a>
     </nav>
 
     <h3>Welcome back <span class="ma-fill-fullname"></span>, here's your personal information:</h3>
-    <table>
+    <table class="data-table">
         <tr>
             <th>Name</th>
             <th>Surname</th>
@@ -63,7 +64,7 @@
     </table>
 
     <h3>Here's your extra information:</h3>
-    <table id="metadata-table"></table>
+    <table id="metadata-table" class="data-table"></table>
 
     <h3>Those are your privileges:</h3>
     <ul id="roles-list"></ul>

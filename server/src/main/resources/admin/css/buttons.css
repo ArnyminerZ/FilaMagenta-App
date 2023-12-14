@@ -1,0 +1,14 @@
+.create-button {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    border: none;
+    background: #afafaf;
+    cursor: pointer;
+    padding: 10px 20px;
+    font-size: .9rem;
+    border-radius: 8px;
+}
+
+.create-button:hover {
+    background: #858484;
+}

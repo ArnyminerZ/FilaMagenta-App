@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Filà Magenta - Users</title>
+
+    <link rel="stylesheet" href="/admin/css/tables.css" />
+    <link rel="stylesheet" href="/admin/css/buttons.css" />
 </head>
 <body>
 <div id="loading_indicator">
@@ -44,11 +50,12 @@
     </dialog>
 
     <button id="newUserButton"
+            class="create-button"
             style="display: none"
             onclick="document.getElementById('newUserDialog').showModal()"
     >Create User</button>
 
-    <table id="usersList">
+    <table id="usersList" class="data-table">
         <tr>
             <th><b>ID</b></th>
             <th><b>NIF</b></th>
