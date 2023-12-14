@@ -14,6 +14,7 @@ import com.filamagenta.database.table.Users
 import com.filamagenta.security.Passwords
 import com.filamagenta.security.roles
 import com.filamagenta.system.EnvironmentVariables
+import io.klogging.logger
 import java.sql.Connection
 import kotlinx.serialization.json.Json
 import org.jetbrains.annotations.VisibleForTesting
@@ -27,10 +28,12 @@ import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 
+private val logger = logger("database")
+
 val database: com.filamagenta.database.Database
     get() = com.filamagenta.database.Database.getInstance()
 
-class Database private constructor(@VisibleForTesting val instance: Database) {
+class Database private constructor(private val instance: Database) {
     companion object {
         /**
          * The JSON configuration used by the database.
@@ -72,9 +75,10 @@ class Database private constructor(@VisibleForTesting val instance: Database) {
          * @param createAdminUser If `true`, a default admin user will be created, with all the roles existing.
          * The user is defined through environment variables, see [EnvironmentVariables.Authentication.Users].
          */
-        @Synchronized
-        fun initialize(vararg extraTables: Table, createAdminUser: Boolean = true) {
+        suspend fun initialize(vararg extraTables: Table, createAdminUser: Boolean = true) {
             if (instance != null) return
+
+            logger.info { "Initializing database..." }
 
             val url by EnvironmentVariables.Database.Url
             val driver by EnvironmentVariables.Database.Driver

@@ -8,18 +8,22 @@ import com.filamagenta.modules.installContentNegotiation
 import com.filamagenta.modules.installRateLimit
 import com.filamagenta.modules.installRouting
 import com.filamagenta.modules.installStatusPages
+import io.klogging.config.ANSI_CONSOLE
+import io.klogging.config.loggingConfiguration
 import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.netty.NettyApplicationEngine
+import kotlinx.coroutines.runBlocking
 
 @KoverIgnore
 var server: NettyApplicationEngine? = null
 
 fun main(args: Array<String> = emptyArray()) {
-    if (!args.contains("skip-database-init")) {
-        Database.initialize()
-    }
+    // Configure logging
+    loggingConfiguration { ANSI_CONSOLE() }
+
+    if (!args.contains("skip-database-init")) runBlocking { Database.initialize() }
 
     embeddedServer(
         Netty,

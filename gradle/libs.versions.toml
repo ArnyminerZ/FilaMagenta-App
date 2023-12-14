@@ -17,6 +17,7 @@ detekt = "1.23.4"
 exposed = "0.45.0"
 h2 = "2.2.224"
 junit = "4.13.2"
+klogging = "0.5.7"
 kotlin = "1.9.21"
 kotlinx-datetime = "0.5.0"
 kotlinx-serialization = "1.6.2"
@@ -48,6 +49,7 @@ exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "e
 exposed-json = { module = "org.jetbrains.exposed:exposed-json", version.ref = "exposed" }
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+klogging = { module = "io.klogging:klogging-jvm", version.ref = "klogging" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
