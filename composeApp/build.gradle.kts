@@ -69,6 +69,12 @@ kotlin {
 
                 // JSON Serialization
                 implementation(libs.kotlinx.serialization.json)
+
+                // KotlinX Coroutines
+                implementation(libs.kotlinx.coroutines.core)
+
+                // Ktor Client
+                implementation(libs.ktor.client.core)
             }
         }
         val commonTest by getting {
@@ -94,6 +100,12 @@ kotlin {
 
                 // For storing settings in Datastore
                 implementation(libs.multiplatformSettings.datastore)
+
+                // KotlinX Coroutines
+                implementation(libs.kotlinx.coroutines.android)
+
+                // Ktor Client
+                implementation(libs.ktor.client.android)
             }
         }
         val androidInstrumentedTest by getting {
@@ -115,6 +127,11 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+
+            dependencies {
+                // Ktor Client
+                implementation(libs.ktor.client.darwin)
+            }
         }
         val iosX64Test by getting
         val iosArm64Test by getting
@@ -131,6 +148,9 @@ kotlin {
 
             dependencies {
                 implementation(compose.desktop.currentOs)
+
+                // Ktor Client
+                implementation(libs.ktor.client.okhttp)
             }
         }
         val desktopTest by getting {
