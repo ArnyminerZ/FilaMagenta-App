@@ -27,6 +27,9 @@ kotlin {
 
             // JSON Serialization
             api(libs.kotlinx.serialization.json)
+
+            // Ktor Dependencies
+            api(libs.ktor.common.http)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test.junit)
