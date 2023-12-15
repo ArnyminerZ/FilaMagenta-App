@@ -1,8 +1,10 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.buildKonfig)
     alias(libs.plugins.detekt)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.kotlinMultiplatform)
@@ -268,4 +270,12 @@ detekt {
 
 multiplatformResources {
     multiplatformResourcesPackage = "filamagenta"
+}
+
+buildkonfig {
+    packageName = "filamagenta"
+
+    defaultConfigs {
+        buildConfigField(STRING, "SERVER", "https://filamagenta.arnyminerz.com")
+    }
 }

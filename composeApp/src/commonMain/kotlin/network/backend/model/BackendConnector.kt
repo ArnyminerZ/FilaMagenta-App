@@ -1,10 +1,13 @@
 package network.backend.model
 
 import error.ServerResponseException
+import filamagenta.BuildKonfig
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.URLBuilder
+import io.ktor.http.appendEncodedPathSegments
 import io.ktor.http.contentType
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.boolean
@@ -17,6 +20,8 @@ import response.FailureResponse
 import server.EndpointDef
 
 abstract class BackendConnector {
+    val server: String = BuildKonfig.SERVER
+
     /**
      * Runs an HTTP POST request to the given endpoint.
      *
@@ -33,7 +38,10 @@ abstract class BackendConnector {
         vararg parameters: Pair<String, Any>,
         body: Any? = null
     ): DataType {
-        val url = endpoint.url(*parameters)
+        val url = URLBuilder(server)
+            .appendEncodedPathSegments(endpoint.url(*parameters))
+            .buildString()
+
         val response = httpClient.post(url) {
             body?.let {
                 contentType(ContentType.Application.Json)
