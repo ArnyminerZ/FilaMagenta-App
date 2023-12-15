@@ -29,8 +29,8 @@ fun CenteredColumn(
             modifier = Modifier
                 .widthIn(max = maxWidth)
                 .fillMaxSize()
-                .testTag(CenteredColumnColumnTestTag)
                 .then(modifier)
+                .testTag(CenteredColumnColumnTestTag)
         ) {
             content(this@Column)
         }
