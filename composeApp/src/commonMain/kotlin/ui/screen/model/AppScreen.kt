@@ -23,7 +23,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +36,7 @@ import dev.icerock.moko.resources.compose.stringResource
 import filamagenta.MR
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import ui.composition.LocalWindowSizeClass
 import ui.data.NavigationItem
 import ui.theme.AppTheme
 
@@ -64,7 +64,7 @@ abstract class AppScreen(
     /**
      * The value can be updated at any moment. If it's not null, a snackbar with the given text will be displayed.
      */
-    protected val snackbarError = MutableStateFlow<StringResource?>(null)
+    val snackbarError = MutableStateFlow<StringResource?>(null)
 
     protected open val navigationItems: List<NavigationItem> = emptyList()
 
@@ -79,9 +79,10 @@ abstract class AppScreen(
 
     @Composable
     override fun Content() {
-        Snackbar()
+        SnackbarLogic()
 
-        val windowSizeClass = calculateWindowSizeClass()
+        val windowSizeClassProvider = LocalWindowSizeClass.current
+        val windowSizeClass = windowSizeClassProvider.calculate()
         val displayBottomNavigation = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
 
         AppTheme {
@@ -89,7 +90,12 @@ abstract class AppScreen(
                 topBar = { TopBar() },
                 bottomBar = { BottomNavigationBar(displayBottomNavigation) },
                 snackbarHost = {
-                    snackbarHostState?.let { SnackbarHost(it, modifier = Modifier.testTag(TEST_TAG_SNACKBAR)) }
+                    snackbarHostState?.let {
+                        SnackbarHost(
+                            hostState = it,
+                            modifier = Modifier.testTag(TEST_TAG_SNACKBAR)
+                        )
+                    }
                 }
             ) { paddingValues ->
                 Row(
@@ -110,7 +116,7 @@ abstract class AppScreen(
     }
 
     @Composable
-    private fun Snackbar() {
+    private fun SnackbarLogic() {
         val scope = rememberCoroutineScope()
 
         LaunchedEffect(Unit) {
@@ -142,7 +148,7 @@ abstract class AppScreen(
                 slideInVertically { -it } togetherWith slideOutVertically { -it }
             }
         ) { isVisible ->
-            if (isVisible) {
+            if (isVisible && navigationItems.isNotEmpty()) {
                 NavigationBar(
                     modifier = Modifier.testTag(TEST_TAG_BOTTOM_BAR)
                 ) {

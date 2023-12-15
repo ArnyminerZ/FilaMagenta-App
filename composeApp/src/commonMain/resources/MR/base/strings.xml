@@ -2,6 +2,8 @@
 <resources>
     <string name="account_type">com.arnyminerz.filamagenta</string>
 
+    <string name="test_stub_snackbar">Snackbar Message</string>
+
     <!-- Generic Strings -->
     <string name="show_password">Show Password</string>
     <string name="hide_password">Hide Password</string>
