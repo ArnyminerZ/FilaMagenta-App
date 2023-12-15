@@ -242,6 +242,8 @@ koverReport {
     filters {
         excludes {
             annotatedBy("KoverIgnore")
+            // Moko and BuildKonfig
+            packages("filamagenta")
         }
     }
 
