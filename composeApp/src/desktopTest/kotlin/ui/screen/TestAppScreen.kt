@@ -7,6 +7,8 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import cafe.adriel.voyager.navigator.Navigator
@@ -20,6 +22,9 @@ import ui.screen.model.AppScreen
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class TestAppScreen : ComposeTestSuite() {
     object DemoScreen : AppScreen() {
+        const val TEST_TAG_CONTENT = "content"
+        const val TEST_TAG_TOP_BAR = "top_bar"
+
         // It's required to have at least one item to display the navigation bar
         override val navigationItems: List<NavigationItem> = listOf(
             NavigationItem(
@@ -31,8 +36,36 @@ class TestAppScreen : ComposeTestSuite() {
         @Composable
         @Suppress("TestFunctionName")
         override fun ScreenContent() {
-            Text("Content")
+            Text(
+                text = "Content",
+                modifier = Modifier.testTag(TEST_TAG_CONTENT)
+            )
         }
+
+        @Composable
+        @Suppress("TestFunctionName")
+        override fun TopBar() {
+            Text(
+                text = "Top Bar",
+                modifier = Modifier.testTag(TEST_TAG_TOP_BAR)
+            )
+        }
+    }
+
+    @Test
+    fun testContent() = testComposable(
+        content = { Navigator(DemoScreen) }
+    ) { composeTestRule ->
+        // Check that content is displayed correctly
+        composeTestRule.onNodeWithTag(DemoScreen.TEST_TAG_CONTENT).assertIsDisplayed()
+    }
+
+    @Test
+    fun testTopBar() = testComposable(
+        content = { Navigator(DemoScreen) }
+    ) { composeTestRule ->
+        // Check that content is displayed correctly
+        composeTestRule.onNodeWithTag(DemoScreen.TEST_TAG_TOP_BAR).assertIsDisplayed()
     }
 
     @Test
