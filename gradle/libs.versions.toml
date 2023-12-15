@@ -25,6 +25,7 @@ kover = "0.7.5"
 ktor = "2.3.7"
 logback = "1.4.14"
 multiplatform-settings = "1.1.1"
+multiplatform-windowSizeClass = "0.3.1"
 mockk = "1.13.8"
 moko = "0.23.0"
 moko-graphics = "0.9.0"
@@ -80,6 +81,7 @@ multiplatformSettings-coroutines = { module = "com.russhwolf:multiplatform-setti
 multiplatformSettings-datastore = { module = "com.russhwolf:multiplatform-settings-datastore", version.ref = "multiplatform-settings" }
 multiplatformSettings-serialization = { module = "com.russhwolf:multiplatform-settings-serialization", version.ref = "multiplatform-settings" }
 multiplatformSettings-test = { module = "com.russhwolf:multiplatform-settings-test", version.ref = "multiplatform-settings" }
+multiplatformWindowSizeClass = { module = "dev.chrisbanes.material3:material3-window-size-class-multiplatform", version.ref = "multiplatform-windowSizeClass" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 moko-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "moko" }
 moko-graphics = { module = "dev.icerock.moko:graphics", version.ref = "moko-graphics" }
