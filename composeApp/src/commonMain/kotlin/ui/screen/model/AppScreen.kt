@@ -3,26 +3,10 @@ package ui.screen.model
 import KoverIgnore
 import accounts.Account
 import accounts.AccountManager
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationRailItem
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,8 +20,6 @@ import dev.icerock.moko.resources.compose.stringResource
 import filamagenta.MR
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import ui.composition.LocalWindowSizeClass
-import ui.data.NavigationItem
 import ui.theme.AppTheme
 
 /**
@@ -49,15 +31,12 @@ import ui.theme.AppTheme
  * will be "Filà Magenta - Home".
  */
 @KoverIgnore
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 abstract class AppScreen(
-    val localizedTitle: StringResource? = null
+    val localizedTitle: StringResource? = null,
+    val ignoreBackPresses: Boolean = true
 ) : Screen {
     companion object {
-        const val TEST_TAG_BOTTOM_BAR = "app_screen_bottom_bar"
         const val TEST_TAG_SNACKBAR = "app_screen_snackbar"
-        const val TEST_TAG_RAIL = "app_screen_rail"
-        const val TEST_TAG_NAV_ITEM = "app_screen_nav_item"
     }
 
     private var snackbarHostState: SnackbarHostState? = null
@@ -67,10 +46,6 @@ abstract class AppScreen(
      */
     val snackbarError = MutableStateFlow<StringResource?>(null)
 
-    protected open val navigationItems: List<NavigationItem> = emptyList()
-
-    val navigationSelection = MutableStateFlow(0)
-
     /**
      * Can be overridden to set the content to display on the top of the scaffold as the Top App Bar.
      */
@@ -78,18 +53,21 @@ abstract class AppScreen(
     protected open fun TopBar() {
     }
 
+    /**
+     * Can be overridden to set the content to display on the bottom of the scaffold as the Bottom App Bar.
+     */
+    @Composable
+    protected open fun BottomBar() {
+    }
+
     @Composable
     override fun Content() {
         SnackbarLogic()
 
-        val windowSizeClassProvider = LocalWindowSizeClass.current
-        val windowSizeClass = windowSizeClassProvider.calculate()
-        val displayBottomNavigation = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-
         AppTheme {
             Scaffold(
                 topBar = { TopBar() },
-                bottomBar = { BottomNavigationBar(displayBottomNavigation) },
+                bottomBar = { BottomBar() },
                 snackbarHost = {
                     snackbarHostState?.let {
                         SnackbarHost(
@@ -99,19 +77,7 @@ abstract class AppScreen(
                     }
                 }
             ) { paddingValues ->
-                Row(
-                    modifier = Modifier.fillMaxSize().padding(paddingValues)
-                ) {
-                    NavigationRail(!displayBottomNavigation)
-
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                    ) {
-                        ScreenContent()
-                    }
-                }
+                ScreenContent(paddingValues)
             }
         }
     }
@@ -139,95 +105,11 @@ abstract class AppScreen(
         }
     }
 
-    @Composable
-    private fun BottomNavigationBar(visible: Boolean) {
-        val selection by navigationSelection.collectAsState()
-
-        AnimatedContent(
-            targetState = visible,
-            transitionSpec = {
-                slideInVertically { -it } togetherWith slideOutVertically { -it }
-            }
-        ) { isVisible ->
-            if (isVisible && navigationItems.isNotEmpty()) {
-                NavigationBar(
-                    modifier = Modifier.testTag(TEST_TAG_BOTTOM_BAR)
-                ) {
-                    for ((i, item) in navigationItems.withIndex()) {
-                        val selected = selection == i
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = { navigationSelection.tryEmit(i) },
-                            icon = {
-                                Icon(
-                                    imageVector = if (selected) {
-                                        item.selectedIcon
-                                    } else {
-                                        item.icon
-                                    },
-                                    contentDescription = if (selected) {
-                                        item.selectedIconContentDescription()
-                                    } else {
-                                        item.iconContentDescription()
-                                    }
-                                )
-                            },
-                            label = item.label,
-                            modifier = Modifier.testTag(TEST_TAG_NAV_ITEM)
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    private fun NavigationRail(visible: Boolean) {
-        val selection by navigationSelection.collectAsState()
-
-        AnimatedContent(
-            targetState = visible,
-            transitionSpec = {
-                slideInHorizontally { -it } togetherWith slideOutHorizontally { -it }
-            }
-        ) { isVisible ->
-            if (isVisible && navigationItems.isNotEmpty()) {
-                androidx.compose.material3.NavigationRail(
-                    modifier = Modifier.testTag(TEST_TAG_RAIL)
-                ) {
-                    for ((i, item) in navigationItems.withIndex()) {
-                        val selected = selection == i
-                        NavigationRailItem(
-                            selected = selected,
-                            onClick = { navigationSelection.tryEmit(i) },
-                            icon = {
-                                Icon(
-                                    imageVector = if (selected) {
-                                        item.selectedIcon
-                                    } else {
-                                        item.icon
-                                    },
-                                    contentDescription = if (selected) {
-                                        item.selectedIconContentDescription()
-                                    } else {
-                                        item.iconContentDescription()
-                                    }
-                                )
-                            },
-                            label = item.label,
-                            modifier = Modifier.testTag(TEST_TAG_NAV_ITEM)
-                        )
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * This should be overridden instead of [Content]. Has theming built-in.
      */
     @Composable
-    protected abstract fun ScreenContent()
+    protected abstract fun ScreenContent(paddingValues: PaddingValues)
 
     /**
      * Adds an observer on the accounts' list, and calls [callback] whenever it is updated.

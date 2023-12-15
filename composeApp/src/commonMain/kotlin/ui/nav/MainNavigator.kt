@@ -6,13 +6,12 @@ import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
 import ui.screen.MainLoadingScreen
 import ui.screen.model.AppScreen
-import ui.screen.model.BaseScreen
 
 @Composable
 fun MainNavigator(initialScreen: Screen = MainLoadingScreen) {
     Navigator(
         screen = initialScreen,
-        onBackPressed = { screen -> screen !is BaseScreen }
+        onBackPressed = { screen -> (screen as? AppScreen)?.ignoreBackPresses ?: true }
     ) { navigator ->
         onNavigate(navigator.lastItem as AppScreen)
 

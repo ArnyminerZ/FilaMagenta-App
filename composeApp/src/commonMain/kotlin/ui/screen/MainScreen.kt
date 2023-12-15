@@ -1,7 +1,10 @@
 package ui.screen
 
 import accounts.AccountManager
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.pager.PagerScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Settings
@@ -11,19 +14,18 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Wallet
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import cafe.adriel.voyager.navigator.LocalNavigator
 import dev.icerock.moko.resources.compose.stringResource
 import filamagenta.MR
 import ui.data.NavigationItem
-import ui.screen.model.BaseScreen
+import ui.screen.model.NavigationScreen
 
-object MainScreen : BaseScreen(
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3WindowSizeClassApi::class)
+object MainScreen : NavigationScreen(
     localizedTitle = MR.strings.title_home
 ) {
     const val TEST_TAG = "main_screen"
@@ -50,17 +52,7 @@ object MainScreen : BaseScreen(
     )
 
     @Composable
-    override fun ScreenContent() {
-        val navigator = LocalNavigator.current
-
-        val accounts by AccountManager.getAccountsFlow().collectAsState(null)
-
-        LaunchedEffect(accounts) {
-            if (accounts != null && accounts?.isEmpty() == true) {
-                navigator?.push(LoginScreen)
-            }
-        }
-
+    override fun PagerScope.PageContent(page: Int) {
         Column(
             modifier = Modifier.testTag(TEST_TAG)
         ) {
@@ -74,5 +66,18 @@ object MainScreen : BaseScreen(
                 Text("Remove Account")
             }
         }
+    }
+
+    @Composable
+    override fun ScreenContent(paddingValues: PaddingValues) {
+        val navigator = LocalNavigator.current
+
+        AccountsHandler { accounts ->
+            if (accounts.isEmpty()) {
+                navigator?.push(LoginScreen)
+            }
+        }
+
+        super.ScreenContent(paddingValues)
     }
 }

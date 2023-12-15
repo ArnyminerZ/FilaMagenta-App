@@ -4,6 +4,7 @@ import accounts.Account
 import accounts.AccountManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -43,17 +44,17 @@ import response.ErrorCodes
 import ui.modifier.autofill
 import ui.reusable.CenteredColumn
 import ui.reusable.form.FormField
-import ui.screen.model.BaseScreen
+import ui.screen.model.AppScreen
 import utils.isValidNif
 
 @OptIn(ExperimentalComposeUiApi::class)
-object LoginScreen : BaseScreen(MR.strings.title_login) {
+object LoginScreen : AppScreen(MR.strings.title_login) {
     const val TEST_TAG = "login_screen"
 
     private val isLoading = MutableStateFlow(false)
 
     @Composable
-    override fun ScreenContent() {
+    override fun ScreenContent(paddingValues: PaddingValues) {
         val navigator = LocalNavigator.current
 
         AccountsHandler { accounts ->
@@ -66,6 +67,7 @@ object LoginScreen : BaseScreen(MR.strings.title_login) {
             modifier = Modifier
                 .padding(top = 16.dp)
                 .padding(horizontal = 8.dp)
+                .padding(paddingValues)
                 .testTag(TEST_TAG)
         ) {
             Titles()

@@ -1,14 +1,15 @@
 package ui.screen
 
 import accounts.AccountManager
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import cafe.adriel.voyager.navigator.LocalNavigator
 import io.github.aakira.napier.Napier
 import ui.reusable.LoadingBox
-import ui.screen.model.BaseScreen
+import ui.screen.model.AppScreen
 
-object MainLoadingScreen : BaseScreen() {
+object MainLoadingScreen : AppScreen() {
     /**
      * **Only for tests**.
      * If true, the loading screen will navigate automatically to [LoginScreen] or [MainScreen] based on the accounts
@@ -17,7 +18,7 @@ object MainLoadingScreen : BaseScreen() {
     var navigateAutomatically: Boolean = true
 
     @Composable
-    override fun ScreenContent() {
+    override fun ScreenContent(paddingValues: PaddingValues) {
         val navigator = LocalNavigator.current
 
         LaunchedEffect(Unit) {
