@@ -8,7 +8,7 @@ import io.github.aakira.napier.Napier
 import ui.reusable.LoadingBox
 import ui.screen.model.BaseScreen
 
-object MainLoadingScreen : BaseScreen {
+object MainLoadingScreen : BaseScreen() {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.current

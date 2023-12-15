@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import cafe.adriel.voyager.navigator.LocalNavigator
 import ui.screen.model.BaseScreen
 
-object MainScreen: BaseScreen {
+object MainScreen: BaseScreen() {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.current
