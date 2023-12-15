@@ -16,10 +16,10 @@ import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
 import request.RegisterRequest
-import security.Roles
+import server.Endpoints
 import utils.isValidNif
 
-object RegisterEndpoint : SecureEndpoint("/auth/register", Roles.Users.Create) {
+object RegisterEndpoint : SecureEndpoint(Endpoints.Authenticate.Register) {
     @Serializable
     data class SuccessfulRegistration(
         val userId: Int

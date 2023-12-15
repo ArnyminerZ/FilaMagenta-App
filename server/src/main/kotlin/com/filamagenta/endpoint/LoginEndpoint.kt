@@ -17,8 +17,9 @@ import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
 import request.LoginRequest
+import server.Endpoints
 
-object LoginEndpoint : Endpoint("/auth/login") {
+object LoginEndpoint : Endpoint(Endpoints.Authenticate.Login) {
     @Serializable
     data class SuccessfulLogin(
         val token: String

@@ -16,9 +16,9 @@ import io.ktor.server.request.receive
 import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import request.UserProfileEditRequest
-import security.Roles
+import server.Endpoints
 
-object UserProfileOtherEditEndpoint : SecureEndpoint("/user/profile/{userId}", Roles.Users.ModifyOthers) {
+object UserProfileOtherEditEndpoint : SecureEndpoint(Endpoints.User.ProfileEditOther) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         var key: UserDataKey? = null
         try {

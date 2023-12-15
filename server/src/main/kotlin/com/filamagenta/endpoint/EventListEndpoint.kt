@@ -20,9 +20,10 @@ import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.and
 import security.Roles
+import server.Endpoints
 import utils.isInWorkingYear
 
-object EventListEndpoint : SecureEndpoint("/events/list") {
+object EventListEndpoint : SecureEndpoint(Endpoints.Event.List) {
     @KoverIgnore
     @Serializable
     data class EventListResponse(

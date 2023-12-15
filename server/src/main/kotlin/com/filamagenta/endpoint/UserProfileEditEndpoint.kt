@@ -15,8 +15,9 @@ import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
 import request.UserProfileEditRequest
+import server.Endpoints
 
-object UserProfileEditEndpoint : SecureEndpoint("/user/profile") {
+object UserProfileEditEndpoint : SecureEndpoint(Endpoints.User.ProfileEdit) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         var key: UserDataKey? = null
         try {

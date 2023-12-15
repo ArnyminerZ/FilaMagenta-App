@@ -15,9 +15,9 @@ import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import java.time.Instant
 import org.jetbrains.exposed.sql.and
-import security.Roles
+import server.Endpoints
 
-object EventJoinOtherEndpoint : SecureEndpoint("/events/{eventId}/join/{otherId}", Roles.Events.JoinOthers) {
+object EventJoinOtherEndpoint : SecureEndpoint(Endpoints.Event.JoinOther) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         val eventId: Int by call.parameters
         val otherId: Int by call.parameters

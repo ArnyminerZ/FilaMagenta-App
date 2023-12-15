@@ -18,8 +18,9 @@ import io.ktor.util.pipeline.PipelineContext
 import org.jetbrains.exposed.sql.and
 import request.UserRoleRequest
 import security.Roles
+import server.Endpoints
 
-object UserRevokeRoleEndpoint : SecureEndpoint("/user/revoke", Roles.Users.RevokeRole) {
+object UserRevokeRoleEndpoint : SecureEndpoint(Endpoints.User.RevokeRole) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         try {
             val (userId, role) = call.receive<UserRoleRequest>()

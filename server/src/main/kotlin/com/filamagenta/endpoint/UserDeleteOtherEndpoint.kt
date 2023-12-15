@@ -15,8 +15,9 @@ import io.ktor.server.application.call
 import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import security.Roles
+import server.Endpoints
 
-object UserDeleteOtherEndpoint : SecureEndpoint("/user/{userId}", Roles.Users.Delete) {
+object UserDeleteOtherEndpoint : SecureEndpoint(Endpoints.User.DeleteOther) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         val userId: Int by call.parameters
 

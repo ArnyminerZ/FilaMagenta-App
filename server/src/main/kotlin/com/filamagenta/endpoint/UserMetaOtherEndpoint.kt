@@ -18,9 +18,9 @@ import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
 import request.UserMetaRequest
-import security.Roles
+import server.Endpoints
 
-object UserMetaOtherEndpoint : SecureEndpoint("/user/meta/{userId}", Roles.Users.ModifyOthers) {
+object UserMetaOtherEndpoint : SecureEndpoint(Endpoints.User.MetaOther) {
     @KoverIgnore
     @Serializable
     data class UserMetaResponse(

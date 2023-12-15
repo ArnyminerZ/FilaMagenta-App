@@ -14,8 +14,9 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
 import security.Role
+import server.Endpoints
 
-object UserProfileEndpoint : SecureEndpoint("/user/profile") {
+object UserProfileEndpoint : SecureEndpoint(Endpoints.User.Profile) {
     @KoverIgnore
     @Serializable
     data class UserProfileResponse(

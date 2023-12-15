@@ -16,8 +16,9 @@ import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
 import request.UserMetaRequest
+import server.Endpoints
 
-object UserMetaEndpoint : SecureEndpoint("/user/meta") {
+object UserMetaEndpoint : SecureEndpoint(Endpoints.User.Meta) {
     @KoverIgnore
     @Serializable
     data class UserMetaResponse(

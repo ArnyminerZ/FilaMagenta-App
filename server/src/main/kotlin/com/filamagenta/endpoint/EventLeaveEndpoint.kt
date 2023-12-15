@@ -13,8 +13,9 @@ import io.ktor.server.application.call
 import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import org.jetbrains.exposed.sql.and
+import server.Endpoints
 
-object EventLeaveEndpoint : SecureEndpoint("/events/{eventId}/leave") {
+object EventLeaveEndpoint : SecureEndpoint(Endpoints.Event.Leave) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         val eventId: Int by call.parameters
 

@@ -11,8 +11,9 @@ import data.TransactionType
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
+import server.Endpoints
 
-object UserTransactionListEndpoint : SecureEndpoint("/user/transactions") {
+object UserTransactionListEndpoint : SecureEndpoint(Endpoints.User.Transactions.List) {
     @KoverIgnore
     @Serializable
     data class UserTransactionsResponse(

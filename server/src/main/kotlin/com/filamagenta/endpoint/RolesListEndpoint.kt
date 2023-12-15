@@ -7,10 +7,9 @@ import com.filamagenta.endpoint.model.respondSuccess
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
-import security.Roles
-import security.roles
+import server.Endpoints
 
-object RolesListEndpoint : SecureEndpoint("/user/roles", Roles.Users.ListRoles) {
+object RolesListEndpoint : SecureEndpoint(Endpoints.Security.RolesList) {
     @KoverIgnore
     @Serializable
     data class RolesListResult(

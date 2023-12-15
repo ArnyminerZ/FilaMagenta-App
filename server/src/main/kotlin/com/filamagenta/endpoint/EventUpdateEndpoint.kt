@@ -19,9 +19,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import request.EventUpdateRequest
-import security.Roles
+import server.Endpoints
 
-object EventUpdateEndpoint : SecureEndpoint("/events/{eventId}", Roles.Events.Update) {
+object EventUpdateEndpoint : SecureEndpoint(Endpoints.Event.Update) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         try {
             val request = call.receive<EventUpdateRequest>()

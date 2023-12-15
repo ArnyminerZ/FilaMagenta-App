@@ -18,8 +18,9 @@ import io.ktor.util.pipeline.PipelineContext
 import org.jetbrains.exposed.sql.and
 import request.UserRoleRequest
 import security.Roles
+import server.Endpoints
 
-object UserGrantRoleEndpoint : SecureEndpoint("/user/grant", Roles.Users.GrantRole) {
+object UserGrantRoleEndpoint : SecureEndpoint(Endpoints.User.GrantRole) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         try {
             val (userId, role) = call.receive<UserRoleRequest>()

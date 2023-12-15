@@ -18,9 +18,9 @@ import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import org.jetbrains.exposed.sql.and
 import request.EventPaymentRequest
-import security.Roles
+import server.Endpoints
 
-object EventPaymentEndpoint : SecureEndpoint("/events/{eventId}/payment/{otherId}", Roles.Events.Payment) {
+object EventPaymentEndpoint : SecureEndpoint(Endpoints.Event.Payment) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         try {
             val eventId: Int by call.parameters

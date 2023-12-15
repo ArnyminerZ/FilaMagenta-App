@@ -19,12 +19,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import request.UserTransactionUpdateRequest
-import security.Roles
+import server.Endpoints
 
-object UserTransactionUpdateEndpoint : SecureEndpoint(
-    "/transaction/{transactionId}",
-    Roles.Transaction.Update
-) {
+object UserTransactionUpdateEndpoint : SecureEndpoint(Endpoints.User.Transactions.Update) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         try {
             val request = call.receive<UserTransactionUpdateRequest>()

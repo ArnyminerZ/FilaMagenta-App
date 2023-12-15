@@ -13,9 +13,9 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
-import security.Roles
+import server.Endpoints
 
-object EventDeleteEndpoint : SecureEndpoint("/events/{eventId}", Roles.Events.Delete) {
+object EventDeleteEndpoint : SecureEndpoint(Endpoints.Event.Delete) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         val eventId: Int by call.parameters
 
