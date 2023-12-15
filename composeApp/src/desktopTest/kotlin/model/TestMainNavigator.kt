@@ -7,13 +7,16 @@ import kotlin.test.Test
 import org.junit.Rule
 import ui.nav.MainNavigator
 import ui.reusable.LoadingBoxTestTag
+import ui.screen.MainLoadingScreen
 
 class TestMainNavigator {
     @get:Rule
     val composeTestRule = createComposeRule()
 
     @Test
-    fun validateBackPressing() {
+    fun testNavigatorLoadingScreen() {
+        MainLoadingScreen.navigateAutomatically = false
+
         composeTestRule.setContent {
             MainNavigator()
         }

@@ -10,11 +10,20 @@ import ui.reusable.LoadingBox
 import ui.screen.model.BaseScreen
 
 object MainLoadingScreen : BaseScreen() {
+    /**
+     * **Only for tests**.
+     * If true, the loading screen will navigate automatically to [LoginScreen] or [MainScreen] based on the accounts
+     * list.
+     */
+    var navigateAutomatically: Boolean = true
+
     @Composable
     override fun ScreenContent(paddingValues: PaddingValues) {
         val navigator = LocalNavigator.current
 
         LaunchedEffect(Unit) {
+            if (!navigateAutomatically) return@LaunchedEffect
+
             // Check if there's any account added
             val accounts = AccountManager.getAccounts()
 
