@@ -15,7 +15,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import filamagenta.MR
 import ui.screen.model.BaseScreen
 
-object MainScreen: BaseScreen(MR.strings.title_home) {
+object MainScreen : BaseScreen(MR.strings.title_home) {
     const val TEST_TAG = "main_screen"
 
     @Composable
