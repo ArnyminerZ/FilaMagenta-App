@@ -17,11 +17,18 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import cafe.adriel.voyager.navigator.LocalNavigator
 import dev.icerock.moko.resources.compose.stringResource
 import filamagenta.MR
+import io.github.aakira.napier.Napier
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
+import network.backend.transactionsConnector
 import ui.data.NavigationItem
 import ui.screen.model.NavigationScreen
 
@@ -76,6 +83,17 @@ object MainScreen : NavigationScreen(
 
     @Composable
     fun WalletPage() {
+        DisposableEffect(Unit) {
+            val job = CoroutineScope(Dispatchers.IO).launch {
+                val transactions = transactionsConnector.getTransactions()
+                Napier.i { "Got ${transactions.size} transactions." }
+            }
+
+            onDispose {
+                job.cancel()
+            }
+        }
+
         Column(
             modifier = Modifier.fillMaxSize().testTag(TEST_TAG)
         ) {
