@@ -9,6 +9,10 @@
     <!-- Generic Errors -->
     <string name="error_generic_no_message" comment="In theory it's never displayed. Only used for fallback in some situations when some value can be null.">No message</string>
 
+    <!-- Screen titles -->
+    <string name="title_home">Home</string>
+    <string name="title_login">Login</string>
+
     <!-- Login Screen -->
     <string name="login_title">Filà Magenta Login</string>
     <string name="login_subtitle">Please, introduce your NIF and your password.</string>

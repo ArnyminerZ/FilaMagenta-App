@@ -22,9 +22,16 @@ import ui.theme.AppTheme
 
 /**
  * All the screens should extend this class. Provides some utility functions for simplifying the development process.
+ *
+ * @param localizedTitle If not null, the title to display on the window's title bar when this screen is being
+ * displayed.
+ * Will be appended after "Filà Magenta - *localizedTitle*]", so for example, if the title is "Home", the full title
+ * will be "Filà Magenta - Home".
  */
 @KoverIgnore
-abstract class AppScreen : Screen {
+abstract class AppScreen(
+    val localizedTitle: StringResource? = null
+) : Screen {
     private var snackbarHostState: SnackbarHostState? = null
 
     /**

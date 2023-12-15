@@ -48,7 +48,7 @@ import ui.screen.model.BaseScreen
 import utils.isValidNif
 
 @OptIn(ExperimentalComposeUiApi::class)
-object LoginScreen : BaseScreen() {
+object LoginScreen : BaseScreen(MR.strings.title_login) {
     const val TEST_TAG = "login_screen"
 
     private val isLoading = MutableStateFlow(false)
