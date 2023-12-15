@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -105,7 +106,8 @@ object LoginScreen : BaseScreen() {
 
             OutlinedButton(
                 onClick = { login(nif, password) },
-                enabled = !isLoading
+                enabled = !isLoading,
+                modifier = Modifier.padding(end = 16.dp).align(Alignment.End)
             ) {
                 AnimatedVisibility(
                     visible = isLoading,
@@ -117,7 +119,7 @@ object LoginScreen : BaseScreen() {
                     )
                 }
 
-                Text("Add Account")
+                Text(stringResource(MR.strings.login_action))
             }
         }
     }
