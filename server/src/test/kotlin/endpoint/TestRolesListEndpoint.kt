@@ -12,7 +12,7 @@ import security.roles
 
 class TestRolesListEndpoint : TestServerEnvironment() {
     @Test
-    fun `test listing endpoints`() = testServer {
+    fun `test listing roles`() = testServer {
         val (_, jwt) = userProvider.createSampleUserAndProvideToken(Roles.Users.ListRoles)
 
         httpClient.get(RolesListEndpoint.url) {
@@ -20,10 +20,7 @@ class TestRolesListEndpoint : TestServerEnvironment() {
         }.let { response ->
             assertResponseSuccess<RolesListEndpoint.RolesListResult>(response) { data ->
                 assertNotNull(data)
-                assertContentEquals(
-                    roles.map { it.name },
-                    data.roles
-                )
+                assertContentEquals(roles, data.roles)
             }
         }
     }
