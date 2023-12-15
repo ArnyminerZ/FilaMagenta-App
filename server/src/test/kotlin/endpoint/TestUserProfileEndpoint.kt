@@ -5,7 +5,7 @@ import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.endpoint.UserProfileEndpoint
 import com.filamagenta.security.Authentication
-import com.filamagenta.security.Roles
+import data.UserMetaKey
 import database.provider.UserProvider
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
@@ -14,6 +14,7 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.Test
+import security.Roles
 
 class TestUserProfileEndpoint : TestServerEnvironment() {
     @Test
@@ -25,12 +26,12 @@ class TestUserProfileEndpoint : TestServerEnvironment() {
         // Add some stub meta
         database {
             UserMeta.new {
-                this.key = UserMeta.Key.EMAIL
+                this.key = UserMetaKey.EMAIL
                 this.value = "example@email.com"
                 this.user = user
             }
             UserMeta.new {
-                this.key = UserMeta.Key.PHONE
+                this.key = UserMetaKey.PHONE
                 this.value = "123456789"
                 this.user = user
             }
@@ -56,8 +57,8 @@ class TestUserProfileEndpoint : TestServerEnvironment() {
                 assertEquals(UserProvider.SampleUser.SURNAME, data.surname)
                 assertContentEquals(
                     mapOf(
-                        UserMeta.Key.EMAIL to "example@email.com",
-                        UserMeta.Key.PHONE to "123456789"
+                        UserMetaKey.EMAIL to "example@email.com",
+                        UserMetaKey.PHONE to "123456789"
                     ).toList(),
                     data.meta.toList()
                 )

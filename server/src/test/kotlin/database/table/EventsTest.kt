@@ -2,8 +2,9 @@ package database.table
 
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
-import com.filamagenta.database.entity.UserMeta
-import com.filamagenta.database.json.EventPrices
+import data.Category
+import data.EventPrices
+import data.EventType
 import database.model.DatabaseTestEnvironment
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
@@ -13,13 +14,13 @@ class EventsTest : DatabaseTestEnvironment() {
     object SampleEvent {
         const val NAME = "Testing Event"
         val date: LocalDateTime = LocalDateTime.of(2023, 10, 5, 20, 0, 0)
-        val type = Event.Type.DINNER
+        val type = EventType.DINNER
         const val DESCRIPTION = "This is the description of the testing event"
         val prices = EventPrices(
             mapOf(
-                UserMeta.Category.FESTER to 0f,
-                UserMeta.Category.SIT_ESP to 20f,
-                UserMeta.Category.JUBILAT to 20f
+                Category.FESTER to 0f,
+                Category.SIT_ESP to 20f,
+                Category.JUBILAT to 20f
             ),
             fallback = 30f
         )

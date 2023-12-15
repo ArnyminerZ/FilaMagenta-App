@@ -5,7 +5,7 @@ import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.UserTransactionListEndpoint
 import com.filamagenta.security.Authentication
-import com.filamagenta.security.Roles
+import data.TransactionType
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
@@ -13,6 +13,7 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.Test
+import security.Roles
 
 class TestUserTransactionListEndpoint : TestServerEnvironment() {
     private fun provideSampleTransactions(user: User) {
@@ -23,7 +24,7 @@ class TestUserTransactionListEndpoint : TestServerEnvironment() {
                 this.income = true
                 this.units = 1U
                 this.pricePerUnit = 12f
-                this.type = Transaction.Type.INCOME_BANK
+                this.type = TransactionType.INCOME_BANK
 
                 this.user = user
             }
@@ -33,7 +34,7 @@ class TestUserTransactionListEndpoint : TestServerEnvironment() {
                 this.income = false
                 this.units = 5U
                 this.pricePerUnit = 9f
-                this.type = Transaction.Type.DEBT
+                this.type = TransactionType.DEBT
 
                 this.user = user
             }

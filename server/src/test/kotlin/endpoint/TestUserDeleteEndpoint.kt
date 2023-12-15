@@ -7,14 +7,15 @@ import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserMetaTable
 import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.endpoint.UserDeleteEndpoint
-import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
+import data.UserMetaKey
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.delete
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import org.junit.Test
+import response.Errors
+import security.Roles
 
 class TestUserDeleteEndpoint : TestServerEnvironment() {
     @Test
@@ -25,7 +26,7 @@ class TestUserDeleteEndpoint : TestServerEnvironment() {
         // Add some meta
         database {
             UserMeta.new {
-                this.key = UserMeta.Key.EMAIL
+                this.key = UserMetaKey.EMAIL
                 this.value = "example@mail.com"
                 this.user = user
             }

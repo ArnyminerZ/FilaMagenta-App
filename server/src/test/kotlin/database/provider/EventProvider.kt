@@ -1,8 +1,9 @@
 package database.provider
 
 import com.filamagenta.database.entity.Event
-import com.filamagenta.database.entity.UserMeta
-import com.filamagenta.database.json.EventPrices
+import data.Category
+import data.EventPrices
+import data.EventType
 import java.time.LocalDateTime
 
 class EventProvider {
@@ -12,7 +13,7 @@ class EventProvider {
     interface IEvent {
         val date: LocalDateTime
         val name: String
-        val type: Event.Type
+        val type: EventType
         val description: String
         val prices: EventPrices
     }
@@ -20,11 +21,11 @@ class EventProvider {
     object SampleEvent1 : IEvent {
         override val date: LocalDateTime = LocalDateTime.of(2023, 12, 10, 20, 0, 0)
         override val name = "Testing event 1"
-        override val type = Event.Type.DINNER
+        override val type = EventType.DINNER
         override val description = "This is the description of the first testing event"
         override val prices = EventPrices(
             prices = mapOf(
-                UserMeta.Category.FESTER to 0f
+                Category.FESTER to 0f
             ),
             fallback = 20f
         )
@@ -33,7 +34,7 @@ class EventProvider {
     object SampleEvent2 : IEvent {
         override val date: LocalDateTime = LocalDateTime.of(2023, 12, 10, 20, 0, 0)
         override val name = "Testing event 2"
-        override val type = Event.Type.LUNCH
+        override val type = EventType.LUNCH
         override val description = "This is the description of the second testing event. It doesn't have any prices"
         override val prices: EventPrices = EventPrices.EMPTY
     }
@@ -41,12 +42,12 @@ class EventProvider {
     object SampleEvent3 : IEvent {
         override val date: LocalDateTime = LocalDateTime.of(2023, 3, 10, 20, 0, 0)
         override val name = "Testing event 3"
-        override val type = Event.Type.MEETING
+        override val type = EventType.MEETING
         override val description = "This is the description of the third testing event. This one is from previous year."
         override val prices = EventPrices(
             prices = mapOf(
-                UserMeta.Category.FESTER to 0f,
-                UserMeta.Category.COL to 12f
+                Category.FESTER to 0f,
+                Category.COL to 12f
             ),
             fallback = 20f
         )

@@ -3,9 +3,6 @@ package endpoint
 import com.filamagenta.database.database
 import com.filamagenta.endpoint.LoginEndpoint
 import com.filamagenta.modules.AUTH_JWT_CLAIM_NIF
-import com.filamagenta.request.LoginRequest
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import database.provider.UserProvider
 import endpoint.model.TestServerEnvironment
@@ -16,6 +13,10 @@ import io.ktor.http.contentType
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.Test
+import request.LoginRequest
+import response.ErrorCodes
+import response.Errors
+import response.endpoint.LoginResult
 
 class TestLoginEndpoint : TestServerEnvironment() {
     @Test
@@ -31,7 +32,7 @@ class TestLoginEndpoint : TestServerEnvironment() {
                 )
             )
         }.let { result ->
-            assertResponseSuccess<LoginEndpoint.SuccessfulLogin>(result) { data ->
+            assertResponseSuccess<LoginResult>(result) { data ->
                 assertNotNull(data)
 
                 val jwt = Authentication.verifyJWT(data.token)

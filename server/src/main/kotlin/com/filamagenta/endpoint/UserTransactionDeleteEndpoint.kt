@@ -6,17 +6,14 @@ import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
+import response.Errors
+import server.Endpoints
 
-object UserTransactionDeleteEndpoint : SecureEndpoint(
-    "/transaction/{transactionId}",
-    Roles.Transaction.Delete
-) {
+object UserTransactionDeleteEndpoint : SecureEndpoint(Endpoints.User.Transactions.Delete) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         val transactionId: Int by call.parameters
 

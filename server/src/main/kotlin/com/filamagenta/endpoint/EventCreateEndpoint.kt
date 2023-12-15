@@ -6,10 +6,6 @@ import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.request.EventCreateRequest
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
@@ -18,8 +14,12 @@ import io.ktor.util.pipeline.PipelineContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import request.EventCreateRequest
+import response.ErrorCodes
+import response.Errors
+import server.Endpoints
 
-object EventCreateEndpoint : SecureEndpoint("/events/create", Roles.Events.Create) {
+object EventCreateEndpoint : SecureEndpoint(Endpoints.Event.Create) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         try {
             val request = call.receive<EventCreateRequest>()

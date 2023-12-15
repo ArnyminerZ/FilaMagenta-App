@@ -5,8 +5,6 @@ import com.filamagenta.database.entity.User
 import com.filamagenta.modules.addEndpoints
 import com.filamagenta.modules.configureJwt
 import com.filamagenta.modules.serverJson
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.FailureResponse
 import database.model.DatabaseTestEnvironment
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.auth.Auth
@@ -37,6 +35,8 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import response.ErrorCodes
+import response.FailureResponse
 
 abstract class TestServerEnvironment : DatabaseTestEnvironment() {
     companion object {

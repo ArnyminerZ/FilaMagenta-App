@@ -7,10 +7,6 @@ import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.request.UserRoleRequest
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
@@ -18,8 +14,13 @@ import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
 import org.jetbrains.exposed.sql.and
+import request.UserRoleRequest
+import response.ErrorCodes
+import response.Errors
+import security.Roles
+import server.Endpoints
 
-object UserGrantRoleEndpoint : SecureEndpoint("/user/grant", Roles.Users.GrantRole) {
+object UserGrantRoleEndpoint : SecureEndpoint(Endpoints.User.GrantRole) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         try {
             val (userId, role) = call.receive<UserRoleRequest>()

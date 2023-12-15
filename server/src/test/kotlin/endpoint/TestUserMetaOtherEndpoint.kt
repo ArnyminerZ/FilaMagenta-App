@@ -3,10 +3,8 @@ package endpoint
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.endpoint.UserMetaOtherEndpoint
-import com.filamagenta.request.UserMetaRequest
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
-import com.filamagenta.security.Roles
+import data.UserMetaKey
 import database.provider.UserProvider
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
@@ -18,6 +16,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import org.junit.Test
+import request.UserMetaRequest
+import response.Errors
+import security.Roles
 
 class TestUserMetaOtherEndpoint : TestServerEnvironment() {
     @Test
@@ -34,12 +35,12 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
-                UserMetaRequest(UserMeta.Key.EMAIL)
+                UserMetaRequest(UserMetaKey.EMAIL)
             )
         }.let { response ->
             assertResponseSuccess<UserMetaOtherEndpoint.UserMetaResponse>(response) { data ->
                 assertNotNull(data)
-                assertEquals(UserMeta.Key.EMAIL, data.key)
+                assertEquals(UserMetaKey.EMAIL, data.key)
                 assertNull(data.value)
             }
         }
@@ -51,12 +52,12 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
-                UserMetaRequest(UserMeta.Key.EMAIL, "example@email.com")
+                UserMetaRequest(UserMetaKey.EMAIL, "example@email.com")
             )
         }.let { response ->
             assertResponseSuccess<UserMetaOtherEndpoint.UserMetaResponse>(response) { data ->
                 assertNotNull(data)
-                assertEquals(UserMeta.Key.EMAIL, data.key)
+                assertEquals(UserMetaKey.EMAIL, data.key)
                 assertEquals("example@email.com", data.value)
             }
         }
@@ -68,12 +69,12 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
-                UserMetaRequest(UserMeta.Key.EMAIL)
+                UserMetaRequest(UserMetaKey.EMAIL)
             )
         }.let { response ->
             assertResponseSuccess<UserMetaOtherEndpoint.UserMetaResponse>(response) { data ->
                 assertNotNull(data)
-                assertEquals(UserMeta.Key.EMAIL, data.key)
+                assertEquals(UserMetaKey.EMAIL, data.key)
                 assertEquals("example@email.com", data.value)
             }
         }
@@ -87,7 +88,7 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
 
         database {
             UserMeta.new {
-                this.key = UserMeta.Key.EMAIL
+                this.key = UserMetaKey.EMAIL
                 this.value = "example@email.com"
                 this.user = user
             }
@@ -100,12 +101,12 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
-                UserMetaRequest(UserMeta.Key.EMAIL, "example2@email.com")
+                UserMetaRequest(UserMetaKey.EMAIL, "example2@email.com")
             )
         }.let { response ->
             assertResponseSuccess<UserMetaOtherEndpoint.UserMetaResponse>(response) { data ->
                 assertNotNull(data)
-                assertEquals(UserMeta.Key.EMAIL, data.key)
+                assertEquals(UserMetaKey.EMAIL, data.key)
                 assertEquals("example2@email.com", data.value)
             }
         }
@@ -117,12 +118,12 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
-                UserMetaRequest(UserMeta.Key.EMAIL)
+                UserMetaRequest(UserMetaKey.EMAIL)
             )
         }.let { response ->
             assertResponseSuccess<UserMetaOtherEndpoint.UserMetaResponse>(response) { data ->
                 assertNotNull(data)
-                assertEquals(UserMeta.Key.EMAIL, data.key)
+                assertEquals(UserMetaKey.EMAIL, data.key)
                 assertEquals("example2@email.com", data.value)
             }
         }
@@ -140,7 +141,7 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
-                UserMetaRequest(UserMeta.Key.EMAIL, "example2@email.com")
+                UserMetaRequest(UserMetaKey.EMAIL, "example2@email.com")
             )
         }.let { response ->
             assertResponseFailure(response, Errors.Authentication.JWT.MissingRole)
@@ -158,7 +159,7 @@ class TestUserMetaOtherEndpoint : TestServerEnvironment() {
             bearerAuth(jwt)
             contentType(ContentType.Application.Json)
             setBody(
-                UserMetaRequest(UserMeta.Key.EMAIL, "example2@email.com")
+                UserMetaRequest(UserMetaKey.EMAIL, "example2@email.com")
             )
         }.let { response ->
             assertResponseFailure(response, Errors.Users.UserIdNotFound)

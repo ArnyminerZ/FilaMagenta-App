@@ -3,10 +3,7 @@ package com.filamagenta.database.utils
 import com.filamagenta.database.Database
 import com.filamagenta.database.entity.User
 import com.filamagenta.security.Passwords
-
-enum class UserDataKey {
-    Name, Surname, Password
-}
+import data.UserDataKey
 
 /**
  * Sets the value of a specified user data key in the database.

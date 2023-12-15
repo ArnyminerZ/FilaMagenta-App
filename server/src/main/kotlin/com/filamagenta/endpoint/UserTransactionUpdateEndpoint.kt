@@ -6,10 +6,6 @@ import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.request.UserTransactionUpdateRequest
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
@@ -20,11 +16,12 @@ import io.ktor.util.pipeline.PipelineContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import request.UserTransactionUpdateRequest
+import response.ErrorCodes
+import response.Errors
+import server.Endpoints
 
-object UserTransactionUpdateEndpoint : SecureEndpoint(
-    "/transaction/{transactionId}",
-    Roles.Transaction.Update
-) {
+object UserTransactionUpdateEndpoint : SecureEndpoint(Endpoints.User.Transactions.Update) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         try {
             val request = call.receive<UserTransactionUpdateRequest>()
@@ -38,10 +35,10 @@ object UserTransactionUpdateEndpoint : SecureEndpoint(
                 return respondSuccess<Void>(status = HttpStatusCode.Accepted)
             }
 
-            if (request.pricePerUnit != null && request.pricePerUnit <= 0) {
+            if (request.pricePerUnit?.let { it <= 0 } == true) {
                 return respondFailure(Errors.Transactions.PriceMustBeGreaterThan0)
             }
-            if (request.units != null && request.units <= 0u) {
+            if (request.units?.let { it <= 0u } == true) {
                 return respondFailure(Errors.Transactions.UnitsMustBeGreaterThan0)
             }
 

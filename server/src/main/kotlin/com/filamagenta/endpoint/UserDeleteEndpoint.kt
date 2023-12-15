@@ -9,12 +9,13 @@ import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
+import response.Errors
+import security.Roles
+import server.Endpoints
 
-object UserDeleteEndpoint : SecureEndpoint("/user/delete") {
+object UserDeleteEndpoint : SecureEndpoint(Endpoints.User.Delete) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         val roles = database { UserRole.find { UserRolesTable.user eq user.id }.toList() }
 

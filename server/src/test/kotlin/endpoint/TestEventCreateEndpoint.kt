@@ -1,14 +1,10 @@
 package endpoint
 
 import com.filamagenta.database.database
-import com.filamagenta.database.entity.Event
-import com.filamagenta.database.entity.UserMeta
-import com.filamagenta.database.json.EventPrices
 import com.filamagenta.endpoint.EventCreateEndpoint
-import com.filamagenta.request.EventCreateRequest
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
+import data.Category
+import data.EventPrices
+import data.EventType
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.post
@@ -17,16 +13,20 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import java.time.LocalDateTime
 import org.junit.Test
+import request.EventCreateRequest
+import response.ErrorCodes
+import response.Errors
+import security.Roles
 
 class TestEventCreateEndpoint : TestServerEnvironment() {
     private val sampleEventCreateRequest = EventCreateRequest(
         date = LocalDateTime.of(2023, 12, 10, 20, 0, 0).toString(),
         name = "Testing event",
-        type = Event.Type.DINNER,
+        type = EventType.DINNER,
         description = "",
         prices = EventPrices(
             prices = mapOf(
-                UserMeta.Category.FESTER to 0f
+                Category.FESTER to 0f
             ),
             fallback = 20f
         )

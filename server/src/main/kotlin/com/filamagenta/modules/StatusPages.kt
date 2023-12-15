@@ -1,13 +1,13 @@
 package com.filamagenta.modules
 
 import com.filamagenta.endpoint.model.respondFailure
-import com.filamagenta.response.Errors
 import io.klogging.logger
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.statuspages.StatusPagesConfig
+import response.Errors
 
 private val logger = logger("status")
 

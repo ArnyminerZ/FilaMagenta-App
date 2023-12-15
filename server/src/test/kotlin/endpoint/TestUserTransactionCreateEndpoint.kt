@@ -4,11 +4,8 @@ import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.table.Transactions
 import com.filamagenta.endpoint.UserTransactionCreateEndpoint
-import com.filamagenta.request.UserTransactionCreateRequest
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
-import com.filamagenta.security.Roles
+import data.TransactionType
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.post
@@ -20,6 +17,10 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 import org.junit.Test
+import request.UserTransactionCreateRequest
+import response.ErrorCodes
+import response.Errors
+import security.Roles
 
 class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
     private val sampleTransaction = UserTransactionCreateRequest(
@@ -28,7 +29,7 @@ class TestUserTransactionCreateEndpoint : TestServerEnvironment() {
         income = true,
         units = 1U,
         pricePerUnit = 10f,
-        type = Transaction.Type.INCOME_BANK
+        type = TransactionType.INCOME_BANK
     )
 
     @Test

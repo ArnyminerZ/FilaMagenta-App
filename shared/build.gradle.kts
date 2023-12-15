@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.detekt)
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.kover)
 }
 
@@ -23,6 +24,12 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(libs.kotlinx.datetime)
+
+            // JSON Serialization
+            api(libs.kotlinx.serialization.json)
+
+            // Ktor Dependencies
+            api(libs.ktor.common.http)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test.junit)

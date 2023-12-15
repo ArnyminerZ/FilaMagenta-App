@@ -2,21 +2,22 @@ package com.filamagenta.endpoint
 
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
-import com.filamagenta.database.utils.UserDataKey
 import com.filamagenta.database.utils.set
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.request.UserProfileEditRequest
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
+import data.UserDataKey
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
+import request.UserProfileEditRequest
+import response.ErrorCodes
+import response.Errors
+import server.Endpoints
 
-object UserProfileEditEndpoint : SecureEndpoint("/user/profile") {
+object UserProfileEditEndpoint : SecureEndpoint(Endpoints.User.ProfileEdit) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         var key: UserDataKey? = null
         try {

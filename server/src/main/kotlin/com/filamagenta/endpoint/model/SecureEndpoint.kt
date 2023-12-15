@@ -6,13 +6,14 @@ import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.database.table.Users
 import com.filamagenta.modules.AUTH_JWT_CLAIM_NIF
-import com.filamagenta.response.Errors
-import com.filamagenta.security.Role
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.util.pipeline.PipelineContext
+import response.Errors
+import security.Role
+import server.EndpointDef
 
 /**
  * Represents an endpoint in the server which requires the user to be authenticated.
@@ -20,11 +21,13 @@ import io.ktor.util.pipeline.PipelineContext
  * @param url The url of the endpoint in the server.
  * @param roles If any, the user that makes a request to this endpoint must have these roles.
  */
+@Suppress("SpreadOperator")
 abstract class SecureEndpoint(
     url: String,
     vararg roles: Role
-) : Endpoint(url) {
-    private val roles = roles.toList()
+) : Endpoint(url, *roles) {
+    @Suppress("SpreadOperator")
+    constructor(definition: EndpointDef) : this(definition.url, *definition.roles.toTypedArray())
 
     /**
      * Makes sure that [user] has all the roles in [roles]. If it's empty, no operation is performed.

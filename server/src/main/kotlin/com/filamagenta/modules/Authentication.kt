@@ -3,7 +3,6 @@ package com.filamagenta.modules
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.filamagenta.endpoint.model.respondFailure
-import com.filamagenta.response.Errors
 import com.filamagenta.system.EnvironmentVariables
 import io.klogging.logger
 import io.ktor.server.application.Application
@@ -12,6 +11,7 @@ import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.AuthenticationConfig
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
+import response.Errors
 
 private val logger = logger("auth")
 

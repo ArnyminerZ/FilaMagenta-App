@@ -2,6 +2,7 @@ package database.table
 
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
+import data.TransactionType
 import database.model.DatabaseTestEnvironment
 import database.provider.UserProvider
 import java.time.LocalDate
@@ -22,7 +23,7 @@ class TransactionTest : DatabaseTestEnvironment() {
                 this.income = true
                 this.pricePerUnit = 10f
                 this.units = 1U
-                this.type = Transaction.Type.INCOME_BANK
+                this.type = TransactionType.INCOME_BANK
 
                 this.user = user
             }
@@ -34,7 +35,7 @@ class TransactionTest : DatabaseTestEnvironment() {
                 assertEquals(true, it.income)
                 assertEquals(10f, it.pricePerUnit)
                 assertEquals(1U, it.units)
-                assertEquals(Transaction.Type.INCOME_BANK, it.type)
+                assertEquals(TransactionType.INCOME_BANK, it.type)
                 assertEquals(UserProvider.SampleUser.NIF, it.user.nif)
             }
         }
@@ -52,7 +53,7 @@ class TransactionTest : DatabaseTestEnvironment() {
                     this.income = true
                     this.pricePerUnit = -1f
                     this.units = 1U
-                    this.type = Transaction.Type.INCOME_BANK
+                    this.type = TransactionType.INCOME_BANK
 
                     this.user = user
                 }
@@ -69,7 +70,7 @@ class TransactionTest : DatabaseTestEnvironment() {
                     this.income = true
                     this.pricePerUnit = 0f
                     this.units = 1U
-                    this.type = Transaction.Type.INCOME_BANK
+                    this.type = TransactionType.INCOME_BANK
 
                     this.user = user
                 }
@@ -89,7 +90,7 @@ class TransactionTest : DatabaseTestEnvironment() {
                     this.income = true
                     this.pricePerUnit = 10f
                     this.units = 0U
-                    this.type = Transaction.Type.INCOME_BANK
+                    this.type = TransactionType.INCOME_BANK
 
                     this.user = user
                 }

@@ -4,8 +4,6 @@ import com.filamagenta.database.database
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.endpoint.EventLeaveOtherEndpoint
-import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.post
@@ -13,6 +11,8 @@ import java.time.Instant
 import kotlin.test.assertNull
 import org.jetbrains.exposed.sql.and
 import org.junit.Test
+import response.Errors
+import security.Roles
 
 class TestEventLeaveOtherEndpoint : TestServerEnvironment() {
     @Test

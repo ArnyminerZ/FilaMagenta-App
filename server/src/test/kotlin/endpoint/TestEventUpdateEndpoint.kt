@@ -2,14 +2,11 @@ package endpoint
 
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
-import com.filamagenta.database.entity.UserMeta
-import com.filamagenta.database.json.EventPrices
 import com.filamagenta.endpoint.EventUpdateEndpoint
-import com.filamagenta.request.EventUpdateRequest
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
-import com.filamagenta.security.Roles
+import data.Category
+import data.EventPrices
+import data.EventType
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.patch
@@ -20,6 +17,10 @@ import io.ktor.http.contentType
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import org.junit.Test
+import request.EventUpdateRequest
+import response.ErrorCodes
+import response.Errors
+import security.Roles
 
 class TestEventUpdateEndpoint : TestServerEnvironment() {
     private fun testUpdating(
@@ -77,10 +78,10 @@ class TestEventUpdateEndpoint : TestServerEnvironment() {
     @Test
     fun `test update event type`() = testUpdating(
         request = EventUpdateRequest(
-            type = Event.Type.ENTRADETA
+            type = EventType.ENTRADETA
         ),
         assertion = {
-            assertEquals(Event.Type.ENTRADETA, it.type)
+            assertEquals(EventType.ENTRADETA, it.type)
         }
     )
 
@@ -99,7 +100,7 @@ class TestEventUpdateEndpoint : TestServerEnvironment() {
         request = EventUpdateRequest(
             prices = EventPrices(
                 prices = mapOf(
-                    UserMeta.Category.INFANTIL to 2f
+                    Category.INFANTIL to 2f
                 ),
                 fallback = 10f
             )
@@ -108,7 +109,7 @@ class TestEventUpdateEndpoint : TestServerEnvironment() {
             assertEquals(
                 EventPrices(
                     prices = mapOf(
-                        UserMeta.Category.INFANTIL to 2f
+                        Category.INFANTIL to 2f
                     ),
                     fallback = 10f
                 ),

@@ -6,12 +6,12 @@ import com.filamagenta.database.entity.Event
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
-import com.filamagenta.database.json.EventPrices
 import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.security.Roles
+import data.EventPrices
+import data.EventType
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.request.header
@@ -19,9 +19,11 @@ import io.ktor.util.pipeline.PipelineContext
 import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.and
+import security.Roles
+import server.Endpoints
 import utils.isInWorkingYear
 
-object EventListEndpoint : SecureEndpoint("/events/list") {
+object EventListEndpoint : SecureEndpoint(Endpoints.Event.List) {
     @KoverIgnore
     @Serializable
     data class EventListResponse(
@@ -33,7 +35,7 @@ object EventListEndpoint : SecureEndpoint("/events/list") {
             val id: Int,
             val date: String,
             val name: String,
-            val type: Event.Type,
+            val type: EventType,
             val description: String,
             val prices: EventPrices?,
             val joined: UserJoinedEvent?,

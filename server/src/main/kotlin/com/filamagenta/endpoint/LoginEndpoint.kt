@@ -6,9 +6,6 @@ import com.filamagenta.database.table.Users
 import com.filamagenta.endpoint.model.Endpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.request.LoginRequest
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import com.filamagenta.security.Passwords
 import io.ktor.server.application.ApplicationCall
@@ -16,14 +13,13 @@ import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
-import kotlinx.serialization.Serializable
+import request.LoginRequest
+import response.ErrorCodes
+import response.Errors
+import response.endpoint.LoginResult
+import server.Endpoints
 
-object LoginEndpoint : Endpoint("/auth/login") {
-    @Serializable
-    data class SuccessfulLogin(
-        val token: String
-    )
-
+object LoginEndpoint : Endpoint(Endpoints.Authenticate.Login) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.body() {
         try {
             val (nif, password) = call.receive<LoginRequest>()
@@ -41,7 +37,7 @@ object LoginEndpoint : Endpoint("/auth/login") {
 
             // Respond with the token
             respondSuccess(
-                SuccessfulLogin(jwt)
+                LoginResult(jwt)
             )
         } catch (e: BadRequestException) {
             respondFailure(e, code = ErrorCodes.Generic.INVALID_REQUEST)

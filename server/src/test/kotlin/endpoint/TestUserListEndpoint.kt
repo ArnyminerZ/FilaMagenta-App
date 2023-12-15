@@ -3,7 +3,7 @@ package endpoint
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.endpoint.UserListEndpoint
-import com.filamagenta.security.Roles
+import data.UserMetaKey
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
@@ -12,6 +12,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import org.junit.Test
+import security.Roles
 
 class TestUserListEndpoint : TestServerEnvironment() {
 
@@ -23,12 +24,12 @@ class TestUserListEndpoint : TestServerEnvironment() {
         // Add some meta to user2
         database {
             UserMeta.new {
-                this.key = UserMeta.Key.PHONE
+                this.key = UserMetaKey.PHONE
                 this.value = "963258741"
                 this.user = user2
             }
             UserMeta.new {
-                this.key = UserMeta.Key.EMAIL
+                this.key = UserMetaKey.EMAIL
                 this.value = "example@mail.com"
                 this.user = user2
             }
@@ -58,8 +59,8 @@ class TestUserListEndpoint : TestServerEnvironment() {
                     assertTrue(user.roles.isEmpty())
                     assertContentEquals(
                         mapOf(
-                            UserMeta.Key.PHONE to "963258741",
-                            UserMeta.Key.EMAIL to "example@mail.com"
+                            UserMetaKey.PHONE to "963258741",
+                            UserMetaKey.EMAIL to "example@mail.com"
                         ).toList(),
                         user.meta.toList()
                     )

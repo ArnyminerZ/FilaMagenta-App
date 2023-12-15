@@ -4,11 +4,8 @@ import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.UserTransactionUpdateEndpoint
-import com.filamagenta.request.UserTransactionUpdateRequest
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
-import com.filamagenta.security.Roles
+import data.TransactionType
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.patch
@@ -22,6 +19,10 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 import org.junit.Test
+import request.UserTransactionUpdateRequest
+import response.ErrorCodes
+import response.Errors
+import security.Roles
 
 class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
     private val sampleTransaction = UserTransactionUpdateRequest(
@@ -30,7 +31,7 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
         income = true,
         units = 1U,
         pricePerUnit = 10f,
-        type = Transaction.Type.INCOME_BANK
+        type = TransactionType.INCOME_BANK
     )
 
     /**
@@ -124,9 +125,9 @@ class TestUserTransactionUpdateEndpoint : TestServerEnvironment() {
     @Test
     fun `test update transaction type`() = testUpdating(
         request = UserTransactionUpdateRequest(
-            type = Transaction.Type.DEBT
+            type = TransactionType.DEBT
         ),
-        assertion = { assertEquals(Transaction.Type.DEBT, it.type) }
+        assertion = { assertEquals(TransactionType.DEBT, it.type) }
     )
 
     @Test
