@@ -1,6 +1,6 @@
 package stub.network
 
-import network.backend.IAuthentication
+import network.backend.proto.IAuthentication
 
 /**
  * Overrides all the methods of the source authenticator to force custom results.

@@ -12,7 +12,7 @@ import error.ServerResponseException
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.runBlocking
 import network.backend.Authentication
-import network.backend.IAuthentication
+import network.backend.proto.IAuthentication
 
 /**
  * Which [IAuthentication] to use for performing authorization requests to the server.

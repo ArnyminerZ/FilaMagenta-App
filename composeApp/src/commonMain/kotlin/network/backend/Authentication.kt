@@ -1,6 +1,7 @@
 package network.backend
 
 import error.ServerResponseException
+import network.backend.proto.IAuthentication
 import request.LoginRequest
 import response.ErrorCodes
 import response.endpoint.LoginResult

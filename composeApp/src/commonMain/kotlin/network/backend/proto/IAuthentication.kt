@@ -1,4 +1,4 @@
-package network.backend
+package network.backend.proto
 
 import KoverIgnore
 import error.ServerResponseException
