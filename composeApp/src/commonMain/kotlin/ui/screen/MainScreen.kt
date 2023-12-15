@@ -9,10 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import cafe.adriel.voyager.navigator.LocalNavigator
 import ui.screen.model.BaseScreen
 
 object MainScreen: BaseScreen() {
+    const val TEST_TAG = "main_screen"
+
     @Composable
     override fun ScreenContent(paddingValues: PaddingValues) {
         val navigator = LocalNavigator.current
@@ -25,7 +29,9 @@ object MainScreen: BaseScreen() {
             }
         }
 
-        Column {
+        Column(
+            modifier = Modifier.testTag(TEST_TAG)
+        ) {
             Text("Main Screen")
 
             Button(

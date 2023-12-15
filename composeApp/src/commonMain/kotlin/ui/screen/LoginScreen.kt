@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.AutofillType
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,6 +48,8 @@ import utils.isValidNif
 
 @OptIn(ExperimentalComposeUiApi::class)
 object LoginScreen : BaseScreen() {
+    const val TEST_TAG = "login_screen"
+
     private val isLoading = MutableStateFlow(false)
 
     @Composable
@@ -64,6 +67,7 @@ object LoginScreen : BaseScreen() {
                 .padding(paddingValues)
                 .padding(top = 16.dp)
                 .padding(horizontal = 8.dp)
+                .testTag(TEST_TAG)
         ) {
             Titles()
             LoginForm()
