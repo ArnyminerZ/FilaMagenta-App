@@ -61,6 +61,9 @@ kotlin {
                 implementation(libs.voyager.navigator)
                 // implementation(libs.voyager.screenModel)
 
+                // Compose - Window Size Class
+                implementation(libs.multiplatformWindowSizeClass)
+
                 // Logging
                 implementation(libs.napier)
 

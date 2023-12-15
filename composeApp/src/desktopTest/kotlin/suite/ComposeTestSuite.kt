@@ -27,7 +27,7 @@ abstract class ComposeTestSuite {
         doBefore: () -> Unit = {},
         content: @Composable () -> Unit,
         finally: () -> Unit = {},
-        assertions: (composeTestRule: ComposeContentTestRule) -> Unit,
+        assertions: suspend (composeTestRule: ComposeContentTestRule) -> Unit,
     ) {
         doBefore()
 
@@ -37,13 +37,15 @@ abstract class ComposeTestSuite {
 
         composeTestRule.waitForIdle()
 
-        @Suppress("MagicNumber")
-        runBlocking { delay(5) }
+        runBlocking {
+            @Suppress("MagicNumber")
+            delay(5)
 
-        try {
-            assertions(composeTestRule)
-        } finally {
-            finally()
+            try {
+                assertions(composeTestRule)
+            } finally {
+                finally()
+            }
         }
     }
 }
