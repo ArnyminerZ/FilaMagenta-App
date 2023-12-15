@@ -1,0 +1,17 @@
+import data.TransactionType;
+import java.lang.Boolean;
+import java.lang.Double;
+import java.lang.Integer;
+import java.time.LocalDate;
+import kotlin.UInt;
+
+CREATE TABLE UserTransaction (
+    id INTEGER AS Integer PRIMARY KEY NOT NULL,
+    date TEXT AS LocalDate NOT NULL,
+    description TEXT NOT NULL,
+    income INTEGER AS Boolean NOT NULL,
+    units INTEGER AS UInt NOT NULL,
+    pricePerUnit REAL AS Double NOT NULL,
+    type TEXT AS TransactionType NOT NULL,
+    userId INTEGER AS Integer NOT NULL
+);
