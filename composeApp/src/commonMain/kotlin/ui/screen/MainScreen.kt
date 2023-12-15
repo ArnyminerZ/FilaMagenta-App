@@ -13,7 +13,7 @@ import ui.screen.model.BaseScreen
 
 object MainScreen: BaseScreen() {
     @Composable
-    override fun Content() {
+    override fun ScreenContent() {
         val navigator = LocalNavigator.current
 
         val accounts by AccountManager.getAccountsFlow().collectAsState(null)

@@ -10,7 +10,7 @@ import ui.screen.model.BaseScreen
 
 object MainLoadingScreen : BaseScreen() {
     @Composable
-    override fun Content() {
+    override fun ScreenContent() {
         val navigator = LocalNavigator.current
 
         LaunchedEffect(Unit) {

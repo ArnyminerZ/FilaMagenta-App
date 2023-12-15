@@ -1,6 +1,7 @@
 package ui.screen.model
 
 import KoverIgnore
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import ui.theme.AppTheme
 
 /**
  * All the screens should extend this class. Provides some utility functions for simplifying the development process.
@@ -23,9 +25,9 @@ abstract class AppScreen : Screen {
         maxWidth: Dp = 600.dp,
         content: @Composable ColumnScope.() -> Unit
     ) {
-        Column(
+        Box(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            contentAlignment = Alignment.Center
         ) {
             Column(
                 modifier = Modifier
@@ -33,8 +35,21 @@ abstract class AppScreen : Screen {
                     .fillMaxSize()
                     .then(modifier)
             ) {
-                content()
+                content(this@Column)
             }
         }
     }
+
+    @Composable
+    override fun Content() {
+        AppTheme {
+            ScreenContent()
+        }
+    }
+
+    /**
+     * This should be overridden instead of [Content]. Has theming built-in.
+     */
+    @Composable
+    abstract fun ScreenContent()
 }

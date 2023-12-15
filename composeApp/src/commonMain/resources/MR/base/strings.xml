@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
     <string name="account_type">com.arnyminerz.filamagenta</string>
+
+    <!-- Generic Strings -->
+    <string name="show_password">Show Password</string>
+    <string name="hide_password">Hide Password</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">Filà Magenta Login</string>
+    <string name="login_subtitle">Please, introduce your NIF and your password.</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
 </resources>
