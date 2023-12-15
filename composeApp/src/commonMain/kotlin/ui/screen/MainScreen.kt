@@ -4,6 +4,7 @@ import accounts.AccountManager
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.PagerScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Event
@@ -52,11 +53,33 @@ object MainScreen : NavigationScreen(
     )
 
     @Composable
+    override fun ScreenContent(paddingValues: PaddingValues) {
+        val navigator = LocalNavigator.current
+
+        AccountsHandler { accounts ->
+            if (accounts.isEmpty()) {
+                navigator?.push(LoginScreen)
+            }
+        }
+
+        super.ScreenContent(paddingValues)
+    }
+
+    @Composable
     override fun PagerScope.PageContent(page: Int) {
+        when (page) {
+            0 -> WalletPage()
+            1 -> EventsPage()
+            2 -> SettingsPage()
+        }
+    }
+
+    @Composable
+    fun WalletPage() {
         Column(
-            modifier = Modifier.testTag(TEST_TAG)
+            modifier = Modifier.fillMaxSize().testTag(TEST_TAG)
         ) {
-            Text("Main Screen")
+            Text("Transactions list")
 
             Button(
                 onClick = {
@@ -69,15 +92,12 @@ object MainScreen : NavigationScreen(
     }
 
     @Composable
-    override fun ScreenContent(paddingValues: PaddingValues) {
-        val navigator = LocalNavigator.current
+    fun EventsPage() {
 
-        AccountsHandler { accounts ->
-            if (accounts.isEmpty()) {
-                navigator?.push(LoginScreen)
-            }
-        }
+    }
 
-        super.ScreenContent(paddingValues)
+    @Composable
+    fun SettingsPage() {
+
     }
 }
