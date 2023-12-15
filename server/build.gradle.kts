@@ -33,13 +33,13 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     // Ktor Server libraries
+    api(libs.ktor.serialization.kotlinx.json)
     api(libs.ktor.server.auth.base)
     api(libs.ktor.server.auth.jwt)
     api(libs.ktor.server.contentNegotiation)
     api(libs.ktor.server.core)
     api(libs.ktor.server.netty)
     api(libs.ktor.server.rateLimit)
-    api(libs.ktor.server.serialization.kotlinx.json)
     api(libs.ktor.server.statusPages)
 
     // Exposed database
