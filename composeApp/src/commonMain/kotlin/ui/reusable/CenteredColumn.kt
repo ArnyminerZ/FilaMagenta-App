@@ -8,8 +8,12 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+
+const val CenteredColumnBoxTestTag = "cc_box_tt"
+const val CenteredColumnColumnTestTag = "cc_col_tt"
 
 @Composable
 fun CenteredColumn(
@@ -18,13 +22,14 @@ fun CenteredColumn(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().testTag(CenteredColumnBoxTestTag),
         contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
                 .widthIn(max = maxWidth)
                 .fillMaxSize()
+                .testTag(CenteredColumnColumnTestTag)
                 .then(modifier)
         ) {
             content(this@Column)
