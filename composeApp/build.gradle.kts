@@ -242,6 +242,10 @@ koverReport {
     filters {
         excludes {
             annotatedBy("KoverIgnore")
+            // Moko and BuildKonfig
+            packages("filamagenta")
+            // Automatically generated sources
+            classes("*ComposableSingletons*")
         }
     }
 
