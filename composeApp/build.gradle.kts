@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.kover)
     alias(libs.plugins.moko)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -113,6 +114,9 @@ kotlin {
 
                 // Ktor Client
                 implementation(libs.ktor.client.android)
+
+                // SQLDelight Driver
+                implementation(libs.sqldelight.android)
             }
         }
         val androidInstrumentedTest by getting {
@@ -138,6 +142,9 @@ kotlin {
             dependencies {
                 // Ktor Client
                 implementation(libs.ktor.client.darwin)
+
+                // SQLDelight Driver
+                implementation(libs.sqldelight.native)
             }
         }
         val iosX64Test by getting
@@ -158,6 +165,9 @@ kotlin {
 
                 // Ktor Client
                 implementation(libs.ktor.client.okhttp)
+
+                // SQLDelight Driver
+                implementation(libs.sqldelight.sqlite)
             }
         }
         val desktopTest by getting {
@@ -284,5 +294,13 @@ buildkonfig {
 
     defaultConfigs {
         buildConfigField(STRING, "SERVER", "https://filamagenta.arnyminerz.com")
+    }
+}
+
+sqldelight {
+    databases {
+        create("Database") {
+            packageName.set("filamagenta")
+        }
     }
 }

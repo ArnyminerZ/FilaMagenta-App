@@ -31,6 +31,7 @@ moko = "0.23.0"
 moko-graphics = "0.9.0"
 napier = "2.6.1"
 postgresql = "42.6.0"
+sqldelight = "2.0.1"
 sqlite = "3.44.1.0"
 voyager = "1.0.0"
 
@@ -89,6 +90,9 @@ moko-resources = { module = "dev.icerock.moko:resources", version.ref = "moko" }
 moko-test = { module = "dev.icerock.moko:resources-test", version.ref = "moko" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+sqldelight-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+sqldelight-sqlite = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite" }
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-screenModel = { module = "cafe.adriel.voyager:voyager-screenModel", version.ref = "voyager" }
@@ -105,3 +109,4 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 moko = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
