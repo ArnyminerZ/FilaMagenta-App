@@ -15,11 +15,6 @@ import ui.screen.MainScreen
 
 class TestMainNavigator : ComposeTestSuite() {
     @After
-    fun resetNavigateAutomatically() {
-        MainLoadingScreen.navigateAutomatically = true
-    }
-
-    @After
     fun clearAccounts() {
         AccountManager.clearAccounts()
     }
@@ -31,6 +26,9 @@ class TestMainNavigator : ComposeTestSuite() {
         },
         content = {
             MainNavigator()
+        },
+        finally = {
+            MainLoadingScreen.navigateAutomatically = true
         }
     ) { composeTestRule ->
         // Make sure the loading box is being displayed

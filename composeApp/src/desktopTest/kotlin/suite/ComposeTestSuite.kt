@@ -21,11 +21,13 @@ abstract class ComposeTestSuite {
      * @param content What to run the test onto.
      * @param assertions Any assertions to perform on the [content]. A [ComposeContentTestRule] is provided for
      * interacting with the UI and asserting.
+     * @param finally Is always called after running [assertions], even if some assertion has failed.
      */
     fun testComposable(
         doBefore: () -> Unit = {},
         content: @Composable () -> Unit,
-        assertions: (composeTestRule: ComposeContentTestRule) -> Unit
+        finally: () -> Unit = {},
+        assertions: (composeTestRule: ComposeContentTestRule) -> Unit,
     ) {
         doBefore()
 
@@ -35,8 +37,13 @@ abstract class ComposeTestSuite {
 
         composeTestRule.waitForIdle()
 
+        @Suppress("MagicNumber")
         runBlocking { delay(5) }
 
-        assertions(composeTestRule)
+        try {
+            assertions(composeTestRule)
+        } finally {
+            finally()
+        }
     }
 }
