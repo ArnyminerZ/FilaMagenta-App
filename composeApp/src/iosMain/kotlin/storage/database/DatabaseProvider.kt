@@ -5,5 +5,5 @@ import filamagenta.Database
 
 actual val database: Database by lazy {
     val driver = NativeSqliteDriver(Database.Schema, "filamagenta.db")
-    Database(driver)
+    Database(driver, UserTransactionAdapter)
 }
