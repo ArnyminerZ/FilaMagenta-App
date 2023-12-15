@@ -6,7 +6,6 @@ import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.endpoint.EventDeleteEndpoint
 import com.filamagenta.endpoint.EventJoinEndpoint
 import com.filamagenta.endpoint.EventListEndpoint
-import com.filamagenta.response.Errors
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.delete
@@ -20,6 +19,7 @@ import kotlin.test.assertTrue
 import org.jetbrains.exposed.sql.and
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import response.Errors
 import security.Roles
 
 class TestEventJoinEndpoint : TestServerEnvironment() {

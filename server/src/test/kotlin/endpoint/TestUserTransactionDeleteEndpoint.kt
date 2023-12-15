@@ -4,7 +4,6 @@ import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.UserTransactionDeleteEndpoint
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import data.TransactionType
 import endpoint.model.TestServerEnvironment
@@ -15,6 +14,7 @@ import io.ktor.http.contentType
 import java.time.LocalDate
 import kotlin.test.assertNull
 import org.junit.Test
+import response.Errors
 import security.Roles
 
 class TestUserTransactionDeleteEndpoint : TestServerEnvironment() {

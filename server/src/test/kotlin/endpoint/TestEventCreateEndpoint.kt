@@ -2,8 +2,6 @@ package endpoint
 
 import com.filamagenta.database.database
 import com.filamagenta.endpoint.EventCreateEndpoint
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
 import data.Category
 import data.EventPrices
 import data.EventType
@@ -16,6 +14,8 @@ import io.ktor.http.contentType
 import java.time.LocalDateTime
 import org.junit.Test
 import request.EventCreateRequest
+import response.ErrorCodes
+import response.Errors
 import security.Roles
 
 class TestEventCreateEndpoint : TestServerEnvironment() {

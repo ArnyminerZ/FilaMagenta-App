@@ -1,8 +1,6 @@
 package com.filamagenta.endpoint.model
 
 import com.filamagenta.modules.serverJson
-import com.filamagenta.response.FailureResponse
-import com.filamagenta.response.SuccessResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
@@ -11,6 +9,8 @@ import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.encodeToString
+import response.FailureResponse
+import response.SuccessResponse
 
 /**
  * Responds to the request as a successful one, and appends the [data] given if any.

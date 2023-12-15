@@ -3,8 +3,6 @@ package endpoint
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.UserProfileOtherEditEndpoint
-import com.filamagenta.response.Errors
-import com.filamagenta.response.FailureResponse
 import com.filamagenta.security.Authentication
 import com.filamagenta.security.Passwords
 import data.UserDataKey
@@ -19,6 +17,8 @@ import kotlin.test.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import request.UserProfileEditRequest
+import response.Errors
+import response.FailureResponse
 import security.Roles
 
 class TestUserProfileOtherEditEndpoint : TestServerEnvironment() {

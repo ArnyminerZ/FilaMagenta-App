@@ -6,12 +6,12 @@ import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.database.table.Users
 import com.filamagenta.modules.AUTH_JWT_CLAIM_NIF
-import com.filamagenta.response.Errors
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.util.pipeline.PipelineContext
+import response.Errors
 import security.Role
 import server.EndpointDef
 

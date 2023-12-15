@@ -4,8 +4,6 @@ import TestEnvironment
 import com.filamagenta.modules.configure
 import com.filamagenta.modules.configureJwt
 import com.filamagenta.modules.serverJson
-import com.filamagenta.response.Errors
-import com.filamagenta.response.FailureResponse
 import endpoint.model.TestServerEnvironment.Companion.assertResponseFailure
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
@@ -22,6 +20,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.Assert.assertFalse
 import org.junit.Test
+import response.Errors
+import response.FailureResponse
 
 class TestStatusPages : TestEnvironment() {
     private fun test(url: String, block: suspend (response: HttpResponse) -> Unit) = testApplication {

@@ -3,7 +3,6 @@ package endpoint
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.endpoint.UserMetaEndpoint
-import com.filamagenta.response.ErrorCodes
 import com.filamagenta.security.Authentication
 import data.UserMetaKey
 import database.provider.UserProvider
@@ -18,6 +17,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import org.junit.Test
 import request.UserMetaRequest
+import response.ErrorCodes
 
 class TestUserMetaEndpoint : TestServerEnvironment() {
     @Test

@@ -4,7 +4,6 @@ import com.filamagenta.database.database
 import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.endpoint.EventPaymentEndpoint
-import com.filamagenta.response.Errors
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.post
@@ -17,6 +16,7 @@ import kotlin.test.assertNotNull
 import org.jetbrains.exposed.sql.and
 import org.junit.Test
 import request.EventPaymentRequest
+import response.Errors
 import security.Roles
 
 class TestEventPaymentEndpoint : TestServerEnvironment() {

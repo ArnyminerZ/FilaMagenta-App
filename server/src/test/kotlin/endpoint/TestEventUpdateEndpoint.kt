@@ -3,8 +3,6 @@ package endpoint
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.Event
 import com.filamagenta.endpoint.EventUpdateEndpoint
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import data.Category
 import data.EventPrices
@@ -20,6 +18,8 @@ import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import org.junit.Test
 import request.EventUpdateRequest
+import response.ErrorCodes
+import response.Errors
 import security.Roles
 
 class TestEventUpdateEndpoint : TestServerEnvironment() {

@@ -6,8 +6,6 @@ import com.filamagenta.database.table.Users
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Passwords
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
@@ -16,6 +14,8 @@ import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
 import request.RegisterRequest
+import response.ErrorCodes
+import response.Errors
 import server.Endpoints
 import utils.isValidNif
 

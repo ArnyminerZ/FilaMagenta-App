@@ -6,8 +6,6 @@ import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
@@ -17,6 +15,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import request.EventCreateRequest
+import response.ErrorCodes
+import response.Errors
 import server.Endpoints
 
 object EventCreateEndpoint : SecureEndpoint(Endpoints.Event.Create) {

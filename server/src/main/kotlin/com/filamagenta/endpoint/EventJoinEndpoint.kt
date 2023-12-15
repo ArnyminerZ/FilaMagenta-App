@@ -8,13 +8,13 @@ import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.response.Errors
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import java.time.Instant
 import org.jetbrains.exposed.sql.and
+import response.Errors
 import server.Endpoints
 
 object EventJoinEndpoint : SecureEndpoint(Endpoints.Event.Join) {

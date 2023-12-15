@@ -7,7 +7,6 @@ import com.filamagenta.database.utils.setUserMeta
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.response.ErrorCodes
 import data.UserMetaKey
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
@@ -16,6 +15,7 @@ import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
 import request.UserMetaRequest
+import response.ErrorCodes
 import server.Endpoints
 
 object UserMetaEndpoint : SecureEndpoint(Endpoints.User.Meta) {

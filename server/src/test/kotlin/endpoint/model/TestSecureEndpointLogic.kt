@@ -7,7 +7,6 @@ import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.get
 import com.filamagenta.endpoint.model.respondSuccess
 import com.filamagenta.modules.AUTH_JWT_NAME
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import database.provider.UserProvider
 import io.ktor.client.request.bearerAuth
@@ -17,6 +16,7 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.util.pipeline.PipelineContext
 import org.junit.Test
+import response.Errors
 import security.Roles
 
 class TestSecureEndpointLogic : TestServerEnvironment() {

@@ -5,8 +5,6 @@ import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.endpoint.UserGrantRoleEndpoint
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import database.provider.UserProvider
 import endpoint.model.TestServerEnvironment
@@ -20,6 +18,8 @@ import kotlin.test.assertNotNull
 import org.jetbrains.exposed.sql.and
 import org.junit.Test
 import request.UserRoleRequest
+import response.ErrorCodes
+import response.Errors
 import security.Roles
 
 class TestGrantRoleEndpoint : TestServerEnvironment() {

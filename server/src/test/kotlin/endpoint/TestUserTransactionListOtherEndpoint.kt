@@ -4,7 +4,6 @@ import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.UserTransactionListOtherEndpoint
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import data.TransactionType
 import endpoint.model.TestServerEnvironment
@@ -14,6 +13,7 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.Test
+import response.Errors
 import security.Roles
 
 class TestUserTransactionListOtherEndpoint : TestServerEnvironment() {

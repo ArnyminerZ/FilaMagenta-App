@@ -8,8 +8,6 @@ import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
@@ -18,6 +16,8 @@ import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import org.jetbrains.exposed.sql.and
 import request.EventPaymentRequest
+import response.ErrorCodes
+import response.Errors
 import server.Endpoints
 
 object EventPaymentEndpoint : SecureEndpoint(Endpoints.Event.Payment) {

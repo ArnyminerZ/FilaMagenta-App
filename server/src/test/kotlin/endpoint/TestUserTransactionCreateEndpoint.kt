@@ -4,8 +4,6 @@ import com.filamagenta.database.database
 import com.filamagenta.database.entity.Transaction
 import com.filamagenta.database.table.Transactions
 import com.filamagenta.endpoint.UserTransactionCreateEndpoint
-import com.filamagenta.response.ErrorCodes
-import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
 import data.TransactionType
 import endpoint.model.TestServerEnvironment
@@ -20,6 +18,8 @@ import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 import org.junit.Test
 import request.UserTransactionCreateRequest
+import response.ErrorCodes
+import response.Errors
 import security.Roles
 
 class TestUserTransactionCreateEndpoint : TestServerEnvironment() {

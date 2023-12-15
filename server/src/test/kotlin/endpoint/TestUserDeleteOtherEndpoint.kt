@@ -7,7 +7,6 @@ import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserMetaTable
 import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.endpoint.UserDeleteOtherEndpoint
-import com.filamagenta.response.Errors
 import data.UserMetaKey
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
@@ -15,6 +14,7 @@ import io.ktor.client.request.delete
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import org.junit.Test
+import response.Errors
 import security.Roles
 
 class TestUserDeleteOtherEndpoint : TestServerEnvironment() {
