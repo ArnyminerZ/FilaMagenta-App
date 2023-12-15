@@ -1,5 +1,6 @@
 package ui.modifier
 
+import KoverIgnore
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.AutofillNode
@@ -17,6 +18,7 @@ import androidx.compose.ui.platform.LocalAutofillTree
  * @param autofillTypes The types of autofill accepted for the field.
  * @param onFill Will get called when an autofill provider asks to fill the fields.
  */
+@KoverIgnore
 @ExperimentalComposeUiApi
 fun Modifier.autofill(
     autofillTypes: List<AutofillType>,
