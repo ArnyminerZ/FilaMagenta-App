@@ -65,7 +65,6 @@ kotlin {
                 // Settings
                 implementation(libs.multiplatformSettings.core)
                 implementation(libs.multiplatformSettings.coroutines)
-                implementation(libs.multiplatformSettings.datastore)
                 implementation(libs.multiplatformSettings.serialization)
 
                 // JSON Serialization
@@ -84,11 +83,17 @@ kotlin {
             dependsOn(commonMain)
 
             dependencies {
+                // Android Compose Dependencies
                 implementation(libs.compose.ui)
                 implementation(libs.compose.ui.tooling.preview)
+
+                // Some AndroidX Dependencies
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.androidx.appcompat)
                 implementation(libs.androidx.datastore)
+
+                // For storing settings in Datastore
+                implementation(libs.multiplatformSettings.datastore)
             }
         }
         val androidInstrumentedTest by getting {
