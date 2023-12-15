@@ -80,6 +80,7 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
 
                 // Ktor Client
+                implementation(libs.ktor.client.auth)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.contentNegotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
