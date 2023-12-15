@@ -9,9 +9,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import cafe.adriel.voyager.navigator.Navigator
+import kotlin.test.assertEquals
+import kotlinx.coroutines.delay
 import org.junit.Test
 import suite.ComposeTestSuite
 import ui.composition.LocalWindowSizeClass
@@ -28,7 +35,11 @@ class TestAppScreen : ComposeTestSuite() {
         // It's required to have at least one item to display the navigation bar
         override val navigationItems: List<NavigationItem> = listOf(
             NavigationItem(
-                label = { Text("Testing") },
+                label = { Text("Testing 1") },
+                icon = Icons.Rounded.Add
+            ),
+            NavigationItem(
+                label = { Text("Testing 2") },
                 icon = Icons.Rounded.Add
             )
         )
@@ -81,6 +92,8 @@ class TestAppScreen : ComposeTestSuite() {
         }
     ) { composeTestRule ->
         composeTestRule.onNodeWithTag(AppScreen.TEST_TAG_BOTTOM_BAR).assertIsDisplayed()
+
+        runTestsForNavigation(composeTestRule)
     }
 
     @Test
@@ -96,5 +109,26 @@ class TestAppScreen : ComposeTestSuite() {
         }
     ) { composeTestRule ->
         composeTestRule.onNodeWithTag(AppScreen.TEST_TAG_RAIL).assertIsDisplayed()
+
+        runTestsForNavigation(composeTestRule)
+    }
+
+    /**
+     * Makes sure the elements in [AppScreen.navigationItems] are displayed correctly, and that they respond updating
+     * [DemoScreen.navigationSelection] accordingly.
+     */
+    @Suppress("MagicNumber")
+    private suspend fun runTestsForNavigation(composeTestRule: ComposeContentTestRule) {
+        composeTestRule.onAllNodesWithTag(AppScreen.TEST_TAG_NAV_ITEM).assertCountEquals(2)
+
+        // Click the second item
+        composeTestRule.onAllNodes(hasTestTag(AppScreen.TEST_TAG_NAV_ITEM))[1].performClick()
+        delay(50)
+        assertEquals(1, DemoScreen.navigationSelection.value)
+
+        // Click the first item
+        composeTestRule.onAllNodes(hasTestTag(AppScreen.TEST_TAG_NAV_ITEM))[0].performClick()
+        delay(50)
+        assertEquals(0, DemoScreen.navigationSelection.value)
     }
 }

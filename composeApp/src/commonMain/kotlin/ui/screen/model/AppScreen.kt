@@ -57,6 +57,7 @@ abstract class AppScreen(
         const val TEST_TAG_BOTTOM_BAR = "app_screen_bottom_bar"
         const val TEST_TAG_SNACKBAR = "app_screen_snackbar"
         const val TEST_TAG_RAIL = "app_screen_rail"
+        const val TEST_TAG_NAV_ITEM = "app_screen_nav_item"
     }
 
     private var snackbarHostState: SnackbarHostState? = null
@@ -68,7 +69,7 @@ abstract class AppScreen(
 
     protected open val navigationItems: List<NavigationItem> = emptyList()
 
-    protected val navigationSelection = MutableStateFlow(0)
+    val navigationSelection = MutableStateFlow(0)
 
     /**
      * Can be overridden to set the content to display on the top of the scaffold as the Top App Bar.
@@ -171,7 +172,8 @@ abstract class AppScreen(
                                     }
                                 )
                             },
-                            label = item.label
+                            label = item.label,
+                            modifier = Modifier.testTag(TEST_TAG_NAV_ITEM)
                         )
                     }
                 }
@@ -212,7 +214,8 @@ abstract class AppScreen(
                                     }
                                 )
                             },
-                            label = item.label
+                            label = item.label,
+                            modifier = Modifier.testTag(TEST_TAG_NAV_ITEM)
                         )
                     }
                 }
