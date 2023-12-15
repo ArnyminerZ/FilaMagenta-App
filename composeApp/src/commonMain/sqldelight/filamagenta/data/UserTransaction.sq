@@ -1,17 +1,26 @@
 import data.TransactionType;
-import java.lang.Boolean;
-import java.lang.Double;
-import java.lang.Integer;
-import java.time.LocalDate;
+import kotlin.Boolean;
+import kotlin.Float;
+import kotlin.Int;
 import kotlin.UInt;
+import kotlinx.datetime.LocalDate;
 
 CREATE TABLE UserTransaction (
-    id INTEGER AS Integer PRIMARY KEY NOT NULL,
+    id INTEGER AS Int PRIMARY KEY NOT NULL,
     date TEXT AS LocalDate NOT NULL,
     description TEXT NOT NULL,
     income INTEGER AS Boolean NOT NULL,
     units INTEGER AS UInt NOT NULL,
-    pricePerUnit REAL AS Double NOT NULL,
+    pricePerUnit REAL AS Float NOT NULL,
     type TEXT AS TransactionType NOT NULL,
-    userId INTEGER AS Integer NOT NULL
+    userId INTEGER AS Int NOT NULL
 );
+
+getAll:
+SELECT * FROM UserTransaction;
+
+insert:
+INSERT INTO UserTransaction(id, date, description, income, units, pricePerUnit, type, userId) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE UserTransaction SET date=?, description=?, income=?, units=?, pricePerUnit=?, type=?, userId=? WHERE id=?;
