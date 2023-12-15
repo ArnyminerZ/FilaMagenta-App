@@ -1,6 +1,7 @@
 package response
 
 import KoverIgnore
+import error.ServerResponseException
 import kotlinx.serialization.Serializable
 
 @KoverIgnore
@@ -22,5 +23,10 @@ data class FailureResponse(
             throwable::class.simpleName,
             throwable.stackTraceToString().split('\n')
         )
+
+        /**
+         * Converts the error into a [ServerResponseException].
+         */
+        fun toException(): ServerResponseException = ServerResponseException(this)
     }
 }
