@@ -18,7 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.AutofillType
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.style.TextAlign
@@ -35,10 +37,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import network.backend.Authentication
 import response.ErrorCodes
+import ui.modifier.autofill
 import ui.reusable.CenteredColumn
 import ui.reusable.form.FormField
 import ui.screen.model.BaseScreen
 
+@OptIn(ExperimentalComposeUiApi::class)
 object LoginScreen : BaseScreen() {
     private val isLoading = MutableStateFlow(false)
 
@@ -86,7 +90,8 @@ object LoginScreen : BaseScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .padding(top = 8.dp),
+                    .padding(top = 8.dp)
+                    .autofill(listOf(AutofillType.Username)) { nif = it },
                 nextFocusRequester = passwordFocusRequester,
                 onSubmit = { login(nif, password) }
             )
@@ -99,7 +104,8 @@ object LoginScreen : BaseScreen() {
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .padding(top = 8.dp)
-                    .focusRequester(passwordFocusRequester),
+                    .focusRequester(passwordFocusRequester)
+                    .autofill(listOf(AutofillType.Password)) { nif = it },
                 isPassword = true,
                 onSubmit = { login(nif, password) }
             )
