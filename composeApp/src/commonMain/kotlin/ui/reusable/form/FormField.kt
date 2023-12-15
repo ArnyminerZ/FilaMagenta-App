@@ -35,7 +35,8 @@ fun FormField(
     label: String,
     modifier: Modifier = Modifier,
     isPassword: Boolean = false,
-    nextFocusRequester: FocusRequester? = null
+    nextFocusRequester: FocusRequester? = null,
+    error: String? = null
 ) {
     val softwareKeyboardController = LocalSoftwareKeyboardController.current
 
@@ -84,6 +85,10 @@ fun FormField(
                     )
                 }
             }
-        }).takeIf { isPassword }
+        }).takeIf { isPassword },
+        isError = error != null,
+        supportingText = (@Composable {
+            Text(error ?: "")
+        }).takeIf { error != null }
     )
 }
