@@ -1,0 +1,35 @@
+server:
+  - server/**
+
+app:
+  - composeApp/**
+
+shared:
+  - shared/**
+
+ios:
+  - iosApp/**
+
+testing:
+  - '**/*Test/**'
+
+documentation:
+  - '**/*.md'
+
+github_actions:
+  - .github
+
+detekt:
+  - config/detekt/detekt-*.yml
+
+gradle:
+  - '**/*.gradle.kts'
+  - gradle.properties
+  - gradle/wrapper/**
+
+docker:
+  - docker-compose.prod.yml
+  - docker-compose.yml
+
+dependencies:
+  - gradle/libs.versions.toml
