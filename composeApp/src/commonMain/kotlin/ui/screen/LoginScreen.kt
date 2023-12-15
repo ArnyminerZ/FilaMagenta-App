@@ -4,7 +4,6 @@ import accounts.Account
 import accounts.AccountManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -54,7 +53,7 @@ object LoginScreen : BaseScreen(MR.strings.title_login) {
     private val isLoading = MutableStateFlow(false)
 
     @Composable
-    override fun ScreenContent(paddingValues: PaddingValues) {
+    override fun ScreenContent() {
         val navigator = LocalNavigator.current
 
         AccountsHandler { accounts ->
@@ -65,7 +64,6 @@ object LoginScreen : BaseScreen(MR.strings.title_login) {
 
         CenteredColumn(
             modifier = Modifier
-                .padding(paddingValues)
                 .padding(top = 16.dp)
                 .padding(horizontal = 8.dp)
                 .testTag(TEST_TAG)

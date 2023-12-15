@@ -1,7 +1,6 @@
 package ui.screen
 
 import accounts.AccountManager
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -18,7 +17,7 @@ object MainLoadingScreen : BaseScreen() {
     var navigateAutomatically: Boolean = true
 
     @Composable
-    override fun ScreenContent(paddingValues: PaddingValues) {
+    override fun ScreenContent() {
         val navigator = LocalNavigator.current
 
         LaunchedEffect(Unit) {
