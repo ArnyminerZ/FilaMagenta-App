@@ -3,6 +3,8 @@ package suite
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 
 /**
@@ -30,6 +32,10 @@ abstract class ComposeTestSuite {
         composeTestRule.setContent {
             content()
         }
+
+        composeTestRule.waitForIdle()
+
+        runBlocking { delay(5) }
 
         assertions(composeTestRule)
     }
