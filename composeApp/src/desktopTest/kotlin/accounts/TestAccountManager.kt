@@ -41,6 +41,7 @@ class TestAccountManager {
     }
 
     @Test
+    @Suppress("MagicNumber")
     fun testRemoveAccount() {
         assertEquals(0, AccountManager.getAccounts().size)
 
