@@ -1,9 +1,11 @@
 package network.backend
 
+import KoverIgnore
 import error.ServerResponseException
 import network.backend.model.BackendConnector
 import response.ErrorCodes
 
+@KoverIgnore
 abstract class IAuthentication : BackendConnector() {
     /**
      * Tries to log in with the given credentials. Failures are thrown.
