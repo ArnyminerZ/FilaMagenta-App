@@ -1,4 +1,4 @@
-package com.filamagenta.response
+package response
 
 import KoverIgnore
 import kotlinx.serialization.Serializable
@@ -20,7 +20,7 @@ data class FailureResponse(
             code,
             throwable.message,
             throwable::class.simpleName,
-            throwable.stackTrace.map { it.toString() }
+            throwable.stackTraceToString().split('\n')
         )
     }
 }

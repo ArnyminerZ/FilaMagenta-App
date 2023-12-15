@@ -1,4 +1,4 @@
-package com.filamagenta.response
+package response
 
 import KoverIgnore
 import io.ktor.http.HttpStatusCode
