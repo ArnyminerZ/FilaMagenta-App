@@ -1,12 +1,15 @@
 package ui.screen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,7 +19,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.navigator.LocalNavigator
 import dev.icerock.moko.resources.compose.stringResource
 import error.ServerResponseException
 import filamagenta.MR
@@ -26,24 +28,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import network.backend.Authentication
+import response.ErrorCodes
+import ui.reusable.CenteredColumn
 import ui.reusable.form.FormField
 import ui.screen.model.BaseScreen
 
 object LoginScreen : BaseScreen() {
     @Composable
-    override fun ScreenContent() {
-        val navigator = LocalNavigator.current
-
-        var accountAdded by remember { mutableStateOf(false) }
-
-        LaunchedEffect(accountAdded) {
-            if (accountAdded) {
-                navigator?.push(MainScreen)
-            }
-        }
+    override fun ScreenContent(paddingValues: PaddingValues) {
+        var isLoading by remember { mutableStateOf(false) }
 
         CenteredColumn(
-            modifier = Modifier.padding(top = 16.dp).padding(horizontal = 8.dp)
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(top = 16.dp)
+                .padding(horizontal = 8.dp)
         ) {
             Text(
                 text = stringResource(MR.strings.login_title),
@@ -67,6 +66,7 @@ object LoginScreen : BaseScreen() {
                 value = nif,
                 onValueChange = { nif = it },
                 label = stringResource(MR.strings.login_nif),
+                enabled = !isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -77,6 +77,7 @@ object LoginScreen : BaseScreen() {
                 value = password,
                 onValueChange = { password = it },
                 label = stringResource(MR.strings.login_password),
+                enabled = !isLoading,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -85,22 +86,46 @@ object LoginScreen : BaseScreen() {
                 isPassword = true
             )
 
-            Button(
+            OutlinedButton(
                 onClick = {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            Napier.i { "Logging in as ${nif}..." }
-                            val token = Authentication.login(nif, password)
-                            Napier.i { "Token: $token" }
-                        } catch (e: ServerResponseException) {
-                            Napier.e(throwable = e) { "Login failed." }
-                        }
-                    }
+                    isLoading = true
+
+                    login(nif, password).invokeOnCompletion { isLoading = false }
 
                     // accountAdded = AccountManager.addAccount(Account(username), password)
-                }
+                },
+                enabled = !isLoading
             ) {
+                AnimatedVisibility(
+                    visible = isLoading,
+                    modifier = Modifier.padding(end = 8.dp)
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp
+                    )
+                }
+
                 Text("Add Account")
+            }
+        }
+    }
+
+    private fun login(nif: String, password: String) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            Napier.i { "Logging in as ${nif}..." }
+            val token = Authentication.login(nif, password)
+            Napier.i { "Token: $token" }
+        } catch (e: ServerResponseException) {
+            Napier.e(throwable = e) { "Login failed. Error code: ${e.code}" }
+
+            when (e.code) {
+                ErrorCodes.Authentication.Login.USER_NOT_FOUND -> {
+                    snackbarError.tryEmit(MR.strings.login_error_not_found)
+                }
+                ErrorCodes.Authentication.Login.WRONG_PASSWORD -> {
+                    snackbarError.tryEmit(MR.strings.login_error_wrong_password)
+                }
             }
         }
     }

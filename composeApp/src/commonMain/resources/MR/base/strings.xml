@@ -6,9 +6,14 @@
     <string name="show_password">Show Password</string>
     <string name="hide_password">Hide Password</string>
 
+    <!-- Generic Errors -->
+    <string name="error_generic_no_message" comment="In theory it's never displayed. Only used for fallback in some situations when some value can be null.">No message</string>
+
     <!-- Login Screen -->
     <string name="login_title">Filà Magenta Login</string>
     <string name="login_subtitle">Please, introduce your NIF and your password.</string>
     <string name="login_nif">NIF</string>
     <string name="login_password">Password</string>
+    <string name="login_error_not_found">User not found</string>
+    <string name="login_error_wrong_password">The password introduced is not correct</string>
 </resources>

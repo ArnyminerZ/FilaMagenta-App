@@ -1,17 +1,21 @@
 package ui.screen.model
 
 import KoverIgnore
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import cafe.adriel.voyager.core.screen.Screen
+import dev.icerock.moko.resources.StringResource
+import dev.icerock.moko.resources.compose.stringResource
+import filamagenta.MR
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import ui.theme.AppTheme
 
 /**
@@ -19,31 +23,48 @@ import ui.theme.AppTheme
  */
 @KoverIgnore
 abstract class AppScreen : Screen {
+    private var snackbarHostState: SnackbarHostState? = null
+
+    /**
+     * The value can be updated at any moment. If it's not null, a snackbar with the given text will be displayed.
+     */
+    protected val snackbarError = MutableStateFlow<StringResource?>(null)
+
+    /**
+     * Can be overridden to set the content to display on the top of the scaffold as the Top App Bar.
+     */
     @Composable
-    protected fun CenteredColumn(
-        modifier: Modifier = Modifier,
-        maxWidth: Dp = 600.dp,
-        content: @Composable ColumnScope.() -> Unit
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                modifier = Modifier
-                    .widthIn(max = maxWidth)
-                    .fillMaxSize()
-                    .then(modifier)
-            ) {
-                content(this@Column)
-            }
-        }
-    }
+    protected open fun TopBar() {}
 
     @Composable
     override fun Content() {
+        val scope = rememberCoroutineScope()
+
+        LaunchedEffect(Unit) {
+            snackbarHostState = SnackbarHostState()
+        }
+
+        val snackbarError by snackbarError.collectAsState(null)
+        val snackbarErrorMessage = stringResource(snackbarError ?: MR.strings.error_generic_no_message)
+        LaunchedEffect(snackbarError) {
+            if (snackbarError == null) {
+                snackbarHostState?.currentSnackbarData?.dismiss()
+            } else {
+                scope.launch {
+                    snackbarHostState?.showSnackbar(snackbarErrorMessage)
+
+                    this@AppScreen.snackbarError.emit(null)
+                }
+            }
+        }
+
         AppTheme {
-            ScreenContent()
+            Scaffold(
+                topBar = { TopBar() },
+                snackbarHost = { snackbarHostState?.let { SnackbarHost(it) } }
+            ) {
+                ScreenContent(it)
+            }
         }
     }
 
@@ -51,5 +72,5 @@ abstract class AppScreen : Screen {
      * This should be overridden instead of [Content]. Has theming built-in.
      */
     @Composable
-    abstract fun ScreenContent()
+    protected abstract fun ScreenContent(paddingValues: PaddingValues)
 }

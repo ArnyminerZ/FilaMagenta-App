@@ -2,6 +2,7 @@ package ui.screen
 
 import accounts.AccountManager
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,7 +14,7 @@ import ui.screen.model.BaseScreen
 
 object MainScreen: BaseScreen() {
     @Composable
-    override fun ScreenContent() {
+    override fun ScreenContent(paddingValues: PaddingValues) {
         val navigator = LocalNavigator.current
 
         val accounts by AccountManager.getAccountsFlow().collectAsState(null)

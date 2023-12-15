@@ -34,9 +34,10 @@ fun FormField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    error: String? = null,
     isPassword: Boolean = false,
-    nextFocusRequester: FocusRequester? = null,
-    error: String? = null
+    nextFocusRequester: FocusRequester? = null
 ) {
     val softwareKeyboardController = LocalSoftwareKeyboardController.current
 
@@ -47,6 +48,7 @@ fun FormField(
         onValueChange = onValueChange,
         modifier = modifier,
         label = { Text(label) },
+        enabled = enabled,
         visualTransformation = if (showingPassword) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
             keyboardType = if (isPassword) KeyboardType.Password else KeyboardType.Text,
