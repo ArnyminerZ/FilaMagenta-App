@@ -2,18 +2,18 @@ package accounts
 
 import android.os.Bundle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withTimeout
 import model.AndroidTestEnvironment
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import stub.network.StubAuthentication
+import utils.blockThreadUntil
 
 class TestAccountManager : AndroidTestEnvironment() {
     private val am: android.accounts.AccountManager by lazy { android.accounts.AccountManager.get(targetContext) }
@@ -108,15 +108,42 @@ class TestAccountManager : AndroidTestEnvironment() {
         )
 
         // Give a bit of time for the flow to update
-        runBlocking {
-            withTimeout(2_000) {
-                while (accounts.size == 1) { delay(1) }
-            }
-        }
+        blockThreadUntil({ accounts.size == 1 })
 
         accounts[1].let { list ->
             assertEquals(1, list.size)
             assertEquals(account.name, list[0].name)
         }
+    }
+
+    @Test
+    fun testSetToken() {
+        // Create a new account
+        val account = Account("testing_account")
+        assertTrue(AccountManager.addAccount(account, "password"))
+
+        // Set the token
+        AccountManager.setToken(account, token = "testing_token")
+
+        // Set which token to return by the stub authentication object
+        StubAuthentication.token = "testing_token"
+
+        // Fetch it and verify it's correct
+        val token = am.blockingGetAuthToken(account.androidAccount, AccountManager.AUTH_TOKEN_TYPE, true)
+        assertEquals("testing_token", token)
+    }
+
+    @Test
+    fun testGetToken() {
+        // Create a new account
+        val account = Account("testing_account")
+        assertTrue(AccountManager.addAccount(account, "password"))
+
+        // Set the token
+        am.setAuthToken(account.androidAccount, AccountManager.AUTH_TOKEN_TYPE, "testing_token")
+
+        // Get the token, and verify that it's correct
+        val token = runBlocking { AccountManager.getToken(account) }
+        assertEquals("testing_token", token)
     }
 }

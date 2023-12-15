@@ -1,12 +1,10 @@
 package network.backend
 
 import error.ServerResponseException
-import request.LoginRequest
+import network.backend.model.BackendConnector
 import response.ErrorCodes
-import response.endpoint.LoginResult
-import server.Endpoints
 
-object Authentication : IAuthentication() {
+abstract class IAuthentication : BackendConnector() {
     /**
      * Tries to log in with the given credentials. Failures are thrown.
      *
@@ -21,8 +19,5 @@ object Authentication : IAuthentication() {
      *
      * @throws ServerResponseException If the login could not be completed.
      */
-    override suspend fun login(nif: String, password: String): String {
-        val result = post<LoginResult>(Endpoints.Authenticate.Login, body = LoginRequest(nif, password))
-        return result.token
-    }
+    abstract suspend fun login(nif: String, password: String): String
 }

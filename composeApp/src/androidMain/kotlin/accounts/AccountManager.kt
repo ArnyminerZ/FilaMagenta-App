@@ -1,19 +1,23 @@
 package accounts
 
 import android.accounts.AccountManager
+import android.accounts.AuthenticatorException
 import android.accounts.OnAccountsUpdateListener
 import android.os.Build
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
+import android.os.OperationCanceledException
 import com.filamagenta.android.applicationContext
 import io.github.aakira.napier.Napier
+import java.io.IOException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 
 actual object AccountManager {
     const val ACCOUNT_TYPE = "com.arnyminerz.filamagenta"
+    const val AUTH_TOKEN_TYPE = "filamagenta"
 
     private val am: AccountManager by lazy { AccountManager.get(applicationContext) }
 
@@ -105,5 +109,32 @@ actual object AccountManager {
      */
     actual fun clearAccounts() {
         getAccounts().forEach(::removeAccount)
+    }
+
+    /**
+     * Sets the token used by the given account to authenticate in the backend.
+     *
+     * @param account The account to set the token for.
+     * @param token The token to set. Can be null for removing stored token.
+     */
+    actual fun setToken(account: Account, token: String?) {
+        am.setAuthToken(account.androidAccount, AUTH_TOKEN_TYPE, token)
+    }
+
+    /**
+     * Fetches the token stored for the given account.
+     *
+     * A network request may be performed if necessary, so be sure to run in an IO thread.
+     *
+     * @return `null` if there's no token stored, the token otherwise.
+     *
+     * @throws AuthenticatorException If the authenticator failed to respond.
+     * @throws OperationCanceledException If the request was canceled for any reason, including the user canceling a
+     * credential request.
+     * @throws IOException If the authenticator experienced an I/O problem creating a new auth token, usually because
+     * of network trouble.
+     */
+    actual suspend fun getToken(account: Account): String? {
+        return am.blockingGetAuthToken(account.androidAccount, AUTH_TOKEN_TYPE, true)
     }
 }
