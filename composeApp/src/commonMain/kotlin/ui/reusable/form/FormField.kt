@@ -21,14 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import dev.icerock.moko.resources.compose.stringResource
 import filamagenta.MR
@@ -57,8 +60,8 @@ import filamagenta.MR
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 fun FormField(
-    value: String?,
-    onValueChange: (String) -> Unit,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -73,20 +76,56 @@ fun FormField(
 
     var showingPassword by remember { mutableStateOf(!isPassword) }
 
+    var selection: TextRange? = null
+
     OutlinedTextField(
-        value = value ?: "",
-        onValueChange = onValueChange,
+        value = value,
+        onValueChange = {
+            selection = it.selection
+            onValueChange(it)
+        },
         modifier = Modifier
-            .onPreviewKeyEvent {
+            .onPreviewKeyEvent { ev ->
                 when {
-                    (it.key == Key.Enter || it.key == Key.NumPadEnter) && it.type == KeyEventType.KeyUp -> {
+                    (ev.key == Key.Enter || ev.key == Key.NumPadEnter) && ev.type == KeyEventType.KeyUp -> {
                         onSubmit?.invoke()
                         true
                     }
-                    it.key == Key.Tab && it.type == KeyEventType.KeyUp -> {
+
+                    ev.key == Key.Tab && ev.type == KeyEventType.KeyUp -> {
                         nextFocusRequester?.requestFocus()
                         true
                     }
+
+                    ev.isCtrlPressed && ev.key == Key.Backspace && ev.type == KeyEventType.KeyUp -> {
+                        selection
+                            ?.takeIf { it.length <= 0 }
+                            ?.takeIf { it.start > 0 }
+                            ?.let { range ->
+                                val textToRemove = value.text.substring(0, range.start)
+                                onValueChange(
+                                    value.copy(
+                                        text = value.text.replace(textToRemove, "")
+                                    )
+                                )
+                                true
+                            } ?: false
+                    }
+
+                    ev.isCtrlPressed && ev.key == Key.Delete && ev.type == KeyEventType.KeyUp -> {
+                        selection
+                            ?.takeIf { it.length <= 0 }
+                            ?.let { range ->
+                                val textToRemove = value.text.substring(range.start)
+                                onValueChange(
+                                    value.copy(
+                                        text = value.text.replace(textToRemove, "")
+                                    )
+                                )
+                                true
+                            } ?: false
+                    }
+
                     else -> false
                 }
             }

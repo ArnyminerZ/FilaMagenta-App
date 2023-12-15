@@ -26,6 +26,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -94,25 +95,25 @@ object LoginScreen : BaseScreen() {
     fun ColumnScope.LoginForm() {
         val isLoading by isLoading.collectAsState(false)
 
-        var nif by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
+        var nif by remember { mutableStateOf(TextFieldValue("")) }
+        var password by remember { mutableStateOf(TextFieldValue("")) }
 
-        val isNifValid = nif.isBlank() || nif.isValidNif
+        val isNifValid = nif.text.isBlank() || nif.text.isValidNif
 
         val passwordFocusRequester = remember { FocusRequester() }
 
         FormField(
             value = nif,
-            onValueChange = { nif = it.uppercase() },
+            onValueChange = { nif = it.copy(text = it.text.uppercase()) },
             label = stringResource(MR.strings.login_nif),
             enabled = !isLoading,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .padding(top = 8.dp)
-                .autofill(listOf(AutofillType.Username)) { nif = it },
+                .autofill(listOf(AutofillType.Username)) { nif = nif.copy(text = it) },
             nextFocusRequester = passwordFocusRequester,
-            onSubmit = { login(nif, password) },
+            onSubmit = { login(nif.text, password.text) },
             error = stringResource(MR.strings.login_error_nif).takeIf { !isNifValid },
             capitalization = KeyboardCapitalization.Characters,
             supportingText = stringResource(MR.strings.login_nif_info)
@@ -127,14 +128,14 @@ object LoginScreen : BaseScreen() {
                 .padding(horizontal = 16.dp)
                 .padding(top = 8.dp)
                 .focusRequester(passwordFocusRequester)
-                .autofill(listOf(AutofillType.Password)) { nif = it },
+                .autofill(listOf(AutofillType.Password)) { password = password.copy(text = it) },
             isPassword = true,
-            onSubmit = { login(nif, password) }
+            onSubmit = { login(nif.text, password.text) }
         )
 
         OutlinedButton(
-            onClick = { login(nif, password) },
-            enabled = !isLoading && isNifValid && nif.isNotBlank() && password.isNotBlank(),
+            onClick = { login(nif.text, password.text) },
+            enabled = !isLoading && isNifValid && nif.text.isNotBlank() && password.text.isNotBlank(),
             modifier = Modifier.padding(end = 16.dp).align(Alignment.End)
         ) {
             AnimatedVisibility(
