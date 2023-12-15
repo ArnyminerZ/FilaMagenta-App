@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,7 @@ import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import network.backend.Authentication
 import response.ErrorCodes
@@ -37,11 +39,13 @@ import ui.reusable.form.FormField
 import ui.screen.model.BaseScreen
 
 object LoginScreen : BaseScreen() {
+    private val isLoading = MutableStateFlow(false)
+
     @Composable
     override fun ScreenContent(paddingValues: PaddingValues) {
         val navigator = LocalNavigator.current
 
-        var isLoading by remember { mutableStateOf(false) }
+        val isLoading by isLoading.collectAsState(false)
 
         AccountsHandler { accounts ->
             if (accounts.isNotEmpty()) {
@@ -82,7 +86,8 @@ object LoginScreen : BaseScreen() {
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .padding(top = 8.dp),
-                nextFocusRequester = passwordFocusRequester
+                nextFocusRequester = passwordFocusRequester,
+                onSubmit = { login(nif, password) }
             )
             FormField(
                 value = password,
@@ -94,17 +99,12 @@ object LoginScreen : BaseScreen() {
                     .padding(horizontal = 16.dp)
                     .padding(top = 8.dp)
                     .focusRequester(passwordFocusRequester),
-                isPassword = true
+                isPassword = true,
+                onSubmit = { login(nif, password) }
             )
 
             OutlinedButton(
-                onClick = {
-                    isLoading = true
-
-                    login(nif, password).invokeOnCompletion { isLoading = false }
-
-                    // accountAdded = AccountManager.addAccount(Account(username), password)
-                },
+                onClick = { login(nif, password) },
                 enabled = !isLoading
             ) {
                 AnimatedVisibility(
@@ -124,6 +124,8 @@ object LoginScreen : BaseScreen() {
 
     private fun login(nif: String, password: String) = CoroutineScope(Dispatchers.IO).launch {
         try {
+            isLoading.tryEmit(true)
+
             Napier.i { "Logging in as ${nif}..." }
             val token = Authentication.login(nif, password)
             Napier.i { "Logged in successfully, adding account..." }
@@ -143,6 +145,8 @@ object LoginScreen : BaseScreen() {
                     snackbarError.tryEmit(MR.strings.login_error_wrong_password)
                 }
             }
+        } finally {
+            isLoading.tryEmit(false)
         }
     }
 }
