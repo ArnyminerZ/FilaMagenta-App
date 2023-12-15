@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalDensity
 class ForcedWindowSizeClassComposition(
     private val widthSizeClass: WindowWidthSizeClass? = null,
     private val heightSizeClass: WindowHeightSizeClass? = null
-): WindowSizeClassComposition {
+) : WindowSizeClassComposition {
     companion object {
         private const val DEFAULT_SIZE = 50f
     }
