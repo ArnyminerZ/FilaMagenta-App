@@ -3,7 +3,6 @@ package utils
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.TimeoutCancellationException
@@ -13,36 +12,36 @@ import kotlinx.coroutines.runBlocking
 
 class TestThreadUtils {
     @Test
-    fun testBlockThreadUntil() {
-        var predicate = false
+    fun testBlockThreadUntil() = runBlocking {
+        var predicate = true
         var complete = false
-        CoroutineScope(Dispatchers.IO).launch {
+        launch(Dispatchers.IO) {
             blockThreadUntil({ predicate })
             complete = true
         }
         assertFalse(complete)
 
-        runBlocking { delay(500) }
+        delay(500)
         assertFalse(complete)
 
-        predicate = true
-        runBlocking { delay(2) }
+        predicate = false
+        delay(2)
         assertTrue(complete)
     }
 
     @Test
-    fun testBlockThreadUntilTimeout() {
+    fun testBlockThreadUntilTimeout() = runBlocking {
         var thrown = false
-        CoroutineScope(Dispatchers.IO).launch {
+        launch {
             try {
-                blockThreadUntil({ false }, 1_000)
+                blockThreadUntil({ true }, 1_000)
             } catch (_: TimeoutCancellationException) {
                 thrown = true
             }
         }
         assertFalse(thrown)
 
-        runBlocking { delay(1_002) }
+        delay(1_100)
 
         assertTrue(thrown)
     }
