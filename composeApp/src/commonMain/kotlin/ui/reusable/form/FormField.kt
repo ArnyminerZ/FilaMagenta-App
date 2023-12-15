@@ -26,6 +26,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -48,6 +49,10 @@ import filamagenta.MR
  * pressing TAB.
  * @param onSubmit If any, will be called when the user presses the submit button in the software keyboard, or enter
  * in a hardware keyboard.
+ * @param capitalization Can be provided to specify the capitalization options for the keyboard. Defaults to none.
+ * @param supportingText If any, the text that will be displayed under the field for giving more information about the
+ * field to the user.
+ * Won't be displayed if [error] is not null.
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -60,7 +65,9 @@ fun FormField(
     error: String? = null,
     isPassword: Boolean = false,
     nextFocusRequester: FocusRequester? = null,
-    onSubmit: (() -> Unit)? = null
+    onSubmit: (() -> Unit)? = null,
+    capitalization: KeyboardCapitalization = KeyboardCapitalization.None,
+    supportingText: String? = null
 ) {
     val softwareKeyboardController = LocalSoftwareKeyboardController.current
 
@@ -95,7 +102,8 @@ fun FormField(
                 nextFocusRequester != null -> ImeAction.Next
                 onSubmit != null -> ImeAction.Go
                 else -> ImeAction.Done
-            }
+            },
+            capitalization = capitalization
         ),
         keyboardActions = KeyboardActions(
             onNext = { nextFocusRequester?.requestFocus() },
@@ -135,6 +143,8 @@ fun FormField(
         isError = error != null,
         supportingText = (@Composable {
             Text(error ?: "")
-        }).takeIf { error != null }
+        }).takeIf { error != null } ?: supportingText?.let {
+            { Text(it) }
+        }
     )
 }

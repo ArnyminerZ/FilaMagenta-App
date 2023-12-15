@@ -13,8 +13,10 @@
     <string name="login_title">Filà Magenta Login</string>
     <string name="login_subtitle">Please, introduce your NIF and your password.</string>
     <string name="login_nif">NIF</string>
+    <string name="login_nif_info">Your DNI or NIE with its validation letter.</string>
     <string name="login_password">Password</string>
     <string name="login_action">Login</string>
     <string name="login_error_not_found">User not found</string>
     <string name="login_error_wrong_password">The password introduced is not correct</string>
+    <string name="login_error_nif">Invalid NIF</string>
 </resources>

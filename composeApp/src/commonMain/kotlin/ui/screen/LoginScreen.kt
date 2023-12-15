@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.AutofillType
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -41,6 +42,7 @@ import ui.modifier.autofill
 import ui.reusable.CenteredColumn
 import ui.reusable.form.FormField
 import ui.screen.model.BaseScreen
+import utils.isValidNif
 
 @OptIn(ExperimentalComposeUiApi::class)
 object LoginScreen : BaseScreen() {
@@ -80,11 +82,13 @@ object LoginScreen : BaseScreen() {
             var nif by remember { mutableStateOf("") }
             var password by remember { mutableStateOf("") }
 
+            val isNifValid = nif.isBlank() || nif.isValidNif
+
             val passwordFocusRequester = remember { FocusRequester() }
 
             FormField(
                 value = nif,
-                onValueChange = { nif = it },
+                onValueChange = { nif = it.uppercase() },
                 label = stringResource(MR.strings.login_nif),
                 enabled = !isLoading,
                 modifier = Modifier
@@ -93,7 +97,10 @@ object LoginScreen : BaseScreen() {
                     .padding(top = 8.dp)
                     .autofill(listOf(AutofillType.Username)) { nif = it },
                 nextFocusRequester = passwordFocusRequester,
-                onSubmit = { login(nif, password) }
+                onSubmit = { login(nif, password) },
+                error = stringResource(MR.strings.login_error_nif).takeIf { !isNifValid },
+                capitalization = KeyboardCapitalization.Characters,
+                supportingText = stringResource(MR.strings.login_nif_info)
             )
             FormField(
                 value = password,
@@ -112,7 +119,7 @@ object LoginScreen : BaseScreen() {
 
             OutlinedButton(
                 onClick = { login(nif, password) },
-                enabled = !isLoading,
+                enabled = !isLoading && isNifValid && nif.isNotBlank() && password.isNotBlank(),
                 modifier = Modifier.padding(end = 16.dp).align(Alignment.End)
             ) {
                 AnimatedVisibility(
