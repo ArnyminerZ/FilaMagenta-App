@@ -1,8 +1,8 @@
-package com.filamagenta.request
+package request
 
 import KoverIgnore
-import com.filamagenta.database.entity.Transaction
 import com.filamagenta.request.model.IUpdateRequest
+import data.TransactionType
 import kotlinx.serialization.Serializable
 
 @KoverIgnore
@@ -13,7 +13,7 @@ data class UserTransactionUpdateRequest(
     val income: Boolean? = null,
     val units: UInt? = null,
     val pricePerUnit: Float? = null,
-    val type: Transaction.Type? = null
+    val type: TransactionType? = null
 ) : IUpdateRequest {
     /**
      * Checks whether all the parameters are null.

@@ -2,13 +2,13 @@ package database.table
 
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.UserRole
-import com.filamagenta.security.Roles
 import database.model.DatabaseTestEnvironment
 import database.provider.UserProvider
 import kotlin.test.assertEquals
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.junit.Assert.assertThrows
 import org.junit.Test
+import security.Roles
 
 class UserRolesTest : DatabaseTestEnvironment() {
     @Test

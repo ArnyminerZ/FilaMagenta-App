@@ -1,12 +1,11 @@
-package com.filamagenta.request
+package request
 
 import KoverIgnore
-import com.filamagenta.database.entity.UserMeta
-import com.filamagenta.endpoint.UserMetaEndpoint
+import data.UserMetaKey
 import kotlinx.serialization.Serializable
 
 /**
- * Represents a request made to the [UserMetaEndpoint].
+ * Represents a request made to the user-meta endpoint.
  *
  * @param key The key of the meta.
  * @param value If `null`, the request will be a fetch one. Otherwise, this value will be set for the meta.
@@ -14,6 +13,6 @@ import kotlinx.serialization.Serializable
 @KoverIgnore
 @Serializable
 data class UserMetaRequest(
-    val key: UserMeta.Key,
+    val key: UserMetaKey,
     val value: String? = null
 )

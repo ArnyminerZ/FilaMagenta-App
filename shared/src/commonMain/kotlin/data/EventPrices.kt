@@ -1,11 +1,10 @@
-package com.filamagenta.database.json
+package data
 
-import com.filamagenta.database.entity.UserMeta
 import kotlinx.serialization.Serializable
 
 @Serializable
 class EventPrices(
-    val prices: Map<UserMeta.Category, Float>? = emptyMap(),
+    val prices: Map<Category, Float>? = emptyMap(),
     val fallback: Float? = null
 ) {
     companion object {
@@ -14,7 +13,8 @@ class EventPrices(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+        if (other == null) return false
+        if (this::class.simpleName != other::class.simpleName) return false
 
         other as EventPrices
 

@@ -3,7 +3,6 @@ package endpoint
 import com.filamagenta.database.database
 import com.filamagenta.endpoint.LoginEndpoint
 import com.filamagenta.modules.AUTH_JWT_CLAIM_NIF
-import com.filamagenta.request.LoginRequest
 import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
@@ -16,6 +15,7 @@ import io.ktor.http.contentType
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.Test
+import request.LoginRequest
 
 class TestLoginEndpoint : TestServerEnvironment() {
     @Test

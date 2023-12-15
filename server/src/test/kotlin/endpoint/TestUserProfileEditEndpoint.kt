@@ -2,14 +2,13 @@ package endpoint
 
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
-import com.filamagenta.database.utils.UserDataKey
 import com.filamagenta.endpoint.UserProfileEditEndpoint
 import com.filamagenta.endpoint.UserProfileEndpoint
-import com.filamagenta.request.UserProfileEditRequest
 import com.filamagenta.response.Errors
 import com.filamagenta.response.FailureResponse
 import com.filamagenta.security.Authentication
 import com.filamagenta.security.Passwords
+import data.UserDataKey
 import database.provider.UserProvider
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
@@ -21,6 +20,7 @@ import io.ktor.http.contentType
 import kotlin.test.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import request.UserProfileEditRequest
 
 class TestUserProfileEditEndpoint : TestServerEnvironment() {
     private fun testUpdate(

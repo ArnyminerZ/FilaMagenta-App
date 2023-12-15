@@ -6,10 +6,8 @@ import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.request.EventUpdateRequest
 import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
@@ -20,11 +18,10 @@ import io.ktor.util.pipeline.PipelineContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import request.EventUpdateRequest
+import security.Roles
 
-object EventUpdateEndpoint : SecureEndpoint(
-    "/events/{eventId}",
-    Roles.Events.Update
-) {
+object EventUpdateEndpoint : SecureEndpoint("/events/{eventId}", Roles.Events.Update) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         try {
             val request = call.receive<EventUpdateRequest>()

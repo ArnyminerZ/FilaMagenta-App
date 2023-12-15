@@ -9,12 +9,13 @@ import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
 import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
+import data.TransactionType
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
+import security.Roles
 
 object UserTransactionListOtherEndpoint : SecureEndpoint("/user/{userId}/transactions", Roles.Transaction.ListOthers) {
     @KoverIgnore
@@ -30,7 +31,7 @@ object UserTransactionListOtherEndpoint : SecureEndpoint("/user/{userId}/transac
             val income: Boolean,
             val units: UInt,
             val pricePerUnit: Float,
-            val type: Transaction.Type
+            val type: TransactionType
         ) {
             constructor(transaction: Transaction) : this(
                 transaction.date.toString(),

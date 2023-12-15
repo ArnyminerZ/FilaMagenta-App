@@ -1,15 +1,15 @@
-package com.filamagenta.request
+package request
 
-import com.filamagenta.database.entity.Event
-import com.filamagenta.database.json.EventPrices
 import com.filamagenta.request.model.IUpdateRequest
+import data.EventPrices
+import data.EventType
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class EventUpdateRequest(
     val date: String? = null,
     val name: String? = null,
-    val type: Event.Type? = null,
+    val type: EventType? = null,
     val description: String? = null,
     val prices: EventPrices? = null
 ) : IUpdateRequest {

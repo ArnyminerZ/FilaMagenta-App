@@ -64,7 +64,7 @@ object LoginScreen : BaseScreen() {
                 label = stringResource(MR.strings.login_username),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
+                    .padding(horizontal = 16.dp)
                     .padding(top = 8.dp),
                 nextFocusRequester = passwordFocusRequester
             )
@@ -74,7 +74,7 @@ object LoginScreen : BaseScreen() {
                 label = stringResource(MR.strings.login_password),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
+                    .padding(horizontal = 16.dp)
                     .padding(top = 8.dp)
                     .focusRequester(passwordFocusRequester),
                 isPassword = true

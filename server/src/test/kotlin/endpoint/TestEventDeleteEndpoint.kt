@@ -5,12 +5,12 @@ import com.filamagenta.database.entity.Event
 import com.filamagenta.endpoint.EventDeleteEndpoint
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
-import com.filamagenta.security.Roles
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.delete
 import kotlin.test.assertNull
 import org.junit.Test
+import security.Roles
 
 class TestEventDeleteEndpoint : TestServerEnvironment() {
     @Test

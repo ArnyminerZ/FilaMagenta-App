@@ -9,7 +9,6 @@ import com.filamagenta.endpoint.model.respondSuccess
 import com.filamagenta.modules.AUTH_JWT_NAME
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
-import com.filamagenta.security.Roles
 import database.provider.UserProvider
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
@@ -18,6 +17,7 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.util.pipeline.PipelineContext
 import org.junit.Test
+import security.Roles
 
 class TestSecureEndpointLogic : TestServerEnvironment() {
     private val endpointUrl = "test"

@@ -4,11 +4,9 @@ import com.filamagenta.database.Database
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.RegisterEndpoint
-import com.filamagenta.request.RegisterRequest
 import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Passwords
-import com.filamagenta.security.Roles
 import database.provider.UserProvider
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
@@ -22,6 +20,8 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import org.junit.After
 import org.junit.Test
+import request.RegisterRequest
+import security.Roles
 
 class TestRegisterEndpoint : TestServerEnvironment() {
     @After

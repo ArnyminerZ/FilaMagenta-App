@@ -1,7 +1,7 @@
-package com.filamagenta.request
+package request
 
 import KoverIgnore
-import com.filamagenta.database.entity.Transaction
+import data.TransactionType
 import kotlinx.serialization.Serializable
 
 @KoverIgnore
@@ -12,5 +12,5 @@ data class UserTransactionCreateRequest(
     val income: Boolean,
     val units: UInt,
     val pricePerUnit: Float,
-    val type: Transaction.Type
+    val type: TransactionType
 )

@@ -6,7 +6,7 @@ import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.UserTransactionDeleteEndpoint
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
-import com.filamagenta.security.Roles
+import data.TransactionType
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.delete
@@ -15,6 +15,7 @@ import io.ktor.http.contentType
 import java.time.LocalDate
 import kotlin.test.assertNull
 import org.junit.Test
+import security.Roles
 
 class TestUserTransactionDeleteEndpoint : TestServerEnvironment() {
     private fun provideSampleTransaction(user: User): Transaction = database {
@@ -24,7 +25,7 @@ class TestUserTransactionDeleteEndpoint : TestServerEnvironment() {
             this.income = true
             this.units = 1U
             this.pricePerUnit = 12f
-            this.type = Transaction.Type.INCOME_BANK
+            this.type = TransactionType.INCOME_BANK
 
             this.user = user
         }

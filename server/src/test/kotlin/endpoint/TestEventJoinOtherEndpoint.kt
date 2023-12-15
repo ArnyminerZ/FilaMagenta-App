@@ -5,7 +5,6 @@ import com.filamagenta.database.entity.JoinedEvent
 import com.filamagenta.database.table.JoinedEvents
 import com.filamagenta.endpoint.EventJoinOtherEndpoint
 import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.post
@@ -17,6 +16,7 @@ import kotlin.test.assertTrue
 import org.jetbrains.exposed.sql.and
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import security.Roles
 
 class TestEventJoinOtherEndpoint : TestServerEnvironment() {
     @Test

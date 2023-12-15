@@ -1,8 +1,8 @@
-package com.filamagenta.request
+package request
 
 import KoverIgnore
-import com.filamagenta.security.Role
 import kotlinx.serialization.Serializable
+import security.Role
 
 @KoverIgnore
 @Serializable

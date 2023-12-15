@@ -13,14 +13,4 @@ class Event(id: EntityID<Int>) : IntEntity(id) {
     var type by Events.type
     var description by Events.description
     var prices by Events.prices
-
-    enum class Type {
-        GENERIC,
-        BREAKFAST,
-        LUNCH,
-        DINNER,
-        ENTRADETA,
-        MEETING,
-        GATHERING
-    }
 }

@@ -6,7 +6,6 @@ import com.filamagenta.database.table.Users
 import com.filamagenta.endpoint.model.Endpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.request.LoginRequest
 import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
@@ -17,6 +16,7 @@ import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
+import request.LoginRequest
 
 object LoginEndpoint : Endpoint("/auth/login") {
     @Serializable

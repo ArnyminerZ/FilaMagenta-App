@@ -9,24 +9,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 class Transaction(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Transaction>(Transactions)
 
-    @Suppress("unused")
-    enum class Type {
-        STARTING_BALANCE,
-        DERRAMA,
-        DEBT,
-        INCOME_CASH,
-        INCOME_BANK,
-        INCOME_CARD,
-        FOOD,
-        CLOTHING,
-        RETURN,
-        LOTTERY,
-        LOTTERY_NON_SOLD,
-        CHAIRS,
-        MONTEPIO,
-        FULLA
-    }
-
     var date by Transactions.date
     var description by Transactions.description
     var income by Transactions.income

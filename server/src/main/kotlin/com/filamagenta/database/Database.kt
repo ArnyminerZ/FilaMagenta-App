@@ -12,7 +12,6 @@ import com.filamagenta.database.table.UserMetaTable
 import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.database.table.Users
 import com.filamagenta.security.Passwords
-import com.filamagenta.security.roles
 import com.filamagenta.system.EnvironmentVariables
 import io.klogging.logger
 import java.sql.Connection
@@ -27,6 +26,7 @@ import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
+import security.roles
 
 private val logger = logger("database")
 

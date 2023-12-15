@@ -4,11 +4,11 @@ import KoverIgnore
 import com.filamagenta.database.entity.User
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.security.Roles
-import com.filamagenta.security.roles
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
+import security.Roles
+import security.roles
 
 object RolesListEndpoint : SecureEndpoint("/user/roles", Roles.Users.ListRoles) {
     @KoverIgnore

@@ -5,11 +5,9 @@ import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.endpoint.UserRevokeRoleEndpoint
-import com.filamagenta.request.UserRoleRequest
 import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Authentication
-import com.filamagenta.security.Roles
 import database.provider.UserProvider
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
@@ -21,6 +19,8 @@ import io.ktor.http.contentType
 import kotlin.test.assertNull
 import org.jetbrains.exposed.sql.and
 import org.junit.Test
+import request.UserRoleRequest
+import security.Roles
 
 class TestRevokeRoleEndpoint : TestServerEnvironment() {
     @Test

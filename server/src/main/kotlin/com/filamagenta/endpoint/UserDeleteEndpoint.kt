@@ -10,9 +10,9 @@ import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
 import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
+import security.Roles
 
 object UserDeleteEndpoint : SecureEndpoint("/user/delete") {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {

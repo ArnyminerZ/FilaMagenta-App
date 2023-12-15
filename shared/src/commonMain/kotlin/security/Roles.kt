@@ -1,20 +1,25 @@
-package com.filamagenta.security
+package security
 
 import KoverIgnore
-import com.filamagenta.database.DatabaseConstants.USER_ROLE_LENGTH
 import kotlinx.serialization.Serializable
+import security.Role.Companion.MAX_LENGTH
 
 /**
  * Represents a Role that can be given to a user, and authorizes it to do certain operations in the server.
  *
- * @param name the name of the role. Max length: [USER_ROLE_LENGTH]
+ * @param name the name of the role. Max length: [MAX_LENGTH] (16)
  */
 @KoverIgnore
 @Serializable
 sealed class Role(val name: String) {
+    companion object {
+        const val MAX_LENGTH = 16
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+        if (other == null) return false
+        if (this::class.simpleName != other::class.simpleName) return false
 
         other as Role
 

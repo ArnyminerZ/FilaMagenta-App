@@ -4,6 +4,7 @@ import com.filamagenta.database.Database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserMeta
 import com.filamagenta.database.table.UserMetaTable
+import data.UserMetaKey
 import org.jetbrains.exposed.sql.and
 
 /**
@@ -17,7 +18,7 @@ import org.jetbrains.exposed.sql.and
  *
  * @return The updated or retrieved meta value for the given user and key, or null if no meta value was found.
  */
-fun Database.setUserMeta(user: User, key: UserMeta.Key, value: String?): String? {
+fun Database.setUserMeta(user: User, key: UserMetaKey, value: String?): String? {
     val currentValue = transaction {
         UserMeta.find { (UserMetaTable.key eq key) and (UserMetaTable.user eq user.id) }.firstOrNull()
     }

@@ -1,14 +1,14 @@
 package endpoint
 
 import com.filamagenta.endpoint.RolesListEndpoint
-import com.filamagenta.security.Roles
-import com.filamagenta.security.roles
 import endpoint.model.TestServerEnvironment
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import kotlin.test.assertContentEquals
 import kotlin.test.assertNotNull
 import org.junit.Test
+import security.Roles
+import security.roles
 
 class TestRolesListEndpoint : TestServerEnvironment() {
     @Test

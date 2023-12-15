@@ -8,12 +8,12 @@ import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
 import com.filamagenta.response.Errors
-import com.filamagenta.security.Roles
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.util.getValue
 import io.ktor.util.pipeline.PipelineContext
 import org.jetbrains.exposed.sql.and
+import security.Roles
 
 object EventLeaveOtherEndpoint : SecureEndpoint("/events/{eventId}/leave/{otherId}", Roles.Events.LeaveOthers) {
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {

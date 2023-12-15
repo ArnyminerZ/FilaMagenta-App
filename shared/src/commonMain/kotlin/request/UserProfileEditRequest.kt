@@ -1,7 +1,7 @@
-package com.filamagenta.request
+package request
 
 import KoverIgnore
-import com.filamagenta.database.utils.UserDataKey
+import data.UserDataKey
 import kotlinx.serialization.Serializable
 
 @KoverIgnore

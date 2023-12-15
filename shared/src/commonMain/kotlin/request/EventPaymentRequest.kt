@@ -1,4 +1,4 @@
-package com.filamagenta.request
+package request
 
 import kotlinx.serialization.Serializable
 

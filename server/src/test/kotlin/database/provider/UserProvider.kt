@@ -5,7 +5,7 @@ import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserRole
 import com.filamagenta.security.Authentication
 import com.filamagenta.security.Passwords
-import com.filamagenta.security.Role
+import security.Role
 
 class UserProvider {
     object SampleUser {

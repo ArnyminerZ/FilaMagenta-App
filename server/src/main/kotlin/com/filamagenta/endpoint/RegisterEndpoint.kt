@@ -6,17 +6,17 @@ import com.filamagenta.database.table.Users
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondFailure
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.request.RegisterRequest
 import com.filamagenta.response.ErrorCodes
 import com.filamagenta.response.Errors
 import com.filamagenta.security.Passwords
-import com.filamagenta.security.Roles
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.call
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
+import request.RegisterRequest
+import security.Roles
 import utils.isValidNif
 
 object RegisterEndpoint : SecureEndpoint("/auth/register", Roles.Users.Create) {

@@ -9,10 +9,11 @@ import com.filamagenta.database.table.UserMetaTable
 import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondSuccess
-import com.filamagenta.security.Role
+import data.UserMetaKey
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
+import security.Role
 
 object UserProfileEndpoint : SecureEndpoint("/user/profile") {
     @KoverIgnore
@@ -22,7 +23,7 @@ object UserProfileEndpoint : SecureEndpoint("/user/profile") {
         val nif: String,
         val name: String,
         val surname: String,
-        val meta: Map<UserMeta.Key, String>,
+        val meta: Map<UserMetaKey, String>,
         val roles: List<Role>
     )
 

@@ -7,6 +7,7 @@ import com.filamagenta.database.entity.User
 import com.filamagenta.database.table.Transactions
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondSuccess
+import data.TransactionType
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
 import kotlinx.serialization.Serializable
@@ -25,7 +26,7 @@ object UserTransactionListEndpoint : SecureEndpoint("/user/transactions") {
             val income: Boolean,
             val units: UInt,
             val pricePerUnit: Float,
-            val type: Transaction.Type
+            val type: TransactionType
         ) {
             constructor(transaction: Transaction) : this(
                 transaction.date.toString(),
