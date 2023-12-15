@@ -1,23 +1,18 @@
 package network.backend
 
-import accounts.Account
 import accounts.AccountManager
-import com.russhwolf.settings.ExperimentalSettingsApi
+import accounts.getSelectedAccount
 import filamagenta.data.UserTransaction
 import kotlinx.datetime.LocalDate
 import network.backend.proto.ITransactions
 import response.endpoint.UserTransactionListResult
 import server.Endpoints
-import storage.settings.SettingsKeys
-import storage.settings.settings
 
-@ExperimentalSettingsApi
+var transactionsConnector: ITransactions = Transactions
+
 object Transactions : ITransactions() {
     override suspend fun getTransactions(): List<UserTransaction> {
-        val selectedAccount = settings.getStringOrNull(SettingsKeys.SELECTED_ACCOUNT)
-        checkNotNull(selectedAccount) { "There's no account selected." }
-
-        val account = Account(selectedAccount)
+        val account = AccountManager.getSelectedAccount()
         val token = AccountManager.getToken(account)
         checkNotNull(token) { "The selected account must have a token stored." }
 
