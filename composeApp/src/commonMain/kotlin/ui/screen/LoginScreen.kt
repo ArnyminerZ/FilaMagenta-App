@@ -1,5 +1,7 @@
 package ui.screen
 
+import accounts.Account
+import accounts.AccountManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +21,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.navigator.LocalNavigator
 import dev.icerock.moko.resources.compose.stringResource
 import error.ServerResponseException
 import filamagenta.MR
@@ -36,7 +39,15 @@ import ui.screen.model.BaseScreen
 object LoginScreen : BaseScreen() {
     @Composable
     override fun ScreenContent(paddingValues: PaddingValues) {
+        val navigator = LocalNavigator.current
+
         var isLoading by remember { mutableStateOf(false) }
+
+        AccountsHandler { accounts ->
+            if (accounts.isNotEmpty()) {
+                navigator?.push(MainScreen)
+            }
+        }
 
         CenteredColumn(
             modifier = Modifier
@@ -115,7 +126,12 @@ object LoginScreen : BaseScreen() {
         try {
             Napier.i { "Logging in as ${nif}..." }
             val token = Authentication.login(nif, password)
-            Napier.i { "Token: $token" }
+            Napier.i { "Logged in successfully, adding account..." }
+            val account = Account(nif)
+            Napier.d { "Adding account..." }
+            AccountManager.addAccount(account, password)
+            Napier.d { "Setting account token..." }
+            AccountManager.setToken(account, token)
         } catch (e: ServerResponseException) {
             Napier.e(throwable = e) { "Login failed. Error code: ${e.code}" }
 

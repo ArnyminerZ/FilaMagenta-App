@@ -1,6 +1,8 @@
 package ui.screen.model
 
 import KoverIgnore
+import accounts.Account
+import accounts.AccountManager
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -73,4 +75,25 @@ abstract class AppScreen : Screen {
      */
     @Composable
     protected abstract fun ScreenContent(paddingValues: PaddingValues)
+
+    /**
+     * Adds an observer on the accounts' list, and calls [callback] whenever it is updated.
+     *
+     * @param notifyImmediately If `true`, [callback] will be run just after adding the collector.
+     * @param callback Will be called whenever an account is added or removed.
+     */
+    @Composable
+    protected fun AccountsHandler(
+        notifyImmediately: Boolean = true,
+        callback: (accounts: List<Account>) -> Unit
+    ) {
+        LaunchedEffect(Unit) {
+            AccountManager.getAccountsFlow().collect {
+                callback(it)
+            }
+            if (notifyImmediately) {
+                callback(AccountManager.getAccounts())
+            }
+        }
+    }
 }
