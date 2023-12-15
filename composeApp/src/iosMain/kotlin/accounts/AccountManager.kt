@@ -1,23 +1,20 @@
 package accounts
 
-import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ExperimentalSettingsImplementation
 import com.russhwolf.settings.KeychainSettings
-import com.russhwolf.settings.serialization.decodeValueOrNull
-import com.russhwolf.settings.serialization.encodeValue
 import com.russhwolf.settings.set
 import io.github.aakira.napier.Napier
 import kotlin.concurrent.Volatile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.serialization.ExperimentalSerializationApi
 
-@OptIn(ExperimentalSettingsImplementation::class, ExperimentalSerializationApi::class, ExperimentalSettingsApi::class)
+@OptIn(ExperimentalSettingsImplementation::class)
 actual object AccountManager {
     private const val KEY_ACCOUNTS_COUNT = "accounts"
     private const val KEY_ACCOUNT_NAME = "account_name_"
     private const val KEY_ACCOUNT_PASS = "account_pass_"
+    private const val KEY_ACCOUNT_TOKEN = "account_token_"
 
     private val storage by lazy {
         KeychainSettings("filamagenta_accounts")
@@ -36,7 +33,7 @@ actual object AccountManager {
 
         return (0 until count).map { index ->
             val key = KEY_ACCOUNT_NAME + index
-            storage.decodeValueOrNull(Account.serializer(), key)!!
+            Account(storage.getStringOrNull(key)!!)
         }
     }
 
@@ -68,6 +65,22 @@ actual object AccountManager {
     }
 
     /**
+     * Finds the position of [account] in the added accounts.
+     *
+     * @param account The account to search for.
+     *
+     * @return The position (starting from `0`) where the account is stored at.
+     *
+     * @throws IllegalArgumentException If [account] was not found.
+     */
+    private fun indexOf(account: Account): Int {
+        val accounts = getAccounts()
+        val index = accounts.indexOfFirst { it == account }
+        require(index >= 0) { "The given account ($account) was not found." }
+        return index
+    }
+
+    /**
      * Adds a new account to the manager.
      *
      * @param account The account to be added.
@@ -81,7 +94,7 @@ actual object AccountManager {
         val passKey = KEY_ACCOUNT_PASS + count
 
         Napier.v { "Adding account $account to position $count..." }
-        storage.encodeValue(Account.serializer(), nameKey, account)
+        storage[nameKey] = account.name
         storage[passKey] = password
 
         Napier.v { "Increasing accounts count to ${count + 1}" }
@@ -99,6 +112,29 @@ actual object AccountManager {
         notifyUpdate()
     }
 
+    private fun moveData(from: Int, to: Int) {
+        val nameFromKey = KEY_ACCOUNT_NAME + from
+        val passFromKey = KEY_ACCOUNT_PASS + from
+        val tokenFromKey = KEY_ACCOUNT_TOKEN + from
+
+        val nameToKey = KEY_ACCOUNT_NAME + to
+        val passToKey = KEY_ACCOUNT_PASS + to
+        val tokenToKey = KEY_ACCOUNT_TOKEN + to
+
+        Napier.v { "Moving account data from #$from to #$to..." }
+        val accountName = storage.getStringOrNull(nameFromKey)
+        val pass = storage.getStringOrNull(passFromKey)
+        val token = storage.getStringOrNull(tokenFromKey)
+
+        if (accountName == null || pass == null) {
+            Napier.e { "Tried to get the data of account at $from, and it was null." }
+            return
+        }
+        storage[nameToKey] = accountName
+        storage[passToKey] = pass
+        storage[tokenToKey] = token
+    }
+
     /**
      * Remove the desired account from the system
      *
@@ -107,14 +143,15 @@ actual object AccountManager {
      * @return `true` if the account was removed successfully, `false` otherwise.
      */
     actual fun removeAccount(account: Account): Boolean {
-        val accounts = getAccounts()
-        val index = accounts.indexOfFirst { it == account }
-        if (index < 0) {
+        val index = try {
+            indexOf(account)
+        } catch (_: IllegalArgumentException) {
             Napier.e { "The given account ($account) was not found." }
             return false
         }
         val nameKey = KEY_ACCOUNT_NAME + index
         val passKey = KEY_ACCOUNT_PASS + index
+        val tokenKey = KEY_ACCOUNT_TOKEN + index
 
         val count = storage.getInt(KEY_ACCOUNTS_COUNT, 0)
         if (index + 1 == count) {
@@ -122,26 +159,13 @@ actual object AccountManager {
             Napier.v { "Removing account $account..." }
             storage.remove(nameKey)
             storage.remove(passKey)
+            storage.remove(tokenKey)
         } else {
             // The account is in the middle, the accounts under it must be moved
             // Start moving the account at index+1 to index
             Napier.v { "Removing account $account from position $index. Moving the rest down." }
             for (i in index until count) {
-                val nameFromKey = KEY_ACCOUNT_NAME + (index + 1)
-                val passFromKey = KEY_ACCOUNT_PASS + (index + 1)
-                val nameToKey = KEY_ACCOUNT_NAME + index
-                val passToKey = KEY_ACCOUNT_PASS + index
-
-                Napier.v { "Moving account #$index to #${index + 1}..." }
-                val data = storage.decodeValueOrNull(Account.serializer(), nameFromKey)
-                val pass = storage.getStringOrNull(passFromKey)
-
-                if (data == null || pass == null) {
-                    Napier.e { "Tried to get the data of account at $index, and it was null." }
-                    return false
-                }
-                storage.encodeValue(Account.serializer(), nameToKey, data)
-                storage[passToKey] = pass
+                moveData(i + 1, i)
             }
         }
 
@@ -150,5 +174,41 @@ actual object AccountManager {
 
         notifyUpdate()
         return true
+    }
+
+    /**
+     * Sets the token used by the given account to authenticate in the backend.
+     *
+     * @param account The account to set the token for.
+     * @param token The token to set. Can be null for removing stored token.
+     *
+     * @throws IllegalArgumentException If the given [account] is not registered locally.
+     */
+    actual fun setToken(account: Account, token: String?) {
+        val index = indexOf(account)
+
+        val tokenKey = KEY_ACCOUNT_TOKEN + index
+        if (token == null) {
+            storage.remove(tokenKey)
+        } else {
+            storage[tokenKey] = token
+        }
+    }
+
+    /**
+     * Fetches the token stored for the given account.
+     *
+     * A network request may be performed if necessary, so be sure to run in an IO thread.
+     *
+     * @return `null` if there's no token stored or the account doesn't exist, the token otherwise.
+     */
+    actual suspend fun getToken(account: Account): String? {
+        try {
+            val index = indexOf(account)
+            val tokenKey = KEY_ACCOUNT_TOKEN + index
+            return storage.getStringOrNull(tokenKey)
+        } catch (_: IllegalArgumentException) {
+            return null
+        }
     }
 }
