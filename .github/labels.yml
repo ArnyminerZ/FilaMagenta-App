@@ -96,3 +96,7 @@
 - name: dependencies
   description: Updates to libraries
   color: 9a08fc
+
+- name: dependent
+  description: This issue or PR depends on another one
+  color: cdcfd1
