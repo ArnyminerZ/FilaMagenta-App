@@ -6,8 +6,23 @@ import android.accounts.AccountAuthenticatorResponse
 import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
+import androidx.annotation.VisibleForTesting
+import com.filamagenta.R
+import error.ServerResponseException
+import io.github.aakira.napier.Napier
+import kotlinx.coroutines.runBlocking
+import network.backend.Authentication
+import network.backend.IAuthentication
 
-class Authenticator(context: Context) : AbstractAccountAuthenticator(context) {
+/**
+ * Which [IAuthentication] to use for performing authorization requests to the server.
+ *
+ * Defaults to [Authentication].
+ */
+@VisibleForTesting
+var authenticationConnector: IAuthentication = Authentication
+
+class Authenticator(private val context: Context) : AbstractAccountAuthenticator(context) {
     private val am = AccountManager.get(context)
 
     override fun addAccount(
@@ -26,12 +41,30 @@ class Authenticator(context: Context) : AbstractAccountAuthenticator(context) {
         authTokenType: String,
         options: Bundle?
     ): Bundle {
-        throw UnsupportedOperationException()
+        Napier.d { "Requested auth token for ${account.name}" }
+        val nif = account.name
+        Napier.v { "Getting password of ${account.name}..." }
+        val password = am.getPassword(account)
+
+        val result = Bundle()
+        try {
+            val token = runBlocking {
+                Napier.d { "Requesting server for auth token..." }
+                Authentication.login(nif, password)
+            }
+            result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true)
+            result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name)
+            result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type)
+            result.putString(AccountManager.KEY_AUTHTOKEN, token)
+        } catch (e: ServerResponseException) {
+            result.putInt(AccountManager.KEY_ERROR_CODE, e.code)
+            result.putString(AccountManager.KEY_ERROR_MESSAGE, e.message)
+            result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false)
+        }
+        return result
     }
 
-    override fun getAuthTokenLabel(authTokenType: String): String {
-        throw UnsupportedOperationException()
-    }
+    override fun getAuthTokenLabel(authTokenType: String): String = context.getString(R.string.auth_token_label)
 
     override fun editProperties(
         response: AccountAuthenticatorResponse?,
@@ -45,7 +78,21 @@ class Authenticator(context: Context) : AbstractAccountAuthenticator(context) {
         account: Account,
         options: Bundle?
     ): Bundle {
-        throw UnsupportedOperationException()
+        val nif = account.name
+        val password = am.getPassword(account)
+
+        val result = Bundle()
+        try {
+            runBlocking {
+                authenticationConnector.login(nif, password)
+            }
+            result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, true)
+        } catch (e: ServerResponseException) {
+            result.putInt(AccountManager.KEY_ERROR_CODE, e.code)
+            result.putString(AccountManager.KEY_ERROR_MESSAGE, e.message)
+            result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, false)
+        }
+        return result
     }
 
     override fun hasFeatures(

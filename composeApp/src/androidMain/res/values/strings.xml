@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">FilaMagenta</string>
+    <string name="app_name">Filà Magenta</string>
+
+    <string name="auth_token_label">Filà Magenta</string>
 </resources>

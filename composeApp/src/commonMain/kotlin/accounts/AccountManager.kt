@@ -42,4 +42,21 @@ expect object AccountManager {
      * Removes all the accounts registered.
      */
     fun clearAccounts()
+
+    /**
+     * Sets the token used by the given account to authenticate in the backend.
+     *
+     * @param account The account to set the token for.
+     * @param token The token to set. Can be null for removing stored token.
+     */
+    fun setToken(account: Account, token: String?)
+
+    /**
+     * Fetches the token stored for the given account.
+     *
+     * A network request may be performed if necessary, so be sure to run in an IO thread.
+     *
+     * @return `null` if there's no token stored, the token otherwise.
+     */
+    suspend fun getToken(account: Account): String?
 }
