@@ -9,18 +9,19 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import io.github.aakira.napier.Napier
 import ui.reusable.LoadingBox
 import ui.screen.model.AppScreen
+import ui.screen.model.AppScreenModel
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-object MainLoadingScreen : AppScreen() {
+class MainLoadingScreen(
     /**
      * **Only for tests**.
      * If true, the loading screen will navigate automatically to [LoginScreen] or [MainScreen] based on the accounts
      * list.
      */
-    var navigateAutomatically: Boolean = true
-
+    private val navigateAutomatically: Boolean = true
+) : AppScreen<AppScreenModel>() {
     @Composable
-    override fun ScreenContent(paddingValues: PaddingValues) {
+    override fun ScreenContent(paddingValues: PaddingValues, screenModel: AppScreenModel) {
         val navigator = LocalNavigator.current
 
         LaunchedEffect(Unit) {

@@ -79,4 +79,17 @@ expect object AccountManager {
      * @return The list of roles that the account has.
      */
     fun getRoles(account: Account): List<Role>
+
+    /**
+     * Fetches the version of the data stored for the given account.
+     * If it's lower than the current one, it must be fetched again.
+     *
+     * When new data is expected to be stored in the account, the version constant should be increased, and at the same
+     * time, if a user has an old version, the data should be updated to match the new format.
+     *
+     * @param account The account to fetch from.
+     *
+     * @return A number identifying the version of the data stored for the account. Greater means newer.
+     */
+    fun getVersion(account: Account): Int
 }

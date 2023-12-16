@@ -1,8 +1,5 @@
 package ui.screen.model
 
-import accounts.Account
-import accounts.AccountManager
-import accounts.liveSelectedAccount
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
@@ -27,7 +24,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,73 +43,28 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.testTag
-import com.russhwolf.settings.ExperimentalSettingsApi
 import dev.icerock.moko.resources.StringResource
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ui.composition.LocalWindowSizeClass
 import ui.data.NavigationItem
-import ui.data.NavigationItemOption
 
 @ExperimentalFoundationApi
 @ExperimentalMaterial3WindowSizeClassApi
-abstract class NavigationScreen(
+abstract class NavigationScreen<SM : NavigationScreenModel>(
     localizedTitle: StringResource? = null,
-    ignoreBackPresses: Boolean = true
-) : AppScreen(localizedTitle, ignoreBackPresses) {
+    ignoreBackPresses: Boolean = true,
+    protected open val navigationItems: List<NavigationItem> = emptyList(),
+    @Suppress("UNCHECKED_CAST")
+    factory: AppScreenModelFactory<SM> = NavigationScreenModel.Factory(navigationItems) as AppScreenModelFactory<SM>
+) : AppScreen<SM>(localizedTitle, ignoreBackPresses, factory) {
     companion object {
         const val TEST_TAG_BOTTOM_BAR = "app_screen_bottom_bar"
         const val TEST_TAG_RAIL = "app_screen_rail"
         const val TEST_TAG_NAV_ITEM = "app_screen_nav_item"
     }
 
-    protected open val navigationItems: List<NavigationItem> = emptyList()
-
-    val navigationSelection = MutableStateFlow(0)
-
-    private suspend fun updateNavigationItemsVisibility(account: Account?, windowSizeClass: WindowSizeClass?) {
-        // Iterate all the items
-        for (item in navigationItems) {
-            var display = true
-
-            // Iterate all the options if any. If not, display will always be true
-            for (option in item.options) {
-                val check = when (option) {
-                    // Display only if the account has a given role
-                    is NavigationItemOption.DisplayIfHasRole -> option.check(account)
-
-                    // Display only if the screen width size class is one of the given
-                    is NavigationItemOption.DisplayIfWidthSizeClass -> option.check(windowSizeClass?.widthSizeClass)
-                }
-                if (!check) {
-                    display = false
-                }
-            }
-            item.visible.emit(display)
-        }
-    }
-
-    @OptIn(ExperimentalSettingsApi::class)
-    private val liveAccount = AccountManager.liveSelectedAccount()
-
-    init {
-        CoroutineScope(Dispatchers.IO).launch {
-            liveAccount.collect {
-                updateNavigationItemsVisibility(it, windowSizeClass.value)
-            }
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            windowSizeClass.collect {
-                updateNavigationItemsVisibility(liveAccount.value, it)
-            }
-        }
-    }
-
     @Composable
-    private fun BottomNavigationBar(visible: Boolean) {
+    private fun BottomNavigationBar(model: SM, visible: Boolean) {
         AnimatedContent(
             targetState = visible,
             transitionSpec = {
@@ -121,7 +72,7 @@ abstract class NavigationScreen(
             }
         ) { isVisible ->
             if (isVisible && navigationItems.isNotEmpty()) {
-                val selection by navigationSelection.collectAsState()
+                val selection by model.navigationSelection.collectAsState()
 
                 NavigationBar(
                     modifier = Modifier.testTag(TEST_TAG_BOTTOM_BAR)
@@ -137,7 +88,7 @@ abstract class NavigationScreen(
 
                             NavigationBarItem(
                                 selected = selected,
-                                onClick = { navigationSelection.tryEmit(index) },
+                                onClick = { model.navigationSelection.tryEmit(index) },
                                 icon = {
                                     Icon(
                                         imageVector = if (selected) {
@@ -163,7 +114,7 @@ abstract class NavigationScreen(
     }
 
     @Composable
-    private fun NavigationRail(visible: Boolean) {
+    private fun NavigationRail(model: SM, visible: Boolean) {
         AnimatedContent(
             targetState = visible,
             transitionSpec = {
@@ -171,7 +122,7 @@ abstract class NavigationScreen(
             }
         ) { isVisible ->
             if (isVisible && navigationItems.isNotEmpty()) {
-                val selection by navigationSelection.collectAsState()
+                val selection by model.navigationSelection.collectAsState()
 
                 androidx.compose.material3.NavigationRail(
                     modifier = Modifier.testTag(TEST_TAG_RAIL)
@@ -187,7 +138,7 @@ abstract class NavigationScreen(
 
                             NavigationRailItem(
                                 selected = selected,
-                                onClick = { navigationSelection.tryEmit(index) },
+                                onClick = { model.navigationSelection.tryEmit(index) },
                                 icon = {
                                     Icon(
                                         imageVector = if (selected) {
@@ -213,38 +164,24 @@ abstract class NavigationScreen(
     }
 
     /**
-     * Updates [navigationSelection] with the [index] given, if it's in bounds.
-     *
-     * @param index The index to set. Must be between zero and the amount of items in [navigationItems].
-     */
-    private fun selectNavigationItem(index: Int): Boolean {
-        return if (index >= 0 && navigationItems.size >= index + 1) {
-            navigationSelection.tryEmit(index)
-            true
-        } else {
-            false
-        }
-    }
-
-    /**
      * Handles key events
      */
-    @Suppress("MagicNumber")
-    private fun keyEventHandler(event: KeyEvent): Boolean = with(event) {
+    @Suppress("MagicNumber", "CyclomaticComplexMethod")
+    private fun keyEventHandler(model: SM, event: KeyEvent): Boolean = with(event) {
         when {
             // Only handle release events
             type != KeyEventType.KeyUp -> false
 
-            isAltPressed && key == Key.NumPad1 -> selectNavigationItem(0)
-            isAltPressed && key == Key.NumPad2 -> selectNavigationItem(1)
-            isAltPressed && key == Key.NumPad3 -> selectNavigationItem(2)
-            isAltPressed && key == Key.NumPad4 -> selectNavigationItem(3)
-            isAltPressed && key == Key.NumPad5 -> selectNavigationItem(4)
-            isAltPressed && key == Key.NumPad6 -> selectNavigationItem(5)
-            isAltPressed && key == Key.NumPad7 -> selectNavigationItem(6)
-            isAltPressed && key == Key.NumPad8 -> selectNavigationItem(7)
-            isAltPressed && key == Key.NumPad9 -> selectNavigationItem(8)
-            isAltPressed && key == Key.NumPad0 -> selectNavigationItem(9)
+            isAltPressed && key == Key.NumPad1 -> model.selectNavigationItem(0)
+            isAltPressed && key == Key.NumPad2 -> model.selectNavigationItem(1)
+            isAltPressed && key == Key.NumPad3 -> model.selectNavigationItem(2)
+            isAltPressed && key == Key.NumPad4 -> model.selectNavigationItem(3)
+            isAltPressed && key == Key.NumPad5 -> model.selectNavigationItem(4)
+            isAltPressed && key == Key.NumPad6 -> model.selectNavigationItem(5)
+            isAltPressed && key == Key.NumPad7 -> model.selectNavigationItem(6)
+            isAltPressed && key == Key.NumPad8 -> model.selectNavigationItem(7)
+            isAltPressed && key == Key.NumPad9 -> model.selectNavigationItem(8)
+            isAltPressed && key == Key.NumPad0 -> model.selectNavigationItem(9)
 
             else -> false
         }
@@ -264,25 +201,25 @@ abstract class NavigationScreen(
     }
 
     /**
-     * Makes sure that the selected page in [pagerState] and [navigationSelection] are synchronized.
-     * This makes sure that if [navigationSelection] is updated, the current page is switched automatically; and if the
-     * current page is switched by the user, [navigationSelection] is updated accordingly.
+     * Makes sure that the selected page in [pagerState] and navigationSelection are synchronized.
+     * This makes sure that if navigationSelection is updated, the current page is switched automatically; and if the
+     * current page is switched by the user, navigationSelection is updated accordingly.
      *
-     * Also handles wrong values to [navigationSelection], so if, for example, an invisible page is selected, the value
+     * Also handles wrong values to navigationSelection, so if, for example, an invisible page is selected, the value
      * will be adjusted automatically.
      *
      * @param pagerState The pager state to watch.
      */
     @Composable
-    private fun PagerStateSynchronizer(pagerState: PagerState) {
+    private fun PagerStateSynchronizer(model: SM, pagerState: PagerState) {
         val scope = rememberCoroutineScope()
-        val selection by navigationSelection.collectAsState()
+        val selection by model.navigationSelection.collectAsState()
 
         LaunchedEffect(pagerState) {
             snapshotFlow { pagerState.settledPage }
                 .collect { page ->
                     if (selection != page) {
-                        navigationSelection.emit(page)
+                        model.navigationSelection.emit(page)
                     }
                 }
         }
@@ -292,9 +229,9 @@ abstract class NavigationScreen(
                     val navItem = navigationItems.getOrNull(page)
                     if (navItem?.visible?.value == false) {
                         if (navigationItems.size >= page + 1) {
-                            navigationSelection.tryEmit(page + 1)
+                            model.navigationSelection.tryEmit(page + 1)
                         } else {
-                            navigationSelection.tryEmit(page - 1)
+                            model.navigationSelection.tryEmit(page - 1)
                         }
                     } else if (pagerState.settledPage != page) scope.launch {
                         pagerState.animateScrollToPage(page)
@@ -304,7 +241,7 @@ abstract class NavigationScreen(
     }
 
     @Composable
-    override fun ScreenContent(paddingValues: PaddingValues) {
+    override fun ScreenContent(paddingValues: PaddingValues, screenModel: SM) {
         val displayBottomNavigation = shouldDisplayBottomNavigation()
 
         // The focus requester is added so that the keyEventHandler receives key events
@@ -315,14 +252,14 @@ abstract class NavigationScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .onPreviewKeyEvent(::keyEventHandler)
+                .onPreviewKeyEvent { keyEventHandler(screenModel, it) }
                 .focusable()
                 .focusRequester(rootFocusRequester)
         ) {
-            NavigationRail(!displayBottomNavigation)
+            NavigationRail(screenModel, !displayBottomNavigation)
 
             val pagerState = rememberPagerState { navigationItems.size }
-            PagerStateSynchronizer(pagerState)
+            PagerStateSynchronizer(screenModel, pagerState)
 
             if (displayBottomNavigation) {
                 HorizontalPager(
@@ -348,10 +285,10 @@ abstract class NavigationScreen(
     }
 
     @Composable
-    override fun BottomBar() {
+    override fun BottomBar(screenModel: SM) {
         val displayBottomNavigation = shouldDisplayBottomNavigation()
 
-        BottomNavigationBar(displayBottomNavigation)
+        BottomNavigationBar(screenModel, displayBottomNavigation)
     }
 
     @Composable

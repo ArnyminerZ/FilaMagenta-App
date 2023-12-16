@@ -60,7 +60,7 @@ kotlin {
 
                 // Compose - Navigation
                 implementation(libs.voyager.navigator)
-                // implementation(libs.voyager.screenModel)
+                implementation(libs.voyager.screenModel)
 
                 // Compose - Window Size Class
                 implementation(libs.multiplatformWindowSizeClass)

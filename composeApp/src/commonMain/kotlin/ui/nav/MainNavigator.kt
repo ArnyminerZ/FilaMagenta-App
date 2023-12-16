@@ -10,12 +10,12 @@ import ui.screen.model.AppScreen
 
 @Composable
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-fun MainNavigator(initialScreen: Screen = MainLoadingScreen) {
+fun MainNavigator(initialScreen: Screen = MainLoadingScreen()) {
     Navigator(
         screen = initialScreen,
-        onBackPressed = { screen -> (screen as? AppScreen)?.ignoreBackPresses ?: true }
+        onBackPressed = { screen -> (screen as? AppScreen<*>)?.ignoreBackPresses ?: true }
     ) { navigator ->
-        onNavigate(navigator.lastItem as AppScreen)
+        onNavigate(navigator.lastItem as AppScreen<*>)
 
         CurrentScreen()
     }

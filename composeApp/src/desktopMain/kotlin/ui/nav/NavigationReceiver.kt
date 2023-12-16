@@ -4,6 +4,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.runtime.Composable
 import dev.icerock.moko.resources.compose.stringResource
 import ui.screen.model.AppScreen
+import ui.screen.model.AppScreenModel
 import windowTitle
 
 /**
@@ -12,7 +13,7 @@ import windowTitle
  */
 @Composable
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-actual fun onNavigate(screen: AppScreen) {
+actual fun <SM: AppScreenModel> onNavigate(screen: AppScreen<SM>) {
     val title = screen.localizedTitle?.let { stringResource(it) }
     windowTitle.tryEmit(title)
 }

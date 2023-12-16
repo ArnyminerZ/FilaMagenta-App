@@ -3,6 +3,7 @@ package ui.nav
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import ui.screen.model.AppScreen
+import ui.screen.model.AppScreenModel
 
 /**
  * Gets called whenever the app navigates to a screen.
@@ -10,4 +11,4 @@ import ui.screen.model.AppScreen
  */
 @Composable
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-actual fun onNavigate(screen: AppScreen) = Unit
+actual fun <SM: AppScreenModel> onNavigate(screen: AppScreen<SM>) = Unit

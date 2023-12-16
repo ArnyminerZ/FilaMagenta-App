@@ -1,7 +1,5 @@
 package ui.screen
 
-import accounts.Account
-import accounts.AccountManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,16 +30,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import dev.icerock.moko.resources.compose.stringResource
-import error.ServerResponseException
 import filamagenta.MR
-import io.github.aakira.napier.Napier
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
-import network.backend.Authentication
-import response.ErrorCodes
+import ui.model.LoginScreenModel
 import ui.modifier.autofill
 import ui.reusable.CenteredColumn
 import ui.reusable.form.FormField
@@ -49,13 +39,11 @@ import ui.screen.model.AppScreen
 import utils.isValidNif
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3WindowSizeClassApi::class)
-object LoginScreen : AppScreen(MR.strings.title_login) {
+object LoginScreen : AppScreen<LoginScreenModel>(MR.strings.title_login, factory = LoginScreenModel.Factory) {
     const val TEST_TAG = "login_screen"
 
-    private val isLoading = MutableStateFlow(false)
-
     @Composable
-    override fun ScreenContent(paddingValues: PaddingValues) {
+    override fun ScreenContent(paddingValues: PaddingValues, screenModel: LoginScreenModel) {
         val navigator = LocalNavigator.current
 
         AccountsHandler { accounts ->
@@ -72,7 +60,7 @@ object LoginScreen : AppScreen(MR.strings.title_login) {
                 .testTag(TEST_TAG)
         ) {
             Titles()
-            LoginForm()
+            LoginForm(screenModel)
         }
     }
 
@@ -93,8 +81,8 @@ object LoginScreen : AppScreen(MR.strings.title_login) {
     }
 
     @Composable
-    fun ColumnScope.LoginForm() {
-        val isLoading by isLoading.collectAsState(false)
+    fun ColumnScope.LoginForm(screenModel: LoginScreenModel) {
+        val isLoading by screenModel.isLoading.collectAsState(false)
 
         var nif by remember { mutableStateOf(TextFieldValue("")) }
         var password by remember { mutableStateOf(TextFieldValue("")) }
@@ -114,7 +102,7 @@ object LoginScreen : AppScreen(MR.strings.title_login) {
                 .padding(top = 8.dp)
                 .autofill(listOf(AutofillType.Username)) { nif = nif.copy(text = it) },
             nextFocusRequester = passwordFocusRequester,
-            onSubmit = { login(nif.text, password.text) },
+            onSubmit = { screenModel.login(nif.text, password.text) },
             error = stringResource(MR.strings.login_error_nif).takeIf { !isNifValid },
             capitalization = KeyboardCapitalization.Characters,
             supportingText = stringResource(MR.strings.login_nif_info)
@@ -131,11 +119,11 @@ object LoginScreen : AppScreen(MR.strings.title_login) {
                 .focusRequester(passwordFocusRequester)
                 .autofill(listOf(AutofillType.Password)) { password = password.copy(text = it) },
             isPassword = true,
-            onSubmit = { login(nif.text, password.text) }
+            onSubmit = { screenModel.login(nif.text, password.text) }
         )
 
         OutlinedButton(
-            onClick = { login(nif.text, password.text) },
+            onClick = { screenModel.login(nif.text, password.text) },
             enabled = !isLoading && isNifValid && nif.text.isNotBlank() && password.text.isNotBlank(),
             modifier = Modifier.padding(end = 16.dp).align(Alignment.End)
         ) {
@@ -150,34 +138,6 @@ object LoginScreen : AppScreen(MR.strings.title_login) {
             }
 
             Text(stringResource(MR.strings.login_action))
-        }
-    }
-
-    private fun login(nif: String, password: String) = CoroutineScope(Dispatchers.IO).launch {
-        try {
-            isLoading.tryEmit(true)
-
-            Napier.i { "Logging in as $nif..." }
-            val token = Authentication.login(nif, password)
-            Napier.i { "Logged in successfully, adding account..." }
-            val account = Account(nif)
-            Napier.d { "Adding account..." }
-            // TODO - set roles
-            AccountManager.addAccount(account, password, token, emptyList())
-        } catch (e: ServerResponseException) {
-            Napier.e(throwable = e) { "Login failed. Error code: ${e.code}" }
-
-            when (e.code) {
-                ErrorCodes.Authentication.Login.USER_NOT_FOUND -> {
-                    snackbarError.tryEmit(MR.strings.login_error_not_found)
-                }
-
-                ErrorCodes.Authentication.Login.WRONG_PASSWORD -> {
-                    snackbarError.tryEmit(MR.strings.login_error_wrong_password)
-                }
-            }
-        } finally {
-            isLoading.tryEmit(false)
         }
     }
 }

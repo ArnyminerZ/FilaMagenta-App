@@ -1,6 +1,5 @@
 package com.filamagenta.endpoint
 
-import KoverIgnore
 import com.filamagenta.database.database
 import com.filamagenta.database.entity.User
 import com.filamagenta.database.entity.UserMeta
@@ -9,25 +8,12 @@ import com.filamagenta.database.table.UserMetaTable
 import com.filamagenta.database.table.UserRolesTable
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondSuccess
-import data.UserMetaKey
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
-import kotlinx.serialization.Serializable
-import security.Role
+import response.endpoint.UserProfileResponse
 import server.Endpoints
 
 object UserProfileEndpoint : SecureEndpoint(Endpoints.User.Profile) {
-    @KoverIgnore
-    @Serializable
-    data class UserProfileResponse(
-        val id: Int,
-        val nif: String,
-        val name: String,
-        val surname: String,
-        val meta: Map<UserMetaKey, String>,
-        val roles: List<Role>
-    )
-
     override suspend fun PipelineContext<Unit, ApplicationCall>.secureBody(user: User) {
         val meta = database {
             UserMeta.find { UserMetaTable.user eq user.id }

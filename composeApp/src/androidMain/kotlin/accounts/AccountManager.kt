@@ -23,6 +23,10 @@ actual object AccountManager {
     const val ACCOUNT_TYPE = "com.arnyminerz.filamagenta"
     const val AUTH_TOKEN_TYPE = "filamagenta"
 
+    const val VERSION = 1
+
+    const val USER_DATA_VERSION = "version"
+
     @VisibleForTesting
     const val USER_DATA_ROLES = "roles"
 
@@ -38,6 +42,7 @@ actual object AccountManager {
 
     @Volatile
     private var listener: OnAccountsUpdateListener? = null
+
     @Volatile
     private var accountsFlow: Flow<List<Account>>? = null
 
@@ -110,13 +115,38 @@ actual object AccountManager {
         if (!am.addAccountExplicitly(account.androidAccount, password, Bundle())) return false
 
         // Store the token
-        setToken(account, password)
+        am.setAuthToken(account.androidAccount, AUTH_TOKEN_TYPE, token)
 
         // Store the user data
         val encodedRoles = jsonEncoder.encodeToString(roles)
         am.setUserData(account.androidAccount, USER_DATA_ROLES, encodedRoles)
 
+        // Store the current version
+        am.setUserData(account.androidAccount, USER_DATA_VERSION, VERSION.toString())
+
         return true
+    }
+
+    /**
+     * All parameters match the required data for the account.
+     * Can be used when an account needs to be updated to a new version.
+     *
+     * @param account The account to update.
+     * @param password The password used by the account to authenticate.
+     * @param token The authorization token of the account.
+     * @param roles The list of roles granted to the account.
+     */
+    fun updateAccount(account: Account, password: String, token: String, roles: List<Role>) {
+        Napier.w { "Updating data of account $account..." }
+
+        am.setPassword(account.androidAccount, password)
+        am.setAuthToken(account.androidAccount, AUTH_TOKEN_TYPE, token)
+
+        val encodedRoles = jsonEncoder.encodeToString(roles)
+        am.setUserData(account.androidAccount, USER_DATA_ROLES, encodedRoles)
+
+        // Store the current version
+        am.setUserData(account.androidAccount, USER_DATA_VERSION, VERSION.toString())
     }
 
     /**
@@ -185,5 +215,20 @@ actual object AccountManager {
     actual fun getRoles(account: Account): List<Role> {
         val encodedRoles = am.getUserData(account.androidAccount, USER_DATA_ROLES)
         return jsonEncoder.decodeFromString(encodedRoles)
+    }
+
+    /**
+     * Fetches the version of the data stored for the given account.
+     * If it's lower than the current one, it must be fetched again.
+     *
+     * When new data is expected to be stored in the account, the version constant should be increased, and at the same
+     * time, if a user has an old version, the data should be updated to match the new format.
+     *
+     * @param account The account to fetch from.
+     *
+     * @return A number identifying the version of the data stored for the account. Greater means newer.
+     */
+    actual fun getVersion(account: Account): Int {
+        return am.getUserData(account.androidAccount, USER_DATA_VERSION)?.toIntOrNull() ?: 0
     }
 }

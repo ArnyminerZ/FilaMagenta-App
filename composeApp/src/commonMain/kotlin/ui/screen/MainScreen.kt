@@ -35,49 +35,51 @@ import network.backend.transactionsConnector
 import security.Roles
 import ui.data.NavigationItem
 import ui.data.NavigationItemOption
+import ui.model.MainScreenModel
 import ui.screen.model.NavigationScreen
 
+private val navigationItems: List<NavigationItem> = listOf(
+    NavigationItem(
+        label = { Text(stringResource(MR.strings.main_nav_wallet)) },
+        icon = Icons.Outlined.Wallet,
+        selectedIcon = Icons.Filled.Wallet,
+        iconContentDescription = { stringResource(MR.strings.main_nav_wallet_desc) }
+    ),
+    NavigationItem(
+        label = { Text(stringResource(MR.strings.main_nav_events)) },
+        icon = Icons.Outlined.Event,
+        selectedIcon = Icons.Filled.Event,
+        iconContentDescription = { stringResource(MR.strings.main_nav_events_desc) }
+    ),
+    NavigationItem(
+        label = { Text(stringResource(MR.strings.main_nav_admin)) },
+        icon = Icons.Outlined.AdminPanelSettings,
+        selectedIcon = Icons.Filled.AdminPanelSettings,
+        iconContentDescription = { stringResource(MR.strings.main_nav_admin_desc) },
+        options = listOf(
+            NavigationItemOption.DisplayIfHasRole(Roles.Transaction.Create),
+            NavigationItemOption.DisplayIfWidthSizeClass(
+                listOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
+            )
+        )
+    ),
+    NavigationItem(
+        label = { Text(stringResource(MR.strings.main_nav_settings)) },
+        icon = Icons.Outlined.Settings,
+        selectedIcon = Icons.Filled.Settings,
+        iconContentDescription = { stringResource(MR.strings.main_nav_settings_desc) }
+    )
+)
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3WindowSizeClassApi::class)
-object MainScreen : NavigationScreen(
-    localizedTitle = MR.strings.title_home
+object MainScreen : NavigationScreen<MainScreenModel>(
+    localizedTitle = MR.strings.title_home,
+    factory = MainScreenModel.Factory(navigationItems)
 ) {
     const val TEST_TAG = "main_screen"
 
-    override val navigationItems: List<NavigationItem> = listOf(
-        NavigationItem(
-            label = { Text(stringResource(MR.strings.main_nav_wallet)) },
-            icon = Icons.Outlined.Wallet,
-            selectedIcon = Icons.Filled.Wallet,
-            iconContentDescription = { stringResource(MR.strings.main_nav_wallet_desc) }
-        ),
-        NavigationItem(
-            label = { Text(stringResource(MR.strings.main_nav_events)) },
-            icon = Icons.Outlined.Event,
-            selectedIcon = Icons.Filled.Event,
-            iconContentDescription = { stringResource(MR.strings.main_nav_events_desc) }
-        ),
-        NavigationItem(
-            label = { Text(stringResource(MR.strings.main_nav_admin)) },
-            icon = Icons.Outlined.AdminPanelSettings,
-            selectedIcon = Icons.Filled.AdminPanelSettings,
-            iconContentDescription = { stringResource(MR.strings.main_nav_admin_desc) },
-            options = listOf(
-                NavigationItemOption.DisplayIfHasRole(Roles.Transaction.Create),
-                NavigationItemOption.DisplayIfWidthSizeClass(
-                    listOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
-                )
-            )
-        ),
-        NavigationItem(
-            label = { Text(stringResource(MR.strings.main_nav_settings)) },
-            icon = Icons.Outlined.Settings,
-            selectedIcon = Icons.Filled.Settings,
-            iconContentDescription = { stringResource(MR.strings.main_nav_settings_desc) }
-        )
-    )
-
     @Composable
-    override fun ScreenContent(paddingValues: PaddingValues) {
+    override fun ScreenContent(paddingValues: PaddingValues, screenModel: MainScreenModel) {
         val navigator = LocalNavigator.current
 
         AccountsHandler { accounts ->
@@ -86,7 +88,7 @@ object MainScreen : NavigationScreen(
             }
         }
 
-        super.ScreenContent(paddingValues)
+        super.ScreenContent(paddingValues, screenModel)
     }
 
     @Composable
