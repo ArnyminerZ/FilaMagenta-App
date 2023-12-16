@@ -2,6 +2,7 @@ package ui.screen
 
 import accounts.AccountManager
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -9,6 +10,7 @@ import io.github.aakira.napier.Napier
 import ui.reusable.LoadingBox
 import ui.screen.model.AppScreen
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 object MainLoadingScreen : AppScreen() {
     /**
      * **Only for tests**.
