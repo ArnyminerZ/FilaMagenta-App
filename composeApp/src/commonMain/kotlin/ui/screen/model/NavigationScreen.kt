@@ -224,27 +224,21 @@ abstract class NavigationScreen(
      * Handles key events
      */
     @Suppress("MagicNumber")
-    private fun keyEventHandler(event: KeyEvent): Boolean {
-        // Only handle release events
-        if (event.type != KeyEventType.KeyUp) return false
+    private fun keyEventHandler(event: KeyEvent): Boolean = with(event) {
+        when {
+            // Only handle release events
+            type != KeyEventType.KeyUp -> false
 
-        return when {
-            event.isAltPressed -> {
-                when (event.key) {
-                    Key.NumPad1 -> selectNavigationItem(0)
-                    Key.NumPad2 -> selectNavigationItem(1)
-                    Key.NumPad3 -> selectNavigationItem(2)
-                    Key.NumPad4 -> selectNavigationItem(3)
-                    Key.NumPad5 -> selectNavigationItem(4)
-                    Key.NumPad6 -> selectNavigationItem(5)
-                    Key.NumPad7 -> selectNavigationItem(6)
-                    Key.NumPad8 -> selectNavigationItem(7)
-                    Key.NumPad9 -> selectNavigationItem(8)
-                    Key.NumPad0 -> selectNavigationItem(9)
-
-                    else -> false
-                }
-            }
+            isAltPressed && key == Key.NumPad1 -> selectNavigationItem(0)
+            isAltPressed && key == Key.NumPad2 -> selectNavigationItem(1)
+            isAltPressed && key == Key.NumPad3 -> selectNavigationItem(2)
+            isAltPressed && key == Key.NumPad4 -> selectNavigationItem(3)
+            isAltPressed && key == Key.NumPad5 -> selectNavigationItem(4)
+            isAltPressed && key == Key.NumPad6 -> selectNavigationItem(5)
+            isAltPressed && key == Key.NumPad7 -> selectNavigationItem(6)
+            isAltPressed && key == Key.NumPad8 -> selectNavigationItem(7)
+            isAltPressed && key == Key.NumPad9 -> selectNavigationItem(8)
+            isAltPressed && key == Key.NumPad0 -> selectNavigationItem(9)
 
             else -> false
         }
