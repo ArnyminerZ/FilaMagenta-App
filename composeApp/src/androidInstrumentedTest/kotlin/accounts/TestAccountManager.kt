@@ -12,6 +12,8 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import security.Role
+import security.Roles
 import stub.network.StubAuthentication
 import utils.blockThreadUntil
 
@@ -33,7 +35,7 @@ class TestAccountManager : AndroidTestEnvironment() {
         // Create a new account
         val account = Account("testing_account")
         assertTrue(
-            AccountManager.addAccount(account, "password")
+            AccountManager.addAccount(account, "password", "token", emptyList())
         )
 
         AccountManager.getAccounts().let { accounts ->
@@ -108,9 +110,9 @@ class TestAccountManager : AndroidTestEnvironment() {
         )
 
         // Give a bit of time for the flow to update
-        blockThreadUntil({ accounts.size == 1 })
+        blockThreadUntil({ accounts.size >= 1 })
 
-        accounts[1].let { list ->
+        accounts.last().let { list ->
             assertEquals(1, list.size)
             assertEquals(account.name, list[0].name)
         }
@@ -120,7 +122,7 @@ class TestAccountManager : AndroidTestEnvironment() {
     fun testSetToken() {
         // Create a new account
         val account = Account("testing_account")
-        assertTrue(AccountManager.addAccount(account, "password"))
+        assertTrue(AccountManager.addAccount(account, "password", "token", emptyList()))
 
         // Set the token
         AccountManager.setToken(account, token = "testing_token")
@@ -137,7 +139,7 @@ class TestAccountManager : AndroidTestEnvironment() {
     fun testGetToken() {
         // Create a new account
         val account = Account("testing_account")
-        assertTrue(AccountManager.addAccount(account, "password"))
+        assertTrue(AccountManager.addAccount(account, "password", "token", emptyList()))
 
         // Set the token
         am.setAuthToken(account.androidAccount, AccountManager.AUTH_TOKEN_TYPE, "testing_token")
@@ -145,5 +147,31 @@ class TestAccountManager : AndroidTestEnvironment() {
         // Get the token, and verify that it's correct
         val token = runBlocking { AccountManager.getToken(account) }
         assertEquals("testing_token", token)
+    }
+
+    @Test
+    fun testSetRoles() {
+        // Create a new account
+        val account = Account("testing_account")
+        assertTrue(AccountManager.addAccount(account, "password", "token", emptyList()))
+
+        // Set the sample roles list
+        val roles = listOf(Roles.Users.List)
+        AccountManager.setRoles(account, roles)
+
+        // Make sure it has been set correctly
+        val encodedRoles = am.getUserData(account.androidAccount, AccountManager.USER_DATA_ROLES)
+        val decodedRoles = AccountManager.jsonEncoder.decodeFromString<List<Role>>(encodedRoles)
+        assertEquals(roles, decodedRoles)
+    }
+
+    @Test
+    fun testGetRoles() {
+        // Create a new account
+        val account = Account("testing_account")
+        val roles = listOf(Roles.Users.List)
+        assertTrue(AccountManager.addAccount(account, "password", "token", roles))
+
+        assertEquals(roles, AccountManager.getRoles(account))
     }
 }

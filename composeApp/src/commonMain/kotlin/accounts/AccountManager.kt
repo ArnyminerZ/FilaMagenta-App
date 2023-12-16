@@ -1,6 +1,7 @@
 package accounts
 
 import kotlinx.coroutines.flow.Flow
+import security.Role
 
 expect object AccountManager {
     /**
@@ -24,10 +25,12 @@ expect object AccountManager {
      *
      * @param account The account to be added.
      * @param password The password that the user uses for authenticating.
+     * @param token The authentication token of the account.
+     * @param roles The list of roles granted to the user.
      *
      * @return `true` if the account was added successfully, `false` otherwise.
      */
-    fun addAccount(account: Account, password: String): Boolean
+    fun addAccount(account: Account, password: String, token: String, roles: List<Role>): Boolean
 
     /**
      * Remove the desired account from the system
@@ -59,4 +62,21 @@ expect object AccountManager {
      * @return `null` if there's no token stored, the token otherwise.
      */
     suspend fun getToken(account: Account): String?
+
+    /**
+     * Updates the list of stored roles for the given account.
+     *
+     * @param account The account that owns the roles.
+     * @param roles The list of roles to set.
+     */
+    fun setRoles(account: Account, roles: List<Role>)
+
+    /**
+     * Fetches the list of stored roles that have been granted to the given account.
+     *
+     * @param account The account to search for.
+     *
+     * @return The list of roles that the account has.
+     */
+    fun getRoles(account: Account): List<Role>
 }

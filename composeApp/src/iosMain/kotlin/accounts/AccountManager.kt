@@ -8,16 +8,26 @@ import kotlin.concurrent.Volatile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import security.Role
 
+@Suppress("TooManyFunctions")
 @OptIn(ExperimentalSettingsImplementation::class)
 actual object AccountManager {
     private const val KEY_ACCOUNTS_COUNT = "accounts"
     private const val KEY_ACCOUNT_NAME = "account_name_"
     private const val KEY_ACCOUNT_PASS = "account_pass_"
     private const val KEY_ACCOUNT_TOKEN = "account_token_"
+    private const val KEY_ACCOUNT_ROLES = "account_roles_"
 
     private val storage by lazy {
         KeychainSettings("filamagenta_accounts")
+    }
+
+    private val jsonEncoder = Json {
+        isLenient = true
     }
 
     @Volatile
@@ -57,10 +67,10 @@ actual object AccountManager {
     /**
      * Notifies all the [flows] that the accounts list has been updated.
      */
-    private fun notifyUpdate() {
+    private suspend fun notifyUpdate() {
         val accounts = getAccounts()
         for (flow in flows) {
-            flow.tryEmit(accounts)
+            flow.emit(accounts)
         }
     }
 
@@ -85,10 +95,12 @@ actual object AccountManager {
      *
      * @param account The account to be added.
      * @param password The password that the user uses for authenticating.
+     * @param token The authentication token of the account.
+     * @param roles The list of roles granted to the user.
      *
      * @return `true` if the account was added successfully, `false` otherwise.
      */
-    actual fun addAccount(account: Account, password: String): Boolean {
+    actual fun addAccount(account: Account, password: String, token: String, roles: List<Role>): Boolean {
         val count = storage.getInt(KEY_ACCOUNTS_COUNT, 0)
         val nameKey = KEY_ACCOUNT_NAME + count
         val passKey = KEY_ACCOUNT_PASS + count
@@ -100,7 +112,10 @@ actual object AccountManager {
         Napier.v { "Increasing accounts count to ${count + 1}" }
         storage[KEY_ACCOUNTS_COUNT] = count + 1
 
-        notifyUpdate()
+        setToken(account, token)
+        setRoles(account, roles)
+
+        runBlocking { notifyUpdate() }
         return true
     }
 
@@ -109,22 +124,25 @@ actual object AccountManager {
      */
     actual fun clearAccounts() {
         storage.clear()
-        notifyUpdate()
+        runBlocking { notifyUpdate() }
     }
 
     private fun moveData(from: Int, to: Int) {
         val nameFromKey = KEY_ACCOUNT_NAME + from
         val passFromKey = KEY_ACCOUNT_PASS + from
         val tokenFromKey = KEY_ACCOUNT_TOKEN + from
+        val rolesFromKey = KEY_ACCOUNT_ROLES + from
 
         val nameToKey = KEY_ACCOUNT_NAME + to
         val passToKey = KEY_ACCOUNT_PASS + to
         val tokenToKey = KEY_ACCOUNT_TOKEN + to
+        val rolesToKey = KEY_ACCOUNT_ROLES + to
 
         Napier.v { "Moving account data from #$from to #$to..." }
         val accountName = storage.getStringOrNull(nameFromKey)
         val pass = storage.getStringOrNull(passFromKey)
         val token = storage.getStringOrNull(tokenFromKey)
+        val roles = storage.getStringOrNull(rolesFromKey)
 
         if (accountName == null || pass == null) {
             Napier.e { "Tried to get the data of account at $from, and it was null." }
@@ -133,6 +151,7 @@ actual object AccountManager {
         storage[nameToKey] = accountName
         storage[passToKey] = pass
         storage[tokenToKey] = token
+        storage[rolesToKey] = roles
     }
 
     /**
@@ -152,6 +171,7 @@ actual object AccountManager {
         val nameKey = KEY_ACCOUNT_NAME + index
         val passKey = KEY_ACCOUNT_PASS + index
         val tokenKey = KEY_ACCOUNT_TOKEN + index
+        val rolesKey = KEY_ACCOUNT_ROLES + index
 
         val count = storage.getInt(KEY_ACCOUNTS_COUNT, 0)
         if (index + 1 == count) {
@@ -160,6 +180,7 @@ actual object AccountManager {
             storage.remove(nameKey)
             storage.remove(passKey)
             storage.remove(tokenKey)
+            storage.remove(rolesKey)
         } else {
             // The account is in the middle, the accounts under it must be moved
             // Start moving the account at index+1 to index
@@ -172,7 +193,7 @@ actual object AccountManager {
         Napier.v { "Reducing accounts count to ${count - 1}" }
         storage[KEY_ACCOUNTS_COUNT] = count - 1
 
-        notifyUpdate()
+        runBlocking { notifyUpdate() }
         return true
     }
 
@@ -210,5 +231,32 @@ actual object AccountManager {
         } catch (_: IllegalArgumentException) {
             return null
         }
+    }
+
+    /**
+     * Updates the list of stored roles for the given account.
+     *
+     * @param account The account that owns the roles.
+     * @param roles The list of roles to set.
+     */
+    actual fun setRoles(account: Account, roles: List<Role>) {
+        val index = indexOf(account)
+        val key = KEY_ACCOUNT_ROLES + index
+        val encodedRoles = jsonEncoder.encodeToString(roles)
+        storage[key] = encodedRoles
+    }
+
+    /**
+     * Fetches the list of stored roles that have been granted to the given account.
+     *
+     * @param account The account to search for.
+     *
+     * @return The list of roles that the account has.
+     */
+    actual fun getRoles(account: Account): List<Role> {
+        val index = indexOf(account)
+        val key = KEY_ACCOUNT_ROLES + index
+        val encodedRoles = storage.getStringOrNull(key)
+        return encodedRoles?.let { jsonEncoder.decodeFromString<List<Role>>(it) } ?: emptyList()
     }
 }

@@ -8,16 +8,31 @@ import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Handler
 import android.os.OperationCanceledException
+import androidx.annotation.VisibleForTesting
 import com.filamagenta.android.applicationContext
 import io.github.aakira.napier.Napier
 import java.io.IOException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import security.Role
 
 actual object AccountManager {
     const val ACCOUNT_TYPE = "com.arnyminerz.filamagenta"
     const val AUTH_TOKEN_TYPE = "filamagenta"
+
+    @VisibleForTesting
+    const val USER_DATA_ROLES = "roles"
+
+    /**
+     * The JSON encoder to be used for encoding complex user data.
+     */
+    @VisibleForTesting
+    val jsonEncoder = Json {
+        isLenient = true
+    }
 
     private val am: AccountManager by lazy { AccountManager.get(applicationContext) }
 
@@ -86,11 +101,22 @@ actual object AccountManager {
      *
      * @param account The account to be added.
      * @param password The password that the user uses for authenticating.
+     * @param token The authentication token of the account.
+     * @param roles The list of roles granted to the user.
      *
      * @return `true` if the account was added successfully, `false` otherwise.
      */
-    actual fun addAccount(account: Account, password: String): Boolean {
-        return am.addAccountExplicitly(account.androidAccount, password, Bundle())
+    actual fun addAccount(account: Account, password: String, token: String, roles: List<Role>): Boolean {
+        if (!am.addAccountExplicitly(account.androidAccount, password, Bundle())) return false
+
+        // Store the token
+        setToken(account, password)
+
+        // Store the user data
+        val encodedRoles = jsonEncoder.encodeToString(roles)
+        am.setUserData(account.androidAccount, USER_DATA_ROLES, encodedRoles)
+
+        return true
     }
 
     /**
@@ -136,5 +162,28 @@ actual object AccountManager {
      */
     actual suspend fun getToken(account: Account): String? {
         return am.blockingGetAuthToken(account.androidAccount, AUTH_TOKEN_TYPE, true)
+    }
+
+    /**
+     * Updates the list of stored roles for the given account.
+     *
+     * @param account The account that owns the roles.
+     * @param roles The list of roles to set.
+     */
+    actual fun setRoles(account: Account, roles: List<Role>) {
+        val encodedRoles = jsonEncoder.encodeToString(roles)
+        am.setUserData(account.androidAccount, USER_DATA_ROLES, encodedRoles)
+    }
+
+    /**
+     * Fetches the list of stored roles that have been granted to the given account.
+     *
+     * @param account The account to search for.
+     *
+     * @return The list of roles that the account has.
+     */
+    actual fun getRoles(account: Account): List<Role> {
+        val encodedRoles = am.getUserData(account.androidAccount, USER_DATA_ROLES)
+        return jsonEncoder.decodeFromString(encodedRoles)
     }
 }

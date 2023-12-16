@@ -21,7 +21,6 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import cafe.adriel.voyager.navigator.Navigator
-import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
 import org.junit.Test
 import suite.ComposeTestSuite
@@ -111,16 +110,18 @@ class TestNavigationScreen : ComposeTestSuite() {
     private suspend fun runTestsForNavigation(composeTestRule: ComposeContentTestRule) {
         composeTestRule.onAllNodesWithTag(TEST_TAG_NAV_ITEM).assertCountEquals(2)
 
+        delay(500)
+
         // Click the second item
         composeTestRule.onAllNodes(hasTestTag(TEST_TAG_NAV_ITEM))[1].performClick()
         delay(50)
-        assertEquals(1, DemoScreen.navigationSelection.value)
+        composeTestRule.waitUntil { DemoScreen.navigationSelection.value == 1 }
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag(TEST_TAG_CONTENT) and hasText("Page 1"))
 
         // Click the first item
         composeTestRule.onAllNodes(hasTestTag(TEST_TAG_NAV_ITEM))[0].performClick()
         delay(50)
-        assertEquals(0, DemoScreen.navigationSelection.value)
+        composeTestRule.waitUntil { DemoScreen.navigationSelection.value == 0 }
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag(TEST_TAG_CONTENT) and hasText("Page 0"))
     }
 }

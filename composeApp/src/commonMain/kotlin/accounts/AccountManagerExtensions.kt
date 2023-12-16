@@ -103,20 +103,32 @@ fun AccountManager.liveSelectedAccount(): StateFlow<Account?> = MutableStateFlow
 
     CoroutineScope(Dispatchers.IO).launch {
         accounts.collect {
-            val account = getSelectedAccount()
-            flow.value = account
+            try {
+                val account = getSelectedAccount()
+                flow.value = account
+            } catch (_: IllegalStateException) {
+                flow.value = null
+            }
         }
     }
     CoroutineScope(Dispatchers.IO).launch {
         selectedAccount.collect {
-            val account = getSelectedAccount()
-            flow.value = account
+            try {
+                val account = getSelectedAccount()
+                flow.value = account
+            } catch (_: IllegalStateException) {
+                flow.value = null
+            }
         }
     }
 
     CoroutineScope(Dispatchers.IO).launch {
         // Emit the initial value
-        val account = getSelectedAccount()
-        flow.value = account
+        try {
+            val account = getSelectedAccount()
+            flow.value = account
+        } catch (_: IllegalStateException) {
+            flow.value = null
+        }
     }
 }

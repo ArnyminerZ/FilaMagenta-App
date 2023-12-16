@@ -53,7 +53,7 @@ class TestMainNavigator : ComposeTestSuite() {
     fun testNavigatorMainScreen() = testComposable(
         doBefore = {
             // Add one account so that navigator redirects to MainScreen
-            AccountManager.addAccount(Account("testing"), "password")
+            AccountManager.addAccount(Account("testing"), "password", "", emptyList())
         },
         content = {
             MainNavigator()

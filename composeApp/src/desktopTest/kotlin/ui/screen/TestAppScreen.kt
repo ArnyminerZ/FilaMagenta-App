@@ -2,6 +2,7 @@ package ui.screen
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -13,6 +14,7 @@ import suite.ComposeTestSuite
 import ui.screen.model.AppScreen
 
 class TestAppScreen : ComposeTestSuite() {
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     object DemoScreen : AppScreen() {
         const val TEST_TAG_CONTENT = "content"
         const val TEST_TAG_TOP_BAR = "top_bar"

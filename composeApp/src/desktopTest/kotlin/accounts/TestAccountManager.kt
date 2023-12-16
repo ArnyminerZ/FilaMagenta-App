@@ -18,6 +18,7 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import security.Roles
 
 class TestAccountManager {
     @After
@@ -31,7 +32,7 @@ class TestAccountManager {
 
         // Create a new account
         val account = Account("testing_account")
-        AccountManager.addAccount(account, "password")
+        AccountManager.addAccount(account, "password", "token", emptyList())
 
         // Check that the account was added
         AccountManager.getAccounts().let { accounts ->
@@ -46,10 +47,10 @@ class TestAccountManager {
         assertEquals(0, AccountManager.getAccounts().size)
 
         // Create sample accounts
-        AccountManager.addAccount(Account("account1"), "password")
-        AccountManager.addAccount(Account("account2"), "password")
-        AccountManager.addAccount(Account("account3"), "password")
-        AccountManager.addAccount(Account("account4"), "password")
+        AccountManager.addAccount(Account("account1"), "password", "token", emptyList())
+        AccountManager.addAccount(Account("account2"), "password", "token", emptyList())
+        AccountManager.addAccount(Account("account3"), "password", "token", emptyList())
+        AccountManager.addAccount(Account("account4"), "password", "token", emptyList())
 
         // Check that the accounts were added
         assertEquals(4, AccountManager.getAccounts().size)
@@ -88,7 +89,7 @@ class TestAccountManager {
 
         val account = Account("test_account")
         assertTrue(
-            AccountManager.addAccount(account, "password")
+            AccountManager.addAccount(account, "password", "token", emptyList())
         )
 
         // Give a bit of time for the flow to update
@@ -121,10 +122,10 @@ class TestAccountManager {
     fun testSettingAndGettingToken() = runTest {
         // Create a sample account
         val account = Account("test_account")
-        assertTrue(AccountManager.addAccount(account, "password"))
+        assertTrue(AccountManager.addAccount(account, "password", "token", emptyList()))
 
         // Make sure the token is not set
-        assertNull(AccountManager.getToken(account))
+        assertEquals("token", AccountManager.getToken(account))
 
         // Set the token
         AccountManager.setToken(account, "testing_token")
@@ -143,5 +144,29 @@ class TestAccountManager {
 
         // Check that it has been removed
         assertNull(AccountManager.getToken(account))
+    }
+
+    @Test
+    fun testSettingAndGettingRoles() = runTest {
+        // Create a sample account
+        val account = Account("test_account")
+        assertTrue(AccountManager.addAccount(account, "password", "token", emptyList()))
+
+        // Make sure there are no roles
+        assertTrue(AccountManager.getRoles(account).isEmpty())
+
+        // Set the roles
+        val roles = listOf(Roles.Users.List)
+        AccountManager.setRoles(account, roles)
+
+        // Check that they have been properly stored
+        assertEquals(roles, AccountManager.getRoles(account))
+
+        // Update the roles
+        val roles2 = listOf(Roles.Users.List, Roles.Transaction.Create)
+        AccountManager.setRoles(account, roles2)
+
+        // Check that it has been properly updated
+        assertEquals(roles2, AccountManager.getRoles(account))
     }
 }

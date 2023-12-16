@@ -162,9 +162,8 @@ object LoginScreen : AppScreen(MR.strings.title_login) {
             Napier.i { "Logged in successfully, adding account..." }
             val account = Account(nif)
             Napier.d { "Adding account..." }
-            AccountManager.addAccount(account, password)
-            Napier.d { "Setting account token..." }
-            AccountManager.setToken(account, token)
+            // TODO - set roles
+            AccountManager.addAccount(account, password, token, emptyList())
         } catch (e: ServerResponseException) {
             Napier.e(throwable = e) { "Login failed. Error code: ${e.code}" }
 

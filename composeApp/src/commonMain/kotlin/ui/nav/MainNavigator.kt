@@ -1,5 +1,6 @@
 package ui.nav
 
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.CurrentScreen
@@ -8,6 +9,7 @@ import ui.screen.MainLoadingScreen
 import ui.screen.model.AppScreen
 
 @Composable
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 fun MainNavigator(initialScreen: Screen = MainLoadingScreen) {
     Navigator(
         screen = initialScreen,
