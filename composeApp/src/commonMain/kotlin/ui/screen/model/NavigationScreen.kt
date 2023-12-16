@@ -11,6 +11,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -31,10 +32,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isAltPressed
 import androidx.compose.ui.input.key.key
@@ -43,7 +48,6 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.testTag
 import com.russhwolf.settings.ExperimentalSettingsApi
 import dev.icerock.moko.resources.StringResource
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -83,13 +87,9 @@ abstract class NavigationScreen(
                     // Display only if the screen width size class is one of the given
                     is NavigationItemOption.DisplayIfWidthSizeClass -> option.check(windowSizeClass?.widthSizeClass)
                 }
-                Napier.d { "Check (${option::class.simpleName}): $check" }
                 if (!check) {
                     display = false
                 }
-            }
-            if (item.options.isEmpty()) {
-                Napier.d { "There are no options: $display" }
             }
             item.visible.emit(display)
         }
@@ -220,6 +220,36 @@ abstract class NavigationScreen(
         }
     }
 
+    /**
+     * Handles key events
+     */
+    @Suppress("MagicNumber")
+    private fun keyEventHandler(event: KeyEvent): Boolean {
+        // Only handle release events
+        if (event.type != KeyEventType.KeyUp) return false
+
+        return when {
+            event.isAltPressed -> {
+                when (event.key) {
+                    Key.NumPad1 -> selectNavigationItem(0)
+                    Key.NumPad2 -> selectNavigationItem(1)
+                    Key.NumPad3 -> selectNavigationItem(2)
+                    Key.NumPad4 -> selectNavigationItem(3)
+                    Key.NumPad5 -> selectNavigationItem(4)
+                    Key.NumPad6 -> selectNavigationItem(5)
+                    Key.NumPad7 -> selectNavigationItem(6)
+                    Key.NumPad8 -> selectNavigationItem(7)
+                    Key.NumPad9 -> selectNavigationItem(8)
+                    Key.NumPad0 -> selectNavigationItem(9)
+
+                    else -> false
+                }
+            }
+
+            else -> false
+        }
+    }
+
     @Composable
     override fun ScreenContent(paddingValues: PaddingValues) {
         val scope = rememberCoroutineScope()
@@ -228,32 +258,17 @@ abstract class NavigationScreen(
         val windowSizeClass = windowSizeClassProvider.calculate()
         val displayBottomNavigation = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
 
+        // The focus requester is added so that the keyEventHandler receives key events
+        val rootFocusRequester = remember { FocusRequester() }
+        LaunchedEffect(Unit) { rootFocusRequester.requestFocus() }
+
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .onPreviewKeyEvent {
-                    when {
-                        it.isAltPressed && it.type == KeyEventType.KeyUp -> {
-                            when (it.key) {
-                                Key.NumPad1 -> selectNavigationItem(0)
-                                Key.NumPad2 -> selectNavigationItem(1)
-                                Key.NumPad3 -> selectNavigationItem(2)
-                                Key.NumPad4 -> selectNavigationItem(3)
-                                Key.NumPad5 -> selectNavigationItem(4)
-                                Key.NumPad6 -> selectNavigationItem(5)
-                                Key.NumPad7 -> selectNavigationItem(6)
-                                Key.NumPad8 -> selectNavigationItem(7)
-                                Key.NumPad9 -> selectNavigationItem(8)
-                                Key.NumPad0 -> selectNavigationItem(9)
-
-                                else -> false
-                            }
-                        }
-
-                        else -> false
-                    }
-                }
+                .onPreviewKeyEvent(::keyEventHandler)
+                .focusable()
+                .focusRequester(rootFocusRequester)
         ) {
             NavigationRail(!displayBottomNavigation)
 
