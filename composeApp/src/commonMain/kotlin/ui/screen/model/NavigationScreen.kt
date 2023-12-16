@@ -1,6 +1,10 @@
 package ui.screen.model
 
+import accounts.Account
+import accounts.AccountManager
+import accounts.liveSelectedAccount
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
@@ -21,6 +25,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,13 +34,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isAltPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.testTag
+import com.russhwolf.settings.ExperimentalSettingsApi
 import dev.icerock.moko.resources.StringResource
+import io.github.aakira.napier.Napier
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ui.composition.LocalWindowSizeClass
 import ui.data.NavigationItem
+import ui.data.NavigationItemOption
 
 @ExperimentalFoundationApi
 @ExperimentalMaterial3WindowSizeClassApi
@@ -53,38 +69,45 @@ abstract class NavigationScreen(
 
     val navigationSelection = MutableStateFlow(0)
 
-    @Composable
-    private fun DrawNavigationItems(
-        itemComposable: @Composable (
-            selected: Boolean,
-            onClick: () -> Unit,
-            icon: ImageVector,
-            iconContentDescription: String?,
-            label: @Composable () -> Unit,
-            modifier: Modifier
-        ) -> Unit
-    ) {
-        val selection by navigationSelection.collectAsState()
+    private suspend fun updateNavigationItemsVisibility(account: Account?, windowSizeClass: WindowSizeClass?) {
+        // Iterate all the items
+        for (item in navigationItems) {
+            var display = true
 
-        for ((i, item) in navigationItems.withIndex()) {
-            val selected = selection == i
+            // Iterate all the options if any. If not, display will always be true
+            for (option in item.options) {
+                val check = when (option) {
+                    // Display only if the account has a given role
+                    is NavigationItemOption.DisplayIfHasRole -> option.check(account)
 
-            itemComposable(
-                selected,
-                { navigationSelection.tryEmit(i) },
-                if (selected) {
-                    item.selectedIcon
-                } else {
-                    item.icon
-                },
-                if (selected) {
-                    item.selectedIconContentDescription()
-                } else {
-                    item.iconContentDescription()
-                },
-                item.label,
-                Modifier.testTag(TEST_TAG_NAV_ITEM)
-            )
+                    // Display only if the screen width size class is one of the given
+                    is NavigationItemOption.DisplayIfWidthSizeClass -> option.check(windowSizeClass?.widthSizeClass)
+                }
+                Napier.d { "Check (${option::class.simpleName}): $check" }
+                if (!check) {
+                    display = false
+                }
+            }
+            if (item.options.isEmpty()) {
+                Napier.d { "There are no options: $display" }
+            }
+            item.visible.emit(display)
+        }
+    }
+
+    @OptIn(ExperimentalSettingsApi::class)
+    private val liveAccount = AccountManager.liveSelectedAccount()
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            liveAccount.collect {
+                updateNavigationItemsVisibility(it, windowSizeClass.value)
+            }
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            windowSizeClass.collect {
+                updateNavigationItemsVisibility(liveAccount.value, it)
+            }
         }
     }
 
@@ -97,22 +120,41 @@ abstract class NavigationScreen(
             }
         ) { isVisible ->
             if (isVisible && navigationItems.isNotEmpty()) {
+                val selection by navigationSelection.collectAsState()
+
                 NavigationBar(
                     modifier = Modifier.testTag(TEST_TAG_BOTTOM_BAR)
                 ) {
-                    DrawNavigationItems { selected, onClick, imageVector, contentDescription, label, modifier ->
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = onClick,
-                            icon = {
-                                Icon(
-                                    imageVector = imageVector,
-                                    contentDescription = contentDescription
-                                )
-                            },
-                            label = label,
-                            modifier = modifier
-                        )
+                    for ((index, item) in navigationItems.withIndex()) {
+                        val itemVisible by item.visible.collectAsState(false)
+                        AnimatedVisibility(
+                            visible = itemVisible,
+                            enter = slideInHorizontally { -it },
+                            exit = slideOutHorizontally { -it }
+                        ) {
+                            val selected = selection == index
+
+                            NavigationBarItem(
+                                selected = selected,
+                                onClick = { navigationSelection.tryEmit(index) },
+                                icon = {
+                                    Icon(
+                                        imageVector = if (selected) {
+                                            item.selectedIcon
+                                        } else {
+                                            item.icon
+                                        },
+                                        contentDescription = if (selected) {
+                                            item.selectedIconContentDescription()
+                                        } else {
+                                            item.iconContentDescription()
+                                        }
+                                    )
+                                },
+                                label = item.label,
+                                modifier = Modifier.testTag(TEST_TAG_NAV_ITEM)
+                            )
+                        }
                     }
                 }
             }
@@ -128,25 +170,53 @@ abstract class NavigationScreen(
             }
         ) { isVisible ->
             if (isVisible && navigationItems.isNotEmpty()) {
+                val selection by navigationSelection.collectAsState()
+
                 androidx.compose.material3.NavigationRail(
                     modifier = Modifier.testTag(TEST_TAG_RAIL)
                 ) {
-                    DrawNavigationItems { selected, onClick, imageVector, contentDescription, label, modifier ->
-                        NavigationRailItem(
-                            selected = selected,
-                            onClick = onClick,
-                            icon = {
-                                Icon(
-                                    imageVector = imageVector,
-                                    contentDescription = contentDescription
-                                )
-                            },
-                            label = label,
-                            modifier = modifier
-                        )
+                    for ((index, item) in navigationItems.withIndex()) {
+                        val itemVisible by item.visible.collectAsState(false)
+                        AnimatedVisibility(
+                            visible = itemVisible,
+                            enter = slideInHorizontally { -it },
+                            exit = slideOutHorizontally { -it }
+                        ) {
+                            val selected = selection == index
+
+                            NavigationRailItem(
+                                selected = selected,
+                                onClick = { navigationSelection.tryEmit(index) },
+                                icon = {
+                                    Icon(
+                                        imageVector = if (selected) {
+                                            item.selectedIcon
+                                        } else {
+                                            item.icon
+                                        },
+                                        contentDescription = if (selected) {
+                                            item.selectedIconContentDescription()
+                                        } else {
+                                            item.iconContentDescription()
+                                        }
+                                    )
+                                },
+                                label = item.label,
+                                modifier = Modifier.testTag(TEST_TAG_NAV_ITEM)
+                            )
+                        }
                     }
                 }
             }
+        }
+    }
+
+    private fun selectNavigationItem(index: Int): Boolean {
+        return if (navigationItems.size >= index + 1) {
+            navigationSelection.tryEmit(index)
+            true
+        } else {
+            false
         }
     }
 
@@ -159,7 +229,31 @@ abstract class NavigationScreen(
         val displayBottomNavigation = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
 
         Row(
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .onPreviewKeyEvent {
+                    when {
+                        it.isAltPressed && it.type == KeyEventType.KeyUp -> {
+                            when (it.key) {
+                                Key.NumPad1 -> selectNavigationItem(0)
+                                Key.NumPad2 -> selectNavigationItem(1)
+                                Key.NumPad3 -> selectNavigationItem(2)
+                                Key.NumPad4 -> selectNavigationItem(3)
+                                Key.NumPad5 -> selectNavigationItem(4)
+                                Key.NumPad6 -> selectNavigationItem(5)
+                                Key.NumPad7 -> selectNavigationItem(6)
+                                Key.NumPad8 -> selectNavigationItem(7)
+                                Key.NumPad9 -> selectNavigationItem(8)
+                                Key.NumPad0 -> selectNavigationItem(9)
+
+                                else -> false
+                            }
+                        }
+
+                        else -> false
+                    }
+                }
         ) {
             NavigationRail(!displayBottomNavigation)
 
@@ -167,7 +261,7 @@ abstract class NavigationScreen(
             val selection by navigationSelection.collectAsState()
 
             LaunchedEffect(pagerState) {
-                snapshotFlow { pagerState.currentPage }
+                snapshotFlow { pagerState.settledPage }
                     .collect { page ->
                         if (selection != page) {
                             navigationSelection.emit(page)
@@ -177,7 +271,14 @@ abstract class NavigationScreen(
             LaunchedEffect(Unit) {
                 snapshotFlow { selection }
                     .collect { page ->
-                        if (pagerState.currentPage != page) scope.launch {
+                        val navItem = navigationItems.getOrNull(page)
+                        if (navItem?.visible?.value == false) {
+                            if (navigationItems.size >= page + 1) {
+                                navigationSelection.tryEmit(page + 1)
+                            } else {
+                                navigationSelection.tryEmit(page - 1)
+                            }
+                        } else if (pagerState.settledPage != page) scope.launch {
                             pagerState.animateScrollToPage(page)
                         }
                     }

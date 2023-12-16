@@ -7,15 +7,18 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.PagerScope
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Wallet
+import androidx.compose.material.icons.outlined.AdminPanelSettings
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Wallet
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
@@ -29,7 +32,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import network.backend.transactionsConnector
+import security.Roles
 import ui.data.NavigationItem
+import ui.data.NavigationItemOption
 import ui.screen.model.NavigationScreen
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3WindowSizeClassApi::class)
@@ -50,6 +55,18 @@ object MainScreen : NavigationScreen(
             icon = Icons.Outlined.Event,
             selectedIcon = Icons.Filled.Event,
             iconContentDescription = { stringResource(MR.strings.main_nav_events_desc) }
+        ),
+        NavigationItem(
+            label = { Text(stringResource(MR.strings.main_nav_admin)) },
+            icon = Icons.Outlined.AdminPanelSettings,
+            selectedIcon = Icons.Filled.AdminPanelSettings,
+            iconContentDescription = { stringResource(MR.strings.main_nav_admin_desc) },
+            options = listOf(
+                NavigationItemOption.DisplayIfHasRole(Roles.Transaction.Create),
+                NavigationItemOption.DisplayIfWidthSizeClass(
+                    listOf(WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded)
+                )
+            )
         ),
         NavigationItem(
             label = { Text(stringResource(MR.strings.main_nav_settings)) },

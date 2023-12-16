@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,6 +34,7 @@ import ui.theme.AppTheme
  * will be "Filà Magenta - Home".
  */
 @KoverIgnore
+@ExperimentalMaterial3WindowSizeClassApi
 abstract class AppScreen(
     val localizedTitle: StringResource? = null,
     val ignoreBackPresses: Boolean = true
@@ -45,6 +49,8 @@ abstract class AppScreen(
      * The value can be updated at any moment. If it's not null, a snackbar with the given text will be displayed.
      */
     val snackbarError = MutableStateFlow<StringResource?>(null)
+
+    protected val windowSizeClass = MutableStateFlow<WindowSizeClass?>(null)
 
     /**
      * Can be overridden to set the content to display on the top of the scaffold as the Top App Bar.
@@ -63,6 +69,7 @@ abstract class AppScreen(
     @Composable
     override fun Content() {
         SnackbarLogic()
+        WindowSizeClassObserver()
 
         AppTheme {
             Scaffold(
@@ -102,6 +109,15 @@ abstract class AppScreen(
                     this@AppScreen.snackbarError.emit(null)
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun WindowSizeClassObserver() {
+        val currentWindowSizeClass = calculateWindowSizeClass()
+
+        LaunchedEffect(currentWindowSizeClass) {
+            windowSizeClass.value = currentWindowSizeClass
         }
     }
 
