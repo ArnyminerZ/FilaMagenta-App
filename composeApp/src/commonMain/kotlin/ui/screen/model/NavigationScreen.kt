@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerScope
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Icon
@@ -211,8 +212,13 @@ abstract class NavigationScreen(
         }
     }
 
+    /**
+     * Updates [navigationSelection] with the [index] given, if it's in bounds.
+     *
+     * @param index The index to set. Must be between zero and the amount of items in [navigationItems].
+     */
     private fun selectNavigationItem(index: Int): Boolean {
-        return if (navigationItems.size >= index + 1) {
+        return if (index >= 0 && navigationItems.size >= index + 1) {
             navigationSelection.tryEmit(index)
             true
         } else {
@@ -244,13 +250,62 @@ abstract class NavigationScreen(
         }
     }
 
+    /**
+     * Checks the current window size class to define which navigation method to use: navigation rail or bottom
+     * navigation bar.
+     *
+     * @return `true` if the [WindowWidthSizeClass] is equal to [WindowWidthSizeClass.Compact], `false` otherwise.
+     */
     @Composable
-    override fun ScreenContent(paddingValues: PaddingValues) {
-        val scope = rememberCoroutineScope()
-
+    private fun shouldDisplayBottomNavigation(): Boolean {
         val windowSizeClassProvider = LocalWindowSizeClass.current
         val windowSizeClass = windowSizeClassProvider.calculate()
-        val displayBottomNavigation = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
+        return windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
+    }
+
+    /**
+     * Makes sure that the selected page in [pagerState] and [navigationSelection] are synchronized.
+     * This makes sure that if [navigationSelection] is updated, the current page is switched automatically; and if the
+     * current page is switched by the user, [navigationSelection] is updated accordingly.
+     *
+     * Also handles wrong values to [navigationSelection], so if, for example, an invisible page is selected, the value
+     * will be adjusted automatically.
+     *
+     * @param pagerState The pager state to watch.
+     */
+    @Composable
+    private fun PagerStateSynchronizer(pagerState: PagerState) {
+        val scope = rememberCoroutineScope()
+        val selection by navigationSelection.collectAsState()
+
+        LaunchedEffect(pagerState) {
+            snapshotFlow { pagerState.settledPage }
+                .collect { page ->
+                    if (selection != page) {
+                        navigationSelection.emit(page)
+                    }
+                }
+        }
+        LaunchedEffect(Unit) {
+            snapshotFlow { selection }
+                .collect { page ->
+                    val navItem = navigationItems.getOrNull(page)
+                    if (navItem?.visible?.value == false) {
+                        if (navigationItems.size >= page + 1) {
+                            navigationSelection.tryEmit(page + 1)
+                        } else {
+                            navigationSelection.tryEmit(page - 1)
+                        }
+                    } else if (pagerState.settledPage != page) scope.launch {
+                        pagerState.animateScrollToPage(page)
+                    }
+                }
+        }
+    }
+
+    @Composable
+    override fun ScreenContent(paddingValues: PaddingValues) {
+        val displayBottomNavigation = shouldDisplayBottomNavigation()
 
         // The focus requester is added so that the keyEventHandler receives key events
         val rootFocusRequester = remember { FocusRequester() }
@@ -267,31 +322,7 @@ abstract class NavigationScreen(
             NavigationRail(!displayBottomNavigation)
 
             val pagerState = rememberPagerState { navigationItems.size }
-            val selection by navigationSelection.collectAsState()
-
-            LaunchedEffect(pagerState) {
-                snapshotFlow { pagerState.settledPage }
-                    .collect { page ->
-                        if (selection != page) {
-                            navigationSelection.emit(page)
-                        }
-                    }
-            }
-            LaunchedEffect(Unit) {
-                snapshotFlow { selection }
-                    .collect { page ->
-                        val navItem = navigationItems.getOrNull(page)
-                        if (navItem?.visible?.value == false) {
-                            if (navigationItems.size >= page + 1) {
-                                navigationSelection.tryEmit(page + 1)
-                            } else {
-                                navigationSelection.tryEmit(page - 1)
-                            }
-                        } else if (pagerState.settledPage != page) scope.launch {
-                            pagerState.animateScrollToPage(page)
-                        }
-                    }
-            }
+            PagerStateSynchronizer(pagerState)
 
             if (displayBottomNavigation) {
                 HorizontalPager(
@@ -318,9 +349,7 @@ abstract class NavigationScreen(
 
     @Composable
     override fun BottomBar() {
-        val windowSizeClassProvider = LocalWindowSizeClass.current
-        val windowSizeClass = windowSizeClassProvider.calculate()
-        val displayBottomNavigation = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
+        val displayBottomNavigation = shouldDisplayBottomNavigation()
 
         BottomNavigationBar(displayBottomNavigation)
     }
