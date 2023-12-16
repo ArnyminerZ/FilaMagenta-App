@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,9 +54,42 @@ abstract class NavigationScreen(
     val navigationSelection = MutableStateFlow(0)
 
     @Composable
-    private fun BottomNavigationBar(visible: Boolean) {
+    private fun DrawNavigationItems(
+        itemComposable: @Composable (
+            selected: Boolean,
+            onClick: () -> Unit,
+            icon: ImageVector,
+            iconContentDescription: String?,
+            label: @Composable () -> Unit,
+            modifier: Modifier
+        ) -> Unit
+    ) {
         val selection by navigationSelection.collectAsState()
 
+        for ((i, item) in navigationItems.withIndex()) {
+            val selected = selection == i
+
+            itemComposable(
+                selected,
+                { navigationSelection.tryEmit(i) },
+                if (selected) {
+                    item.selectedIcon
+                } else {
+                    item.icon
+                },
+                if (selected) {
+                    item.selectedIconContentDescription()
+                } else {
+                    item.iconContentDescription()
+                },
+                item.label,
+                Modifier.testTag(TEST_TAG_NAV_ITEM)
+            )
+        }
+    }
+
+    @Composable
+    private fun BottomNavigationBar(visible: Boolean) {
         AnimatedContent(
             targetState = visible,
             transitionSpec = {
@@ -66,27 +100,18 @@ abstract class NavigationScreen(
                 NavigationBar(
                     modifier = Modifier.testTag(TEST_TAG_BOTTOM_BAR)
                 ) {
-                    for ((i, item) in navigationItems.withIndex()) {
-                        val selected = selection == i
+                    DrawNavigationItems { selected, onClick, imageVector, contentDescription, label, modifier ->
                         NavigationBarItem(
                             selected = selected,
-                            onClick = { navigationSelection.tryEmit(i) },
+                            onClick = onClick,
                             icon = {
                                 Icon(
-                                    imageVector = if (selected) {
-                                        item.selectedIcon
-                                    } else {
-                                        item.icon
-                                    },
-                                    contentDescription = if (selected) {
-                                        item.selectedIconContentDescription()
-                                    } else {
-                                        item.iconContentDescription()
-                                    }
+                                    imageVector = imageVector,
+                                    contentDescription = contentDescription
                                 )
                             },
-                            label = item.label,
-                            modifier = Modifier.testTag(TEST_TAG_NAV_ITEM)
+                            label = label,
+                            modifier = modifier
                         )
                     }
                 }
@@ -96,8 +121,6 @@ abstract class NavigationScreen(
 
     @Composable
     private fun NavigationRail(visible: Boolean) {
-        val selection by navigationSelection.collectAsState()
-
         AnimatedContent(
             targetState = visible,
             transitionSpec = {
@@ -108,27 +131,18 @@ abstract class NavigationScreen(
                 androidx.compose.material3.NavigationRail(
                     modifier = Modifier.testTag(TEST_TAG_RAIL)
                 ) {
-                    for ((i, item) in navigationItems.withIndex()) {
-                        val selected = selection == i
+                    DrawNavigationItems { selected, onClick, imageVector, contentDescription, label, modifier ->
                         NavigationRailItem(
                             selected = selected,
-                            onClick = { navigationSelection.tryEmit(i) },
+                            onClick = onClick,
                             icon = {
                                 Icon(
-                                    imageVector = if (selected) {
-                                        item.selectedIcon
-                                    } else {
-                                        item.icon
-                                    },
-                                    contentDescription = if (selected) {
-                                        item.selectedIconContentDescription()
-                                    } else {
-                                        item.iconContentDescription()
-                                    }
+                                    imageVector = imageVector,
+                                    contentDescription = contentDescription
                                 )
                             },
-                            label = item.label,
-                            modifier = Modifier.testTag(TEST_TAG_NAV_ITEM)
+                            label = label,
+                            modifier = modifier
                         )
                     }
                 }
