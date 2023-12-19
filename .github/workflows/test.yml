@@ -65,7 +65,7 @@ jobs:
           arguments: :server:check
       - name: Store reports
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Server Reports
           path: |
@@ -135,7 +135,7 @@ jobs:
           arguments: :composeApp:check
       - name: Store reports
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: App Reports
           path: |
