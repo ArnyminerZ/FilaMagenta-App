@@ -1,42 +1,38 @@
 server:
 - changed-files:
-  - any-glob-to-any-file:
-    - 'server/**'
+  - any-glob-to-any-file: 'server/**'
 
 app:
 - changed-files:
-  - any-glob-to-any-file:
-    - 'composeApp/**'
+  - any-glob-to-any-file: 'composeApp/**'
 
 shared:
 - changed-files:
-  - any-glob-to-any-file:
-    - 'shared/**'
+  - any-glob-to-any-file: 'shared/**'
 
 ios:
 - changed-files:
-  - any-glob-to-any-file:
-    - 'iosApp/**'
+  - any-glob-to-any-file: 'iosApp/**'
 
 testing:
 - changed-files:
-  - any-glob-to-any-file:
-    - '**/*Test/**'
+  - any-glob-to-any-file: '**/*Test/**'
 
 documentation:
 - changed-files:
-  - any-glob-to-any-file:
-    - '**/*.md'
+  - any-glob-to-any-file: '**/*.md'
 
 github_actions:
 - changed-files:
-  - any-glob-to-any-file:
-    - '.github'
+  - any-glob-to-any-file: '.github'
 
 detekt:
 - changed-files:
-  - any-glob-to-any-file:
-    - 'config/detekt/detekt-*.yml'
+  - any-glob-to-any-file: 'config/detekt/detekt-*.yml'
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: 'gradle/libs.versions.toml'
 
 gradle:
 - changed-files:
@@ -50,8 +46,3 @@ docker:
   - any-glob-to-any-file:
     - 'docker-compose.prod.yml'
     - 'docker-compose.yml'
-
-dependencies:
-- changed-files:
-  - any-glob-to-any-file:
-    - 'gradle/libs.versions.toml'
