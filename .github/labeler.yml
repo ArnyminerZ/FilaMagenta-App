@@ -1,57 +1,57 @@
 server:
-  - changed-files:
-    - any-glob-to-any-file:
-      - 'server/**'
+- changed-files:
+  - any-glob-to-any-file:
+    - 'server/**'
 
 app:
-  - changed-files:
-    - any-glob-to-any-file:
-      - 'composeApp/**'
+- changed-files:
+  - any-glob-to-any-file:
+    - 'composeApp/**'
 
 shared:
-  - changed-files:
-    - any-glob-to-any-file:
-      - 'shared/**'
+- changed-files:
+  - any-glob-to-any-file:
+    - 'shared/**'
 
 ios:
-  - changed-files:
-    - any-glob-to-any-file:
-      - 'iosApp/**'
+- changed-files:
+  - any-glob-to-any-file:
+    - 'iosApp/**'
 
 testing:
-  - changed-files:
-    - any-glob-to-any-file:
-      - '**/*Test/**'
+- changed-files:
+  - any-glob-to-any-file:
+    - '**/*Test/**'
 
 documentation:
-  - changed-files:
-    - any-glob-to-any-file:
-      - '**/*.md'
+- changed-files:
+  - any-glob-to-any-file:
+    - '**/*.md'
 
 github_actions:
-  - changed-files:
-    - any-glob-to-any-file:
-      - '.github'
+- changed-files:
+  - any-glob-to-any-file:
+    - '.github'
 
 detekt:
-  - changed-files:
-    - any-glob-to-any-file:
-      - 'config/detekt/detekt-*.yml'
+- changed-files:
+  - any-glob-to-any-file:
+    - 'config/detekt/detekt-*.yml'
 
 gradle:
-  - changed-files:
-    - any-glob-to-any-file:
-      - '**/*.gradle.kts'
-      - 'gradle.properties'
-      - 'gradle/wrapper/**'
+- changed-files:
+  - any-glob-to-any-file:
+    - '**/*.gradle.kts'
+    - 'gradle.properties'
+    - 'gradle/wrapper/**'
 
 docker:
-  - changed-files:
-    - any-glob-to-any-file:
-      - 'docker-compose.prod.yml'
-      - 'docker-compose.yml'
+- changed-files:
+  - any-glob-to-any-file:
+    - 'docker-compose.prod.yml'
+    - 'docker-compose.yml'
 
 dependencies:
-  - changed-files:
-    - any-glob-to-any-file:
-      - 'gradle/libs.versions.toml'
+- changed-files:
+  - any-glob-to-any-file:
+    - 'gradle/libs.versions.toml'
