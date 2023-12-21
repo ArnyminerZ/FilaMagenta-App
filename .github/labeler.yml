@@ -1,35 +1,57 @@
 server:
-  - server/**
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'server/**'
 
 app:
-  - composeApp/**
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'composeApp/**'
 
 shared:
-  - shared/**
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'shared/**'
 
 ios:
-  - iosApp/**
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'iosApp/**'
 
 testing:
-  - '**/*Test/**'
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*Test/**'
 
 documentation:
-  - '**/*.md'
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.md'
 
 github_actions:
-  - .github
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github'
 
 detekt:
-  - config/detekt/detekt-*.yml
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'config/detekt/detekt-*.yml'
 
 gradle:
-  - '**/*.gradle.kts'
-  - gradle.properties
-  - gradle/wrapper/**
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.gradle.kts'
+      - 'gradle.properties'
+      - 'gradle/wrapper/**'
 
 docker:
-  - docker-compose.prod.yml
-  - docker-compose.yml
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'docker-compose.prod.yml'
+      - 'docker-compose.yml'
 
 dependencies:
-  - gradle/libs.versions.toml
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'gradle/libs.versions.toml'
