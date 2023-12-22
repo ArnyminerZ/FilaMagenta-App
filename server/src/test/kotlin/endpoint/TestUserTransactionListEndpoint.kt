@@ -13,6 +13,7 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.Test
+import response.endpoint.UserTransactionListResult
 import security.Roles
 
 class TestUserTransactionListEndpoint : TestServerEnvironment() {
@@ -51,7 +52,7 @@ class TestUserTransactionListEndpoint : TestServerEnvironment() {
         httpClient.get(UserTransactionListEndpoint.url) {
             bearerAuth(jwt)
         }.let { response ->
-            assertResponseSuccess<UserTransactionListEndpoint.UserTransactionsResponse>(response) { data ->
+            assertResponseSuccess<UserTransactionListResult>(response) { data ->
                 assertNotNull(data)
 
                 val transactions = data.transactions
