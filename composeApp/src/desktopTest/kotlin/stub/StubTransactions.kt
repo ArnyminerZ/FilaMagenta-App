@@ -5,7 +5,8 @@ import filamagenta.data.UserTransaction
 import kotlinx.datetime.LocalDate
 import network.backend.proto.ITransactions
 
-object StubTransactions: ITransactions() {
+@Suppress("MagicNumber")
+object StubTransactions : ITransactions() {
     override suspend fun getTransactions(): List<UserTransaction> = listOf(
         UserTransaction(
             id = 1,
