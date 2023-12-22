@@ -5,7 +5,10 @@ import accounts.AccountManager
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import kotlin.test.Test
+import network.backend.Transactions
+import network.backend.transactionsConnector
 import org.junit.After
+import stub.StubTransactions
 import suite.ComposeTestSuite
 import ui.nav.MainNavigator
 import ui.reusable.LoadingBoxTestTag
@@ -52,11 +55,18 @@ class TestMainNavigator : ComposeTestSuite() {
     @Test
     fun testNavigatorMainScreen() = testComposable(
         doBefore = {
+            transactionsConnector = StubTransactions
+
             // Add one account so that navigator redirects to MainScreen
-            AccountManager.addAccount(Account("testing"), "password")
+            val account = Account("testing")
+            AccountManager.addAccount(account, "password")
+            AccountManager.setToken(account, "token")
         },
         content = {
             MainNavigator()
+        },
+        finally = {
+            transactionsConnector = Transactions
         }
     ) { composeTestRule ->
         // Make sure the login screen has been displayed
