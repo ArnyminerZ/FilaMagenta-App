@@ -6,12 +6,12 @@ import com.filamagenta.database.entity.User
 import com.filamagenta.database.table.Transactions
 import com.filamagenta.endpoint.model.SecureEndpoint
 import com.filamagenta.endpoint.model.respondSuccess
+import data.SerializableTransaction
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import response.endpoint.UserTransactionListResult
-import response.endpoint.UserTransactionListResult.SerializableTransaction
 import server.Endpoints
 
 object UserTransactionListEndpoint : SecureEndpoint(Endpoints.User.Transactions.List) {

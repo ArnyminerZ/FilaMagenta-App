@@ -14,6 +14,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import org.junit.Test
 import response.Errors
+import response.endpoint.UserTransactionListResult
 import security.Roles
 
 class TestUserTransactionListOtherEndpoint : TestServerEnvironment() {
@@ -54,7 +55,7 @@ class TestUserTransactionListOtherEndpoint : TestServerEnvironment() {
         ) {
             bearerAuth(jwt)
         }.let { response ->
-            assertResponseSuccess<UserTransactionListOtherEndpoint.UserTransactionsResponse>(response) { data ->
+            assertResponseSuccess<UserTransactionListResult>(response) { data ->
                 assertNotNull(data)
 
                 val transactions = data.transactions
